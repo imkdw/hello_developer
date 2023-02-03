@@ -1,8 +1,22 @@
-# hello_developer
+# 프로젝트명 : HELLO_DEVELOPER
 
-개발자를 위한 커뮤니티, 헬로 디벨로퍼 입니다!
+## 개발자들을 위한 커뮤니티 서비스 입니다.
 
-## 23.01.31 ~
+#### 개발기간 : 2023.01.31 ~ 진행중
 
-1. 요구사항 정리 진행중(제약조건, 필요기능)
-2. 와이어프레임 제작중 (80% 완성)
+# 개발 환경
+
+- Language
+  - Typescript
+  - Javascript
+- Frontend
+  - React
+  - Recoil
+  - Styled-components
+- Backend
+  - Express.js
+  - TypeORM
+- Infra
+  - AWS EC2
+  - AWS S3
+  - AWS RDB
