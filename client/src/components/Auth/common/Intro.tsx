@@ -32,7 +32,7 @@ const IntroBackground = styled.div`
 
 /** 인트로에 표시될 제목 */
 const IntroHeader = styled.header`
-  font-size: 50px;
+  font-size: 40px;
   letter-spacing: 2px;
   color: white;
   position: relative;
@@ -43,7 +43,7 @@ const IntroHeader = styled.header`
 
 /** 인트로에 표시될 환영문구 */
 const IntroContent = styled.p`
-  font-size: 30px;
+  font-size: 25px;
   color: white;
   position: relative;
   z-index: 999;

@@ -5,6 +5,7 @@ const GlobalStyles = createGlobalStyle`
     padding: 0;
     margin: 0;
     font-family: 'Noto Sans KR', sans-serif;
+    box-sizing: border-box;
   }
 
   button {
@@ -15,6 +16,15 @@ const GlobalStyles = createGlobalStyle`
   a {
     color: #212121;
     text-decoration: none;
+  }
+  
+  input {
+    border: none;
+    outline: none;
+  }
+
+  li {
+    list-style: none;
   }
 
   input {

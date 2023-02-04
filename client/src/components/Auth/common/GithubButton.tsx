@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { GithubIcon } from "./AuthIcon";
 
 const StyledGithubButton = styled.button`
-  width: 50%;
+  width: 70%;
   height: 50px;
   border: 1px solid;
   border-radius: 15px;
