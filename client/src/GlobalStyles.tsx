@@ -17,6 +17,15 @@ const GlobalStyles = createGlobalStyle`
     text-decoration: none;
   }
 
+  input {
+    border: none;
+    outline: none;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
   html, body {
     height: 100%;
   }

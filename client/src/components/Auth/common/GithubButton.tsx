@@ -1,4 +1,5 @@
 import styled from "styled-components";
+
 import { GithubIcon } from "./AuthIcon";
 
 const StyledGithubButton = styled.button`
@@ -11,6 +12,11 @@ const StyledGithubButton = styled.button`
   justify-content: center;
   gap: 5px;
   font-size: 18px;
+  margin-top: 10px;
+
+  @media screen and (max-width: 767px) {
+    width: 90%;
+  }
 `;
 
 const GithubButton = () => {

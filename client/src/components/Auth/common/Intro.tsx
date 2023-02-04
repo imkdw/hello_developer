@@ -13,6 +13,10 @@ const StyledIntro = styled.div`
   align-items: center;
   justify-content: center;
   gap: 20em;
+
+  @media screen and (max-width: 767px) {
+    display: none;
+  }
 `;
 
 /** 블러처리를 위한 엘리먼트 */

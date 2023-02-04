@@ -7,6 +7,7 @@ const StyledAuthLine = styled.div`
   align-items: center;
   justify-content: space-between;
   color: #c3c3c3;
+  margin-top: 30px;
 `;
 
 const Line = styled.div`
