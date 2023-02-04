@@ -31,10 +31,10 @@ const AuthTab = () => {
   return (
     <StyledAuthTab>
       <TabButton isFontWeightBold={pathname === "/login"} to="/login">
-        Login
+        로그인
       </TabButton>
       <TabButton isFontWeightBold={pathname === "/register"} to="/register">
-        Register
+        회원가입
       </TabButton>
     </StyledAuthTab>
   );

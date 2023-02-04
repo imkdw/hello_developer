@@ -31,6 +31,11 @@ const Content = styled.div`
   border-radius: 15px;
   display: flex;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+
+  @media screen and (max-width: 767px) {
+    width: 90%;
+    height: 90%;
+  }
 `;
 
 /** 로그인, 회원가입 데이터를 입력받을 폼 */
