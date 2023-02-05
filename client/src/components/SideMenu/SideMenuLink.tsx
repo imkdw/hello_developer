@@ -34,7 +34,11 @@ const UtilLink = styled(Link)`
   margin: 0 0 30px 10px;
 `;
 
-const SideMenuLink = () => {
+interface SideMenuLinkProps {
+  onClick?: () => void;
+}
+
+const SideMenuLink = ({ onClick }: SideMenuLinkProps) => {
   const sideMenuData = [
     {
       id: "notice",
@@ -78,11 +82,13 @@ const SideMenuLink = () => {
     <StyledSideMenuLink>
       <PostLinks>
         {sideMenuData.map((data) => (
-          <SideMenuLinkItem key={data.id} Icon={data.icon} to={data.to} text={data.text} />
+          <SideMenuLinkItem key={data.id} Icon={data.icon} to={data.to} text={data.text} onClick={onClick} />
         ))}
       </PostLinks>
       <UtilLinks>
-        <UtilLink to="/login">로그인 / 회원가입</UtilLink>
+        <UtilLink to="/login" onClick={onClick}>
+          로그인 / 회원가입
+        </UtilLink>
       </UtilLinks>
     </StyledSideMenuLink>
   );

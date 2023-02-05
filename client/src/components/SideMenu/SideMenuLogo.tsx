@@ -5,6 +5,7 @@ import Logo from "../Common/Logo";
 const StyledSideMenuLogo = styled(Link)`
   width: 100%;
   height: 15%;
+  min-height: 140px;
   display: flex;
   align-items: center;
   justify-content: center;

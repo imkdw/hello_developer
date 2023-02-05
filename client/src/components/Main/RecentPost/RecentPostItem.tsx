@@ -8,8 +8,8 @@ const StyledPostItem = styled(Link)`
   display: flex;
   flex-direction: column;
   border-bottom: 1px solid #e5e6e8;
-  justify-content: space-evenly;
   align-items: center;
+  gap: 10px;
   cursor: pointer;
 
   &:hover {

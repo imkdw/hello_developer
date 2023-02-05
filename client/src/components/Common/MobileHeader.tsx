@@ -1,5 +1,7 @@
 import styled from "styled-components";
+import { enableSideMenuState } from "../../recoil/ui.recoil";
 import Logo from "./Logo";
+import { useSetRecoilState } from "recoil";
 
 const StyledMobileHeader = styled.div`
   width: 100%;
@@ -16,6 +18,10 @@ const IconWrapper = styled.div`
   top: 50%;
   transform: translateY(-50%);
   left: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 `;
 
 const MenuIcon = () => {
@@ -27,9 +33,17 @@ const MenuIcon = () => {
 };
 
 const MobileHeader = () => {
+  const setEnableSideMenu = useSetRecoilState(enableSideMenuState);
+
+  /** 모바일환경 사이드메뉴 활성화 */
+  const sideMenuHandler = () => {
+    setEnableSideMenu((prevState) => !prevState);
+    document.body.style.overflow = "hidden";
+  };
+
   return (
     <StyledMobileHeader>
-      <IconWrapper>
+      <IconWrapper onClick={sideMenuHandler}>
         <MenuIcon />
       </IconWrapper>
       <Logo width={150} height={50} />

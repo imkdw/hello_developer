@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import PostItem from "./PostItem";
+import PostItem from "./RecentPostItem";
 
 const StyledPosts = styled.div`
   width: 85%;

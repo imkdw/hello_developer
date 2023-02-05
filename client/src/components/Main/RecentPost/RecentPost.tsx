@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import Posts from "./Posts";
+import Posts from "./RecentPosts";
 
 const StyledRecentPost = styled.div`
   height: 100%;
@@ -26,6 +26,7 @@ const Wrapper = styled.div`
 
 const PostWrapper = styled.div`
   width: 40%;
+  min-width: 400px;
   height: 48%;
   display: flex;
   align-items: center;
@@ -46,7 +47,7 @@ const SortationTitle = styled.div`
   align-items: center;
 
   @media screen and (max-width: 767px) {
-    height: 40px;
+    height: 45px;
   }
 `;
 
