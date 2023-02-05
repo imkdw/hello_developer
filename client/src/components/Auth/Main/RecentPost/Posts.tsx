@@ -2,11 +2,16 @@ import styled from "styled-components";
 import PostItem from "./PostItem";
 
 const StyledPosts = styled.div`
-  width: 80%;
+  width: 85%;
   flex: 6;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  align-items: center;
+
+  @media screen and (max-width: 767px) {
+    gap: 10px;
+  }
 `;
 
 const Posts = () => {

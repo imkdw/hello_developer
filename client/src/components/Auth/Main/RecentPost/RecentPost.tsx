@@ -9,12 +9,32 @@ const StyledRecentPost = styled.div`
   justify-content: center;
 `;
 
+const Wrapper = styled.div`
+  width: 90%;
+  height: 90%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-evenly;
+
+  @media screen and (max-width: 767px) {
+    width: 100%;
+    flex-direction: column;
+    gap: 20px;
+  }
+`;
+
 const PostWrapper = styled.div`
-  width: 38%;
+  width: 40%;
   height: 48%;
   display: flex;
   align-items: center;
   flex-direction: column;
+
+  @media screen and (max-width: 767px) {
+    width: 100%;
+    gap: 10px;
+  }
 `;
 
 const SortationTitle = styled.div`
@@ -24,7 +44,10 @@ const SortationTitle = styled.div`
   border-radius: 20px;
   display: flex;
   align-items: center;
-  flex: 1;
+
+  @media screen and (max-width: 767px) {
+    height: 40px;
+  }
 `;
 
 const TitleText = styled.p`
@@ -32,15 +55,10 @@ const TitleText = styled.p`
   font-size: 24px;
   color: white;
   letter-spacing: 5px;
-`;
 
-const Wrapper = styled.div`
-  width: 100%;
-  height: 90%;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-evenly;
+  @media screen and (max-width: 767px) {
+    font-size: 20px;
+  }
 `;
 
 const RecentPost = () => {
