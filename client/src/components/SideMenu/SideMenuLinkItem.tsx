@@ -5,7 +5,7 @@ import { currentPageState } from "../../recoil/ui.recoil";
 
 const StyledSideMenuLinkItem = styled.li<{ backgroundColor?: boolean }>`
   width: 100%;
-  height: 45px;
+  height: 50px;
   border-radius: 10px;
   background-color: ${(props) => props.backgroundColor && "#e7e9eb"};
 

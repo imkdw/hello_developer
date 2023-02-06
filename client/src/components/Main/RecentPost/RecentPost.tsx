@@ -3,7 +3,7 @@ import Posts from "./RecentPosts";
 
 const StyledRecentPost = styled.div`
   height: 100%;
-  flex: 4;
+  flex: 6;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -35,6 +35,7 @@ const PostWrapper = styled.div`
   @media screen and (max-width: 767px) {
     width: 100%;
     gap: 10px;
+    margin-bottom: 20px;
   }
 `;
 

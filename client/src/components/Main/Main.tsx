@@ -1,10 +1,11 @@
 import styled from "styled-components";
 import { RecentPost } from "./RecentPost";
 import { useMediaQuery } from "react-responsive";
-import { useRecoilValue } from "recoil";
-import { enableSideMenuState } from "../../recoil/ui.recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { currentPageState, enableSideMenuState } from "../../recoil/ui.recoil";
 import { MobileHeader } from "../Common";
 import { SideMenu } from "../SideMenu";
+import { useEffect } from "react";
 
 const StyledMain = styled.div`
   width: 100%;
@@ -18,9 +19,18 @@ const StyledMain = styled.div`
   }
 `;
 
-const Main = () => {
+interface MainProps {
+  currentPage: string;
+}
+
+const Main = ({ currentPage }: MainProps) => {
   const isMobile = useMediaQuery({ maxWidth: "767px" });
   const enableSideMenu = useRecoilValue(enableSideMenuState);
+  const setCurrentPage = useSetRecoilState(currentPageState);
+
+  useEffect(() => {
+    setCurrentPage(currentPage);
+  }, [currentPage]);
 
   return (
     <StyledMain>

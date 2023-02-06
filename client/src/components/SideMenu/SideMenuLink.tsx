@@ -19,6 +19,10 @@ const PostLinks = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 30px;
+
+  @media screen and (max-width: 767px) {
+    gap: 20px;
+  }
 `;
 
 const UtilLinks = styled.div`

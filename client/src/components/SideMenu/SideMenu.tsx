@@ -8,13 +8,12 @@ import { useSetRecoilState } from "recoil";
 import { enableSideMenuState } from "../../recoil/ui.recoil";
 
 const StyledSideMenu = styled.div`
-  width: 18%;
   height: 100%;
   background-color: #f8f8f9;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #e5e6e8;
-  flex: 1;
+  flex: 1.5;
 
   @media screen and (max-width: 767px) {
     width: 100%;

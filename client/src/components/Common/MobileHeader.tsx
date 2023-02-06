@@ -5,7 +5,7 @@ import { useSetRecoilState } from "recoil";
 
 const StyledMobileHeader = styled.div`
   width: 100%;
-  height: 80px;
+  min-height: 80px;
   display: flex;
   position: relative;
   border-bottom: 1px solid #e5e6e8;

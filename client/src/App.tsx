@@ -1,7 +1,8 @@
 import { Route, Routes } from "react-router";
 import { AuthPage } from "./components/Auth";
 import { Main } from "./components/Main";
-import { Post } from "./components/Post";
+import { PostDetail } from "./components/PostDetail";
+import { PostList } from "./components/PostList";
 import GlobalStyles from "./GlobalStyles";
 
 const App = () => {
@@ -9,15 +10,16 @@ const App = () => {
     <>
       <GlobalStyles />
       <Routes>
-        <Route path="/" element={<Main />} />
+        <Route path="/" element={<Main currentPage="main" />} />
         <Route path="/login" element={<AuthPage />} />
         <Route path="/register" element={<AuthPage />} />
-        <Route path="/notice" element={<Post currentPage="notice" />} />
-        <Route path="/suggestion" element={<Post currentPage="suggestion" />} />
-        <Route path="/free" element={<Post currentPage="free" />} />
-        <Route path="/knowledge/*" element={<Post currentPage="knowledge" />} />
-        <Route path="/qna/*" element={<Post currentPage="qna" />} />
-        <Route path="/recruitment/*" element={<Post currentPage="recruitment" />} />
+        <Route path="/notice" element={<PostList currentPage="notice" />} />
+        <Route path="/suggestion" element={<PostList currentPage="suggestion" />} />
+        <Route path="/free" element={<PostList currentPage="free" />} />
+        <Route path="/knowledge/*" element={<PostList currentPage="knowledge" />} />
+        <Route path="/qna/*" element={<PostList currentPage="qna" />} />
+        <Route path="/recruitment/*" element={<PostList currentPage="recruitment" />} />
+        <Route path="/post/:postId" element={<PostDetail />} />
       </Routes>
     </>
   );
