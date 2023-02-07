@@ -1,4 +1,5 @@
 import { useMediaQuery } from "react-responsive";
+import { Link } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { currentPageState } from "../../recoil/ui.recoil";
@@ -80,7 +81,7 @@ const MobileUtilButton = styled.button`
   border: 1px solid #e5e6e8;
 `;
 
-const MobileAddPostButton = styled.button`
+const MobileAddPostButton = styled(Link)`
   width: 80px;
   height: 40px;
   border-radius: 10px;
@@ -147,7 +148,7 @@ const Utils = () => {
           <MobileUtilButton>
             <SortIcon />
           </MobileUtilButton>
-          <MobileAddPostButton>글작성</MobileAddPostButton>
+          <MobileAddPostButton to="/post/add">글작성</MobileAddPostButton>
         </>
       ) : (
         <>

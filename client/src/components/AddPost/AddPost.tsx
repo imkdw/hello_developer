@@ -1,13 +1,12 @@
 import { useMediaQuery } from "react-responsive";
-import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { enableSideMenuState } from "../../recoil/ui.recoil";
 import { MobileHeader } from "../Common";
 import { SideMenu } from "../SideMenu";
-import Detail from "./Detail";
+import AddPostForm from "./AddPostForm";
 
-const StyledPostDetail = styled.div`
+const StyledAddPost = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
@@ -17,20 +16,17 @@ const StyledPostDetail = styled.div`
   }
 `;
 
-const PostDetail = () => {
-  const params = useParams();
+const AddPost = () => {
   const isMobile = useMediaQuery({ maxWidth: "767px" });
   const enableSideMenu = useRecoilValue(enableSideMenuState);
 
-  console.log(params);
-
   return (
-    <StyledPostDetail>
+    <StyledAddPost>
       {enableSideMenu && <SideMenu />}
       {isMobile ? <MobileHeader /> : <SideMenu />}
-      <Detail />
-    </StyledPostDetail>
+      <AddPostForm />
+    </StyledAddPost>
   );
 };
 
-export default PostDetail;
+export default AddPost;

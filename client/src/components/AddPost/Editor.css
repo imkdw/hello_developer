@@ -1,0 +1,10 @@
+.ck {
+  height: 250px;
+  background-color: aliceblue;
+}
+
+@media screen and (max-width: 767px) {
+  .ck {
+    height: 150px;
+  }
+}

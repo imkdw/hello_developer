@@ -24,7 +24,7 @@ const GlobalStyles = createGlobalStyle`
   }
 
   li {
-    list-style: none;
+    /* list-style: none; */
   }
 
   input {
@@ -34,6 +34,12 @@ const GlobalStyles = createGlobalStyle`
 
   button {
     cursor: pointer;
+  }
+
+  textarea {
+    resize: none;
+    border: none;
+    outline: none;
   }
 
   html, body {

@@ -92,7 +92,7 @@ const CategoryItem = styled(Link)<{ $isBorderBottom: boolean }>`
   }
 `;
 
-const AddPostButton = styled.button`
+const AddPostButton = styled(Link)`
   width: 170px;
   height: 40px;
   border-radius: 10px;
@@ -241,7 +241,7 @@ const PostDataHeader = () => {
 
   return (
     <StyledHeader>
-      {currentPage !== "main" && (
+      {currentPage && currentPage !== "main" && (
         <>
           <Top>
             <Title>{pageData[currentPage].title}</Title>
@@ -260,7 +260,7 @@ const PostDataHeader = () => {
                 );
               })}
             </CategoryTab>
-            <AddPostButton>
+            <AddPostButton to="/post/add">
               <AddIcon />
               <ButtonText>새로운 글 작성</ButtonText>
             </AddPostButton>

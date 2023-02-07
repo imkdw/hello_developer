@@ -21,11 +21,20 @@ const TagText = styled.p`
   align-items: center;
   justify-content: center;
   font-size: 14px;
+
+  @media screen and (max-width: 767px) {
+    font-size: 12px;
+    padding: 0 10px 0 10px;
+  }
 `;
 
 const RecommendData = styled.div`
   display: flex;
   gap: 20px;
+
+  @media screen and (max-width: 767px) {
+    gap: 10px;
+  }
 `;
 
 const RecommendCount = styled.button`
@@ -38,6 +47,10 @@ const RecommendCount = styled.button`
   justify-content: center;
   gap: 10px;
   font-size: 16px;
+
+  @media screen and (max-width: 767px) {
+    padding: 5px 10px 5px 10px;
+  }
 `;
 
 const RecommendIcon = () => {

@@ -19,6 +19,10 @@ const InputWrapper = styled.form`
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-end;
+
+  @media screen and (max-width: 767px) {
+    width: 82%;
+  }
 `;
 
 const Textarea = styled.textarea`
@@ -30,6 +34,10 @@ const Textarea = styled.textarea`
   outline: none;
   padding: 10px;
   font-size: 18px;
+
+  @media screen and (max-width: 767px) {
+    font-size: 14px;
+  }
 `;
 
 const SubmitButton = styled.button`

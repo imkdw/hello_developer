@@ -2,8 +2,9 @@ import styled from "styled-components";
 import { enableSideMenuState } from "../../recoil/ui.recoil";
 import Logo from "./Logo";
 import { useSetRecoilState } from "recoil";
+import { Link } from "react-router-dom";
 
-const StyledMobileHeader = styled.div`
+const StyledMobileHeader = styled(Link)`
   width: 100%;
   min-height: 80px;
   display: flex;
@@ -42,7 +43,7 @@ const MobileHeader = () => {
   };
 
   return (
-    <StyledMobileHeader>
+    <StyledMobileHeader to="/">
       <IconWrapper onClick={sideMenuHandler}>
         <MenuIcon />
       </IconWrapper>

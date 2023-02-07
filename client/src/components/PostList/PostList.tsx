@@ -8,6 +8,7 @@ import { useMediaQuery } from "react-responsive";
 import { MobileHeader } from "../Common";
 import { SideMenu } from "../SideMenu";
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 const StyledPostList = styled.div`
   width: 100%;
@@ -34,12 +35,19 @@ interface PostListProps {
 
 const PostList = ({ currentPage }: PostListProps) => {
   const setCurrentPage = useSetRecoilState(currentPageState);
-  const isMobile = useMediaQuery({ maxWidth: "767px" });
   const enableSideMenu = useRecoilValue(enableSideMenuState);
+  const isMobile = useMediaQuery({ maxWidth: "767px" });
+  const pathname = useLocation().pathname;
 
   useEffect(() => {
     setCurrentPage(currentPage);
   }, [currentPage, setCurrentPage]);
+
+  /** currentPage Props가 전달이 안된경우 path 기준으로 갱신 */
+  if (!currentPage) {
+    console.log(pathname);
+    setCurrentPage(pathname.replace("/", ""));
+  }
 
   return (
     <StyledPostList>

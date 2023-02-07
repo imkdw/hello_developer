@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router";
+import { AddPost } from "./components/AddPost";
 import { AuthPage } from "./components/Auth";
 import { Main } from "./components/Main";
 import { PostDetail } from "./components/PostDetail";
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/qna/*" element={<PostList currentPage="qna" />} />
         <Route path="/recruitment/*" element={<PostList currentPage="recruitment" />} />
         <Route path="/post/:postId" element={<PostDetail />} />
+        <Route path="/post/add" element={<AddPost />} />
       </Routes>
     </>
   );
