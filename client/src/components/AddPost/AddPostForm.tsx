@@ -18,7 +18,7 @@ const Wrapper = styled.div`
   align-items: flex-end;
 
   @media screen and (max-width: 767px) {
-    gap: 20px;
+    /* gap: 20px; */
   }
 `;
 
