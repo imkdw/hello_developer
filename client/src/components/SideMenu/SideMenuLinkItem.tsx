@@ -8,7 +8,6 @@ const StyledSideMenuLinkItem = styled.li<{ backgroundColor?: boolean }>`
   height: 50px;
   border-radius: 10px;
   background-color: ${(props) => props.backgroundColor && "#e7e9eb"};
-  list-style: none;
 
   &:hover {
     background-color: #e7e9eb;

@@ -24,7 +24,7 @@ const GlobalStyles = createGlobalStyle`
   }
 
   li {
-    /* list-style: none; */
+    list-style: none;
   }
 
   input {

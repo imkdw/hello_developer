@@ -28,7 +28,7 @@ const Label = styled.label`
 
 const InputWrapper = styled.div`
   width: 90%;
-  height: 40px;
+  height: 50px;
   display: flex;
   border-radius: 10px;
   border: 1px solid #a6a6a6;
@@ -41,6 +41,7 @@ const Input = styled.input`
   width: 85%;
   height: 100%;
   border-radius: 10px;
+  font-size: 16px;
 `;
 
 const Button = styled.button`

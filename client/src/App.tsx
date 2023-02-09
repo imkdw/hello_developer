@@ -4,6 +4,7 @@ import { AuthPage } from "./components/Auth";
 import { Main } from "./components/Main";
 import { PostDetail } from "./components/PostDetail";
 import { PostList } from "./components/PostList";
+import { Profile } from "./components/Profile";
 import GlobalStyles from "./GlobalStyles";
 
 const App = () => {
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/recruitment/*" element={<PostList currentPage="recruitment" />} />
         <Route path="/post/:postId" element={<PostDetail />} />
         <Route path="/post/add" element={<AddPost />} />
+        <Route path="/profile/:userId" element={<Profile />} />
       </Routes>
     </>
   );

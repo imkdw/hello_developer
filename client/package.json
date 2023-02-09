@@ -47,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "@types/ckeditor__ckeditor5-build-classic": "^29.0.1",
     "@types/react-responsive": "^8.0.5",
     "@types/react-router-dom": "^5.3.3",
     "@types/recoil": "^0.0.9",
