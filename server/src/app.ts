@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import authRouter from "./routes/auth.router";
 
 dotenv.config();
 
@@ -11,10 +12,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(morgan("dev"));
 
+/** Routers */
+app.use("/auth", authRouter);
+
 app.get("/ping", (req, res) => {
   res.status(200).json({ status: "OK" });
 });
 
-app.listen(app.get("port"), () => {
-  console.log(`Server Listening on ${app.get("port")}`);
-});
+export default app;
