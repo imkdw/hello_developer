@@ -6,7 +6,7 @@ class AuthModel {
   static findUserByEmail = async (email: string) => {
     try {
       const userRepo = (await connection).getRepository(User);
-      const user = userRepo.findOneBy({ email });
+      const user = await userRepo.findOneBy({ email });
       return user;
     } catch (err: any) {
       throw err;

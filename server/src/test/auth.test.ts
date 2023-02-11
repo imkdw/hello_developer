@@ -1,7 +1,9 @@
 import request from "supertest";
+import { createConnection } from "typeorm";
 import app from "../app";
 import { connection } from "../db/db";
 import User from "../entity/user.entity";
+import Secure from "../utils/secure";
 
 /**
  * 회원가입 API 테스트 케이스
@@ -27,7 +29,6 @@ describe("[POST] /auth/register", () => {
   afterAll(async () => {
     const repo = (await connection).getRepository(User);
     await repo.query("TRUNCATE TABLE user");
-    (await connection).close();
   });
 
   test("정상 회원가입", async () => {
@@ -144,7 +145,7 @@ describe("[POST] /auth/login", () => {
     const repo = (await connection).getRepository(User);
     const user = repo.create({
       email: "test@test.com",
-      password: "test123!@#",
+      password: await Secure.encryptToHash("test123!@#"),
       nickname: "테스트계정1",
     });
     await repo.save(user);
@@ -157,24 +158,32 @@ describe("[POST] /auth/login", () => {
     (await connection).close();
   });
 
-  test("이메일 없음", async () => {
-    const repo = (await connection).getRepository(User);
-
+  test("정상 로그인", async () => {
     const account = {
-      email: "test999@test.com",
+      email: "test@test.com",
+      password: "test123!@#",
+    };
+
+    const res = await request(app).post("/auth/login").send(account);
+    expect(res.statusCode).toBe(200);
+
+    /** 반환값 : { accessToken: string } */
+    const { accessToken } = res.body;
+    expect(accessToken.length).toBeGreaterThan(1);
+  });
+
+  test("이메일 없음", async () => {
+    const account = {
+      email: "test1@test.com",
       password: "test123!@#",
     };
 
     const res = await request(app).post("/auth/login").send(account);
     expect(res.statusCode).toBe(400);
     expect(res.body).toEqual({ code: "auth-006", message: "invalid_email_or_password" });
-
-    (await connection).close();
   });
 
   test("비밀번호 불일치", async () => {
-    const repo = (await connection).getRepository(User);
-
     const account = {
       email: "test@test.com",
       password: "test123!@#!",
@@ -183,7 +192,5 @@ describe("[POST] /auth/login", () => {
     const res = await request(app).post("/auth/login").send(account);
     expect(res.statusCode).toBe(400);
     expect(res.body).toEqual({ code: "auth-006", message: "invalid_email_or_password" });
-
-    (await connection).close();
   });
 });

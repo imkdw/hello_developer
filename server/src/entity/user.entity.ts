@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from "typeor
 
 @Entity()
 export default class User {
-  @PrimaryGeneratedColumn("uuid", { name: "id" })
+  @PrimaryGeneratedColumn("uuid", { name: "user_id" })
   userId: string;
 
   @Column({ type: "varchar", length: 100, nullable: false, unique: true })

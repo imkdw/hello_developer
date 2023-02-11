@@ -1,5 +1,6 @@
 import AuthModel from "../models/auth.model";
 import { LoginUserDTO, RegisterUserDTO } from "../types/auth";
+import Jwt from "../utils/jwt";
 import Secure from "../utils/secure";
 
 class AuthService {
@@ -11,22 +12,27 @@ class AuthService {
       /** 유저가 없는경우 */
       if (!user) {
         throw {
+          status: 400,
           code: "auth-006",
           message: "invalid_email_or_password",
         };
       }
 
       /** 비밀번호가 일치하지 않은경우 */
-      const isSamePassword = Secure.compareHash(userDTO.password, user.password);
+      const isSamePassword = await Secure.compareHash(userDTO.password, user.password);
+
       if (!isSamePassword) {
         throw {
+          status: 400,
           code: "auth-006",
           message: "invalid_email_or_password",
         };
       }
 
-      /** acessToken, refreshToken 발급 로직 구현필요*/
-      return "success";
+      /** accessToken 발행 */
+      const accessToken = Jwt.sign(user.userId, user.email, user.nickname);
+
+      return accessToken;
     } catch (err: any) {
       throw err;
     }
