@@ -1,11 +1,32 @@
 import * as jwt from "jsonwebtoken";
 import config from "../config";
+import { JwtVerifyReturn } from "../types/jwt";
 
 class Jwt {
   static sign = (userId: string, email: string, nickname: string) => {
     return jwt.sign({ userId, email, nickname }, config.jwt.secretKey, {
       expiresIn: config.jwt.atkExpiresIn,
     });
+  };
+
+  static verify = (accessToken: string) => {
+    try {
+      return jwt.verify(accessToken, config.jwt.secretKey) as JwtVerifyReturn;
+    } catch (err: any) {
+      if (err instanceof jwt.TokenExpiredError) {
+        throw {
+          status: 401,
+          code: "auth-008",
+          message: "expired_token",
+        };
+      } else if (err instanceof jwt.JsonWebTokenError) {
+        throw {
+          status: 401,
+          code: "auth-007",
+          message: "invalid_token",
+        };
+      }
+    }
   };
 }
 

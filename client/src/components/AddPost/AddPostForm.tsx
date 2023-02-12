@@ -6,6 +6,10 @@ const StyledAddPostForm = styled.form`
   height: auto;
   display: flex;
   justify-content: center;
+
+  @media screen and (max-width: 767px) {
+    width: 100%;
+  }
 `;
 
 const Wrapper = styled.div`
@@ -18,7 +22,7 @@ const Wrapper = styled.div`
   align-items: flex-end;
 
   @media screen and (max-width: 767px) {
-    /* gap: 20px; */
+    gap: 20px;
   }
 `;
 
@@ -40,6 +44,12 @@ const FormControl = styled.div`
 
   &:last-child {
     height: 150px;
+  }
+
+  &:nth-child(4) {
+    @media screen and (max-width: 767px) {
+      height: 200px;
+    }
   }
 
   &:nth-child(5) {
@@ -100,14 +110,28 @@ const SubmitButton = styled.button`
   border-radius: 10px;
 `;
 
+const InputWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+
+  @media screen and (max-width: 767px) {
+    flex-direction: column;
+    height: 150px;
+  }
+`;
+
 const AddPostForm = () => {
   return (
     <StyledAddPostForm>
       <Wrapper>
         <Message>헬로디벨로퍼 - 글작성</Message>
         <FormControl>
-          <Label>토픽</Label>
+          <Label>카테고리</Label>
           <Select>
+            <Option value="none" selected>
+              카테고리를 선택해주세요
+            </Option>
             <Option>건의사항</Option>
             <Option>자유주제</Option>
             <Option>지식공유 - 꿀팁</Option>
@@ -127,10 +151,14 @@ const AddPostForm = () => {
           <Label>
             태그 -{" "}
             <span style={{ fontSize: "14px", color: "#005DFF" }}>
-              내용을 대표하는 태그를 최대 3개까지 입력해주세요
+              내용을 대표하는 태그를 입력해주세요. (0개 가능)
             </span>
           </Label>
-          <Input type="text" placeholder="태그를 # 기호로 구분해서 입력해주세요" />
+          <InputWrapper>
+            <Input type="text" placeholder="첫번째 태그" style={{ flex: 1 }} />
+            <Input type="text" placeholder="두번째 태그" style={{ flex: 1 }} />
+            <Input type="text" placeholder="세번째 태그" style={{ flex: 1 }} />
+          </InputWrapper>
         </FormControl>
         <FormControl>
           <Label>내용</Label>

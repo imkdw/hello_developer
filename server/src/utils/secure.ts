@@ -1,6 +1,11 @@
 import bcrypt from "bcrypt";
+import { v4 } from "uuid";
 
 class Secure {
+  static getUUID = () => {
+    return v4();
+  };
+
   static encryptToHash = async (plainText: string) => {
     return await bcrypt.hash(plainText, 10);
   };

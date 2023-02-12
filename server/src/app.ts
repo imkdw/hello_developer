@@ -2,6 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import authRouter from "./routes/auth.router";
+import postRouter from "./routes/post.router";
 
 dotenv.config();
 
@@ -10,10 +11,11 @@ app.set("port", process.env.PORT);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(morgan("dev"));
+// app.use(morgan("dev"));
 
 /** Routers */
 app.use("/auth", authRouter);
+app.use("/post", postRouter);
 
 app.get("/ping", (req, res) => {
   res.status(200).json({ status: "OK" });

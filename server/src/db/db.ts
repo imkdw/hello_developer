@@ -1,16 +1,10 @@
-import { createConnection } from "typeorm";
+import mysql from "mysql2/promise";
 import config from "../config";
-import Post from "../entity/post.entity";
-import Tag from "../entity/tag.entity";
-import User from "../entity/user.entity";
 
-export const connection = createConnection({
-  type: config.database.type,
+export const pool = mysql.createPool({
   host: config.database.host,
-  port: config.database.port,
-  username: config.database.username,
+  user: config.database.username,
   password: config.database.password,
   database: config.database.name,
-  entities: [User, Post, Tag],
-  synchronize: true,
+  connectionLimit: 5,
 });

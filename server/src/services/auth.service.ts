@@ -10,7 +10,7 @@ class AuthService {
       const user = await AuthModel.findUserByEmail(userDTO.email);
 
       /** 유저가 없는경우 */
-      if (!user) {
+      if (user.length === 0) {
         throw {
           status: 400,
           code: "auth-006",
@@ -19,8 +19,7 @@ class AuthService {
       }
 
       /** 비밀번호가 일치하지 않은경우 */
-      const isSamePassword = await Secure.compareHash(userDTO.password, user.password);
-
+      const isSamePassword = await Secure.compareHash(userDTO.password, user[0].password);
       if (!isSamePassword) {
         throw {
           status: 400,
@@ -29,8 +28,13 @@ class AuthService {
         };
       }
 
+      /**
+       * @todo Need to make refresh token login
+       * @body Make https enviroment too
+       */
       /** accessToken 발행 */
-      const accessToken = Jwt.sign(user.userId, user.email, user.nickname);
+      const { user_id, email, nickname } = user[0];
+      const accessToken = Jwt.sign(user_id, email, nickname);
 
       return accessToken;
     } catch (err: any) {
@@ -45,7 +49,10 @@ class AuthService {
       const hashedPassword = await Secure.encryptToHash(userDTO.password);
       userDTO.password = hashedPassword;
 
-      await AuthModel.register(userDTO);
+      /** 유저 고유아이디 생성 */
+      const userId = Secure.getUUID();
+
+      await AuthModel.register(userId, userDTO);
     } catch (err: any) {
       /** 데이터가 중복된 경우 */
       if (err.code === "ER_DUP_ENTRY") {
@@ -69,6 +76,11 @@ class AuthService {
           };
         }
       }
+
+      throw {
+        status: 500,
+        message: err.message,
+      };
     }
   };
 }

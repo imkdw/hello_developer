@@ -2,8 +2,6 @@ import app from "./app";
 
 const startApp = async () => {
   try {
-    console.log("TypeORM initialize Complete");
-
     app.listen(app.get("port"), () => {
       console.log("Server Listening on 5000");
     });
