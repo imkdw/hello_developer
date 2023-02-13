@@ -3,92 +3,98 @@ import app from "../app";
 import { pool } from "../db/db";
 import Secure from "../utils/secure";
 
-describe("[POST] /auth/register", () => {
+describe("회원가입 API, [POST] /v1/api/auth/register", () => {
   beforeAll(async () => {
     const connection = await pool.getConnection();
-    await connection.execute("TRUNCATE user");
+    await connection.execute("SET foreign_key_checks=0");
+    await connection.execute("CALL truncate_tables");
+    await connection.execute("SET foreign_key_checks=1");
     connection.destroy();
   });
 
   afterAll(async () => {
     const connection = await pool.getConnection();
-    await connection.execute("TRUNCATE user");
+    await connection.execute("SET foreign_key_checks=0");
+    await connection.execute("CALL truncate_tables");
+    await connection.execute("SET foreign_key_checks=1");
     connection.destroy();
   });
 
-  test("return http 200 status and token when provided with valid account", async () => {
+  const registerApi = "/v1/api/auth/register";
+
+  test("[정상적인 회원가입] HTTP 201", async () => {
     const account = {
       email: "test@test.com",
       password: "test123!@#",
       nickname: "test1",
     };
 
-    const res = await request(app).post("/auth/register").send(account);
+    const res = await request(app).post(registerApi).send(account);
     expect(res.statusCode).toBe(201);
   });
 
-  test("return http 400 and code: 'auth-001' when provided invalid email", async () => {
+  test("[유효하지 않은 이메일] HTTP 400, CODE: 'auth-001', MESSAGE: 'invalid_email'", async () => {
     const account = {
       email: "testtest.com",
       password: "test123!@#",
       nickname: "test1",
     };
 
-    const res = await request(app).post("/auth/register").send(account);
+    const res = await request(app).post(registerApi).send(account);
     expect(res.statusCode).toBe(400);
     expect(res.body).toEqual({ code: "auth-001", message: "invalid_email" });
   });
 
-  test("return http 400 and code: 'auth-004' when provided duplicate email", async () => {
+  test("[중복된 이메일] HTTP 400, CODE: 'auth-004', MESSAGE: 'exist_email'", async () => {
     const account = {
       email: "test@test.com",
       password: "test123!@#",
       nickname: "test99",
     };
 
-    const res = await request(app).post("/auth/register").send(account);
+    const res = await request(app).post(registerApi).send(account);
     expect(res.statusCode).toBe(400);
     expect(res.body).toEqual({ code: "auth-004", message: "exist_email" });
   });
 
-  test("return http 400 and code: 'auth-002' when provided invalid password", async () => {
+  test("[유효하지 않은 비밀번호] HTTP 400, CODE: 'auth-002', MESSAGE: 'invalid_password'", async () => {
     const account = {
       email: "test@test.com",
       password: "test1234",
       nickname: "test1",
     };
 
-    const res = await request(app).post("/auth/register").send(account);
+    const res = await request(app).post(registerApi).send(account);
     expect(res.statusCode).toBe(400);
     expect(res.body).toEqual({ code: "auth-002", message: "invalid_password" });
   });
 
-  test("return http 400 and code: 'auth-002' when provided invalid nickname", async () => {
+  test("[유효하지 않은 닉네임] HTTP 400, CODE: 'auth-003', MESSAGE: 'invalid_nickname'", async () => {
     const account = {
       email: "test@test.com",
       password: "test123!@#",
       nickname: "test1!!",
     };
 
-    const res = await request(app).post("/auth/register").send(account);
+    const res = await request(app).post(registerApi).send(account);
     expect(res.statusCode).toBe(400);
     expect(res.body).toEqual({ code: "auth-003", message: "invalid_nickname" });
   });
 
-  test("return http 400 and code: 'auth-005' when provided duplicate nickname", async () => {
+  test("[중복된 닉네임] HTTP 400, CODE: 'auth-005', MESSAGE: 'exist_nickname'", async () => {
     const account = {
       email: "test999@test.com",
       password: "test123!@#",
       nickname: "test1",
     };
 
-    const res = await request(app).post("/auth/register").send(account);
+    const res = await request(app).post(registerApi).send(account);
     expect(res.statusCode).toBe(400);
     expect(res.body).toEqual({ code: "auth-005", message: "exist_nickname" });
   });
 });
 
-describe("[POST] /auth/login", () => {
+describe("로그인 API, [POST] /v1/api/auth/register", () => {
   beforeAll(async () => {
     const connection = await pool.getConnection();
     const userId = Secure.getUUID();
@@ -101,39 +107,43 @@ describe("[POST] /auth/login", () => {
 
   afterAll(async () => {
     const connection = await pool.getConnection();
-    await connection.execute("TRUNCATE user");
+    await connection.execute("SET foreign_key_checks=0");
+    await connection.execute("CALL truncate_tables");
+    await connection.execute("SET foreign_key_checks=1");
     connection.destroy();
   });
 
-  test("return http 200 and accessToken when provided valid account", async () => {
+  const loginApi = "/v1/api/auth/login";
+
+  test("[정상적인 닉네임] HTTP 200, 엑세스토큰 반환", async () => {
     const account = {
       email: "test@test.com",
       password: "test123!@#",
     };
 
-    const res = await request(app).post("/auth/login").send(account);
+    const res = await request(app).post(loginApi).send(account);
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty("accessToken");
   });
 
-  test("return http 400 and code: 'auth-006' when provided wrong email", async () => {
+  test("[이메일 확인불가] HTTP 400, CODE: 'auth-006', MESSAGE: 'invalid_email_or_password'", async () => {
     const account = {
       email: "test1@test.com",
       password: "test123!@#",
     };
 
-    const res = await request(app).post("/auth/login").send(account);
+    const res = await request(app).post(loginApi).send(account);
     expect(res.statusCode).toBe(400);
     expect(res.body).toEqual({ code: "auth-006", message: "invalid_email_or_password" });
   });
 
-  test("return http 400 and code: 'auth-006' when provided wrong password", async () => {
+  test("[잘못된 비밀번호] HTTP 400, CODE: 'auth-006', MESSAGE: 'invalid_email_or_password'", async () => {
     const account = {
       email: "test@test.com",
       password: "test123!@#!",
     };
 
-    const res = await request(app).post("/auth/login").send(account);
+    const res = await request(app).post(loginApi).send(account);
     expect(res.statusCode).toBe(400);
     expect(res.body).toEqual({ code: "auth-006", message: "invalid_email_or_password" });
   });

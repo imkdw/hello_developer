@@ -1,8 +1,23 @@
 import { FieldPacket, ResultSetHeader } from "mysql2";
 import { pool } from "../db/db";
-import { AddPostUserDTO, FindCategoryIdByNameReturn, FindTagIdByNameReturn } from "../types/post";
+import {
+  AddPostUserDTO,
+  FindCategoryIdByNameReturn,
+  FindPostByCategoryIdReturn,
+  FindTagIdByNameReturn,
+  findTagIdByPostIdReturn,
+  FindTagNameByIdReturn,
+} from "../types/post";
 
 export class PostModel {
+  /**
+   * 새로운 게시글 생성
+   * @param {string} userId - 유저의 ID(uuid)
+   * @param {string} postId - 게시물 ID(uuid)
+   * @param {number[]} category - 게시물 카테고리 ID들
+   * @param {AddPostUserDTO} userDTO - 사용자가 입력한 값들
+   * @returns {null} - 반환값 없음
+   */
   static add = async (userId: string, postId: string, category: number[], userDTO: AddPostUserDTO) => {
     const connection = await pool.getConnection();
 
@@ -65,6 +80,11 @@ export class PostModel {
     }
   };
 
+  /**
+   * 카테고리 아이디 검색 (카테고리 이름으로)
+   * @param {string} name - 카테고리 이름(notice, suggestion 등)
+   * @returns {FindCategoryIdByNameReturn[]} - 카테고리 id를 반환
+   */
   static findCategoryIdByName = async (name: string) => {
     const query = "SELECT category_id FROM post_category WHERE name = ?";
 
@@ -74,6 +94,77 @@ export class PostModel {
         name,
       ]);
       connection.destroy();
+      return rows[0];
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  /**
+   * 게시글 목록 검색 (카테고리 아이디로)
+   * @param {number} categoryId1 - 메인 카테고리 아이디
+   * @param {number | undefined} categoryId1 - 서브 카테고리 아이디
+   * @returns {FindPostByCategoryIdReturn[]} - 게시글 목록을 반환
+   */
+  static findPostByCategoryId = async (categoryId1: number, categoryId2?: number) => {
+    const query = `SELECT post_id, title, created_at_date, content, user_id FROM post WHERE category_id1 = ? ${
+      categoryId2 ? "AND category_id2 = ?" : ""
+    }`;
+    const values = categoryId2 ? [categoryId1, categoryId2] : [categoryId1];
+
+    try {
+      const connection = await pool.getConnection();
+      const [rows, fields]: [FindPostByCategoryIdReturn[], FieldPacket[]] = await connection.execute(
+        query,
+        values
+      );
+      connection.release();
+      return rows;
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  /**
+   * 게시글 태그 아이디 검색 (게시글 아이디로)
+   * @param {string} postId - 게시물 ID
+   */
+  static findTagIdByPostId = async (postId: string) => {
+    const query = "SELECT tag_id FROM post_tags WHERE post_id = ?";
+    try {
+      const connection = await pool.getConnection();
+      const [rows, fields]: [findTagIdByPostIdReturn[], FieldPacket[]] = await connection.execute(query, [
+        postId,
+      ]);
+      connection.release();
+      return rows;
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  /**
+   * 게시글 태그 이름 검색 (태그 아이디로)
+   * @param {number} tagId - 태그 아이디
+   * @returns {}
+   */
+  static findTagNameById = async (tagId: number) => {
+    const query = "SELECT name FROM tags WHERE tag_id = ?";
+    try {
+      const connection = await pool.getConnection();
+      const [rows, fields]: [FindTagNameByIdReturn[], FieldPacket[]] = await connection.execute(query, [
+        tagId,
+      ]);
+      connection.release();
       return rows[0];
     } catch (err: any) {
       throw {

@@ -14,8 +14,8 @@ app.use(express.json());
 // app.use(morgan("dev"));
 
 /** Routers */
-app.use("/auth", authRouter);
-app.use("/post", postRouter);
+app.use("/v1/api/auth", authRouter);
+app.use("/v1/api/post", postRouter);
 
 app.get("/ping", (req, res) => {
   res.status(200).json({ status: "OK" });
