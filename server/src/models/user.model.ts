@@ -9,7 +9,7 @@ export class UserModel {
    * @returns {FindUserByUserIdReturn} - 유저 정보 반환
    */
   static findUserByUserId = async (userId: string) => {
-    const query = "SELECT nickname, profile_img FROM user WHERE user_id = ?";
+    const query = "SELECT * FROM user WHERE user_id = ?";
     try {
       const connection = await pool.getConnection();
       const [rows, fields]: [FindUserByUserIdReturn[], FieldPacket[]] = await connection.execute(query, [

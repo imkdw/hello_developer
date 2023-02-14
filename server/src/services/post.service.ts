@@ -36,6 +36,7 @@ export class PostService {
 
       /** 데이터 삽입 */
       await PostModel.add(userId, postId, categoryId, userDTO);
+      return postId;
     } catch (err: any) {
       throw err;
     }
@@ -98,7 +99,36 @@ export class PostService {
       );
 
       /** 5. 게시글 댓글 가져오기 */
-      // TODO: 댓글 가져오는 로직 구현필요
+      let allComments = await Promise.all(
+        posts.map(async (post) => {
+          const commentItem = [];
+
+          const comments = await PostModel.findCommentByPostId(post.post_id);
+          commentItem.push(comments);
+
+          const reComments = await Promise.all(
+            comments.map(async (comment) => {
+              const reComments = await PostModel.findReCommentByCommentId(comment.comment_id);
+              return reComments;
+            })
+          );
+          commentItem.push(reComments);
+          return commentItem;
+        })
+      );
+
+      /** 게시글의 총 댓글 갯수 */
+      const allCommentCount = allComments.map((comment) => {
+        const commentCount = comment[0].length;
+
+        let reCommentCount = 0;
+        /** 대댓글이 달린 경우만 갯수 카운트 */
+        if (comment[1][0]) {
+          reCommentCount = comment[1][0].length;
+        }
+
+        return commentCount + reCommentCount;
+      });
 
       /** 6. 게시글에 태그 추가 */
       const postData = posts.map((post, index) => {
@@ -106,12 +136,115 @@ export class PostService {
           user: userInfo[index],
           ...changePropertySnakeToCamel(post),
           tags: tags[index],
+          commentCount: allCommentCount[index],
         };
       });
 
       return {
         posts: postData,
       };
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  static detail = async (postId: string) => {
+    try {
+      /** 게시글 정보 */
+      const post = await PostModel.findPostByPostId(postId);
+
+      /** 유저 정보 */
+      const user = await UserModel.findUserByUserId(post.user_id);
+
+      /** 태그 이름 */
+      const tagIds = await PostModel.findTagIdByPostId(post.post_id);
+      const tagNames = await Promise.all(
+        tagIds.map(async (tagId) => {
+          const tagName = await PostModel.findTagNameById(tagId.tag_id);
+          return tagName;
+        })
+      );
+
+      /** 댓글 목록 */
+      const comments = await PostModel.findCommentByPostId(post.post_id);
+
+      let allComments: any = [];
+      /** 대댓글 추가하기 */
+      await Promise.all(
+        comments.map(async (comment) => {
+          const commentUser = await UserModel.findUserByUserId(comment.user_id);
+          const reComments = await PostModel.findReCommentByCommentId(comment.comment_id);
+
+          const reCommentWithUser = await Promise.all(
+            reComments.map(async (reComment) => {
+              const reCommentUser = await UserModel.findUserByUserId(reComment.user_id);
+              return {
+                user: {
+                  nickname: reCommentUser.nickname,
+                  profileImg: reCommentUser.profile_img,
+                },
+                ...reComment,
+              };
+            })
+          );
+
+          allComments.push({
+            user: {
+              nickname: commentUser.nickname,
+              profileImg: commentUser.profile_img,
+            },
+            ...comment,
+            reComment: reCommentWithUser,
+          });
+        })
+      );
+
+      return {
+        user: {
+          profileImg: user.profile_img,
+          nickname: user.nickname,
+        },
+        title: post.title,
+        createdAt: post.created_at_date,
+        content: post.content,
+        tags: tagNames,
+        comments: allComments,
+      };
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  static addComment = async (userId: string, postId: string, comment: string) => {
+    try {
+      /** 댓글이 비어있을 경우 */
+      if (comment.length === 0) {
+        throw {
+          status: 400,
+          code: "post-003",
+          message: "invalid_comment",
+        };
+      }
+
+      const commentId = await PostModel.addComment(userId, postId, comment);
+      return commentId;
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  static addRecomment = async (userId: string, commentId: string, reComment: string) => {
+    try {
+      /** 댓글이 비어있을 경우 */
+      if (reComment.length === 0) {
+        throw {
+          status: 400,
+          code: "post-004",
+          message: "invalid_re_comment",
+        };
+      }
+
+      await PostModel.addReComment(userId, commentId, reComment);
     } catch (err: any) {
       throw err;
     }
