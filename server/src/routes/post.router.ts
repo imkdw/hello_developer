@@ -13,10 +13,19 @@ postRouter.get("/list", PostController.list);
 /** 게시글 상세보기 */
 postRouter.get("/:postId", PostController.detail);
 
+/** 게시글 삭제 */
+postRouter.delete("/:postId", isAuth, PostController.deletePost);
+
 /** 댓글 추가 */
 postRouter.post("/comment/add", isAuth, PostController.addComment);
 
+/** 댓글 삭제 */
+postRouter.delete("/comment/:commentId", isAuth, PostController.deleteComment);
+
 /** 대댓글 추가 */
 postRouter.post("/re-comment/add", isAuth, PostController.addReComment);
+
+/** 대댓글 삭제 */
+postRouter.delete("/re-comment/:reCommentId", isAuth, PostController.deleteReComment);
 
 export default postRouter;

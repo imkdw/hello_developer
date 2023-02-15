@@ -244,7 +244,32 @@ export class PostService {
         };
       }
 
-      await PostModel.addReComment(userId, commentId, reComment);
+      const reCommentId = await PostModel.addReComment(userId, commentId, reComment);
+      return reCommentId;
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  static deletePost = async (userId: string, postId: string) => {
+    try {
+      await PostModel.deletePost(userId, postId);
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  static deleteComment = async (userId: string, commentId: number) => {
+    try {
+      await PostModel.deleteComment(userId, commentId);
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  static deleteReComment = async (userId: string, reCommentId: number) => {
+    try {
+      await PostModel.deleteReComment(userId, reCommentId);
     } catch (err: any) {
       throw err;
     }

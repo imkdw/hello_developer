@@ -3,10 +3,14 @@ import { pool } from "../db/db";
 import {
   AddPostUserDTO,
   FindCategoryIdByNameReturn,
+  FindCommentByIdReturn,
   FindCommentByPostId,
+  FindCommentByUserIdReturn,
   FindPostByCategoryIdReturn,
   FindPostByPostIdReturn,
+  FindPostByUserIdReturn,
   FindReCommentByCommentIdReturn,
+  FindReCommentByUserIdReturn,
   FindTagIdByNameReturn,
   findTagIdByPostIdReturn,
   FindTagNameByIdReturn,
@@ -118,8 +122,9 @@ export class PostModel {
 
     try {
       const connection = await pool.getConnection();
-      await connection.execute(query, values);
+      const [rows, fields]: [ResultSetHeader, FieldPacket[]] = await connection.execute(query, values);
       connection.release();
+      return rows.insertId;
     } catch (err: any) {
       throw {
         status: 500,
@@ -279,6 +284,119 @@ export class PostModel {
       ]);
       connection.release();
       return rows[0];
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  static findPostByUserId = async (userId: string) => {
+    const query = "SELECT * FROM post WHERE user_id = ?";
+    try {
+      const connection = await pool.getConnection();
+      const [rows, fields]: [FindPostByUserIdReturn[], FieldPacket[]] = await connection.execute(query, [
+        userId,
+      ]);
+      connection.release();
+      return rows;
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  static findCommentByUserId = async (userId: string) => {
+    const query = "SELECT comment_id, post_id, created_at_date FROM comment WHERE user_id = ?";
+
+    try {
+      const connection = await pool.getConnection();
+      const [rows, fields]: [FindCommentByUserIdReturn[], FieldPacket[]] = await connection.execute(query, [
+        userId,
+      ]);
+      connection.release();
+      return rows;
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  static findRecommentByUserId = async (userId: string) => {
+    const query = "SELECT comment_id, created_at_date FROM re_comment WHERE user_id = ?";
+
+    try {
+      const connection = await pool.getConnection();
+      const [rows, fields]: [FindReCommentByUserIdReturn[], FieldPacket[]] = await connection.execute(query, [
+        userId,
+      ]);
+      connection.release();
+      return rows;
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  static findCommentById = async (commentId: number) => {
+    const query = "SELECT post_id FROM comment WHERE comment_id = ?";
+
+    try {
+      const connection = await pool.getConnection();
+      const [rows, fields]: [FindCommentByIdReturn[], FieldPacket[]] = await connection.execute(query, [
+        commentId,
+      ]);
+      connection.release();
+      return rows;
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  static deletePost = async (userId: string, postId: string) => {
+    const query = "DELETE FROM post WHERE post_id = ? AND user_id = ?";
+    try {
+      const connection = await pool.getConnection();
+      await connection.query(query, [userId, postId]);
+      connection.release();
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  static deleteComment = async (userId: string, commentId: number) => {
+    const query = "DELETE FROM comment WHERE user_id = ? AND comment_id = ?";
+    try {
+      const connection = await pool.getConnection();
+      await connection.query(query, [userId, commentId]);
+      connection.release();
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  static deleteReComment = async (userId: string, reCommentId: number) => {
+    const query = "DELETE FROM re_comment WHERE user_id = ? AND re_comment_id = ?";
+    try {
+      const connection = await pool.getConnection();
+      await connection.query(query, [userId, reCommentId]);
+      connection.release();
     } catch (err: any) {
       throw {
         status: 500,

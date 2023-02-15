@@ -20,8 +20,8 @@ class AuthController {
     const userDTO: RegisterUserDTO = req.body;
 
     try {
-      await AuthService.register(userDTO);
-      res.status(201).json({ message: "Register Success" });
+      const userId = await AuthService.register(userDTO);
+      res.status(201).json({ userId });
     } catch (err: any) {
       res.status(err.status || 500).json({ code: err.code, message: err.message });
     }

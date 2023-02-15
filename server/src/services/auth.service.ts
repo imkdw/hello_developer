@@ -53,6 +53,7 @@ class AuthService {
       const userId = Secure.getUUID();
 
       await AuthModel.register(userId, userDTO);
+      return userId;
     } catch (err: any) {
       /** 데이터가 중복된 경우 */
       if (err.code === "ER_DUP_ENTRY") {

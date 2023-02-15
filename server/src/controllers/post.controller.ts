@@ -54,8 +54,44 @@ class PostController {
       const { commentId, reComment } = req.body;
       const userId = res.locals.userId;
 
-      await PostService.addRecomment(userId, commentId, reComment);
-      res.status(201).json({ message: "Create ReComment Success" });
+      const reCommentId = await PostService.addRecomment(userId, commentId, reComment);
+      res.status(201).json({ reCommentId });
+    } catch (err: any) {
+      res.status(err.status || 500).json({ code: err.code, message: err.message });
+    }
+  };
+
+  static deletePost = async (req: Request, res: Response) => {
+    const { postId } = req.params;
+    const userId = res.locals.userId;
+
+    try {
+      await PostService.deletePost(userId, postId);
+      res.status(200).json();
+    } catch (err: any) {
+      res.status(err.status || 500).json({ code: err.code, message: err.message });
+    }
+  };
+
+  static deleteComment = async (req: Request, res: Response) => {
+    const commentId = Number(req.params.commentId);
+    const userId = res.locals.userId;
+
+    try {
+      await PostService.deleteComment(userId, commentId);
+      res.status(200).json();
+    } catch (err: any) {
+      res.status(err.status || 500).json({ code: err.code, message: err.message });
+    }
+  };
+
+  static deleteReComment = async (req: Request, res: Response) => {
+    const reCommentId = Number(req.params.reCommentId);
+    const userId = res.locals.userId;
+
+    try {
+      await PostService.deleteReComment(userId, reCommentId);
+      res.status(200).json();
     } catch (err: any) {
       res.status(err.status || 500).json({ code: err.code, message: err.message });
     }

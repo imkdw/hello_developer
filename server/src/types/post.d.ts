@@ -9,6 +9,14 @@ export interface AddPostUserDTO {
   }[];
 }
 
+export interface HistoryPosts {
+  postId: string;
+  category1: string;
+  category2: string;
+  title: string;
+  createdAt: string;
+}
+
 /** Model : 카테고리 이름으로 아이디 가져오는 함수 반환값 */
 export interface FindCategoryIdByNameReturn extends RowDataPacket {
   category_id: number;
@@ -70,4 +78,34 @@ export interface FindPostByPostIdReturn extends RowDataPacket {
   category_id2: string;
   recommend_cnt: string;
   non_recommend_cnt: string;
+}
+
+// TODO: 게시글 조회시 유저아이디, 포스트아이디 리턴값이 동일한 타입인점 수정필요
+/** Model : 유저아이디로 게시글을 가져오는 쿼리 반환값 */
+export interface FindPostByUserIdReturn extends RowDataPacket {
+  post_id: string;
+  title: string;
+  created_at_date: string;
+  updated_at_date: string;
+  content: string;
+  user_id: string;
+  category_id1: string;
+  category_id2: string;
+  recommend_cnt: string;
+  non_recommend_cnt: string;
+}
+
+/** Model : 유저아이디로 댓글을 가져오는 쿼리 반환값 */
+export interface FindCommentByUserIdReturn extends RowDataPacket {
+  post_id: string;
+  created_at_date: string;
+}
+
+export interface FindReCommentByUserIdReturn extends RowDataPacket {
+  comment_id: number;
+  created_at_date: string;
+}
+
+export interface FindCommentByIdReturn extends RowDataPacket {
+  post_id: string;
 }
