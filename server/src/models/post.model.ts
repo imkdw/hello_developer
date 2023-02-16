@@ -9,11 +9,13 @@ import {
   FindPostByCategoryIdReturn,
   FindPostByPostIdReturn,
   FindPostByUserIdReturn,
+  FindRecommedationByUserAndPostIdReturn,
   FindReCommentByCommentIdReturn,
   FindReCommentByUserIdReturn,
   FindTagIdByNameReturn,
   findTagIdByPostIdReturn,
   FindTagNameByIdReturn,
+  FindViewCntByPostIdReturn,
 } from "../types/post";
 
 export class PostModel {
@@ -40,7 +42,7 @@ export class PostModel {
         userDTO.title,
         userDTO.content,
         category[0],
-        category.length === 2 ? category[1] : null,
+        category[1] ? category[1] : null,
       ];
       await connection.execute(postQuery, postValues);
 
@@ -396,6 +398,114 @@ export class PostModel {
     try {
       const connection = await pool.getConnection();
       await connection.query(query, [userId, reCommentId]);
+      connection.release();
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  static recommendation = async (userId: string, postId: string, type: "add" | "delete") => {
+    const connection = await pool.getConnection();
+
+    try {
+      await connection.beginTransaction();
+
+      /** POST 테이블 추천수 업데이트 */
+      let postQuery = `UPDATE post SET recommend_cnt = recommend_cnt ${
+        type === "add" ? "+" : "-"
+      } 1 WHERE post_id = ?`;
+      await connection.execute(postQuery, [postId]);
+
+      /** recommedation 테이블 row 추가,삭제 */
+      let recommedationQuery =
+        type === "add"
+          ? "INSERT INTO post_recommendation(user_id, post_id) VALUES(?, ?)"
+          : "DELETE FROM post_recommendation WHERE user_id = ? AND post_id = ?";
+      await connection.execute(recommedationQuery, [userId, postId]);
+
+      await connection.commit();
+    } catch (err: any) {
+      await connection.rollback();
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    } finally {
+      connection.release();
+    }
+  };
+
+  static findRecommedationByUserAndPostId = async (userId: string, postId: string) => {
+    const query = "SELECT recommendation_id FROM post_recommendation WHERE user_id = ? AND post_id = ?";
+    try {
+      const connection = await pool.getConnection();
+      const [rows, fields]: [FindRecommedationByUserAndPostIdReturn[], FieldPacket[]] =
+        await connection.query(query, [userId, postId]);
+      connection.release();
+      return rows[0];
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  static views = async (postId: string) => {
+    const query = "UPDATE post_views SET view_cnt = view_cnt + 1 WHERE post_id = ?";
+    try {
+      const connection = await pool.getConnection();
+      await connection.execute(query, [postId]);
+      connection.release();
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  static findViewCntByPostId = async (postId: string) => {
+    const query = "SELECT view_cnt FROM post_views WHERE post_id = ?";
+    try {
+      const connection = await pool.getConnection();
+      const [rows, fields]: [FindViewCntByPostIdReturn[], FieldPacket[]] = await connection.execute(query, [
+        postId,
+      ]);
+      connection.release();
+      return rows[0];
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  static updateComment = async (commentId: string, commentText: string, now: string) => {
+    const query = "UPDATE comment SET content = ?, updated_at_date = ? WHERE comment_id = ?";
+    const values = [commentText, now, commentId];
+    try {
+      const connection = await pool.getConnection();
+      await connection.execute(query, values);
+      connection.release();
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  static updateReComment = async (reCommentId: string, reCommentText: string, now: string) => {
+    const query = "UPDATE re_comment SET content = ?, updated_at_date = ? WHERE re_comment_id = ?";
+    const values = [reCommentText, now, reCommentId];
+    try {
+      const connection = await pool.getConnection();
+      await connection.execute(query, values);
       connection.release();
     } catch (err: any) {
       throw {

@@ -45,7 +45,19 @@ class UserController {
       const history = await UserService.history(userId, item);
       res.status(200).json(history);
     } catch (err: any) {
-      console.error(err.message);
+      res.status(err.status || 500).json({ code: err.code, message: err.message });
+    }
+  };
+
+  static updateProfile = async (req: Request, res: Response) => {
+    const { userId } = req.params;
+    const { name, introduce } = req.body;
+    const tokenUserId = res.locals.userId;
+
+    try {
+      await UserService.updateProfile(userId, tokenUserId, name, introduce);
+      res.status(200).json();
+    } catch (err: any) {
       res.status(err.status || 500).json({ code: err.code, message: err.message });
     }
   };

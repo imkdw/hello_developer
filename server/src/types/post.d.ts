@@ -109,3 +109,31 @@ export interface FindReCommentByUserIdReturn extends RowDataPacket {
 export interface FindCommentByIdReturn extends RowDataPacket {
   post_id: string;
 }
+
+export interface FindRecommedationByUserAndPostIdReturn extends RowDataPacket {
+  recommedation_id: string;
+}
+
+export interface FindViewCntByPostIdReturn extends RowDataPacket {
+  view_cnt: number;
+}
+
+export interface AllComments {
+  user: {
+    nickname: string;
+    profileImg: string;
+  };
+  comment_id: number;
+  user_id: string;
+  content: string;
+  created_at_date: string;
+  updated_at_date: string;
+  reComment: {
+    re_comment_id: number;
+    comment_id: number;
+    user_id: string;
+    content: string;
+    created_at_date: string;
+    updated_at_date: string;
+  }[];
+}

@@ -17,6 +17,12 @@ const register = async () => {
   expect(res.body).toHaveProperty("userId");
 };
 
+const TEAR_DOWN = async () => {
+  const connection = await pool.getConnection();
+  await connection.execute("CALL truncate_tables");
+  connection.destroy();
+};
+
 describe("회원가입 API, [POST] /v1/api/auth/register", () => {
   beforeAll(async () => {
     const connection = await pool.getConnection();
@@ -25,9 +31,7 @@ describe("회원가입 API, [POST] /v1/api/auth/register", () => {
   });
 
   afterAll(async () => {
-    const connection = await pool.getConnection();
-    await connection.execute("CALL truncate_tables()");
-    connection.destroy();
+    await TEAR_DOWN();
   });
 
   test("[정상적인 회원가입] HTTP 201", async () => {
@@ -105,9 +109,7 @@ describe("로그인 API, [POST] /v1/api/auth/register", () => {
   });
 
   afterAll(async () => {
-    const connection = await pool.getConnection();
-    await connection.execute("CALL truncate_tables");
-    connection.destroy();
+    await TEAR_DOWN();
   });
 
   test("[정상적인 닉네임] HTTP 200, 엑세스토큰 반환", async () => {

@@ -7,6 +7,9 @@ const userRouter = express.Router();
 /** 프로필 가져오기 */
 userRouter.get("/:userId", UserController.profile);
 
+/** 프로필 수정 */
+userRouter.put("/:userId", isAuth, UserController.profile);
+
 /** 히스토리 가져오기 */
 userRouter.get("/:userId/history", UserController.history);
 

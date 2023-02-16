@@ -96,6 +96,54 @@ class PostController {
       res.status(err.status || 500).json({ code: err.code, message: err.message });
     }
   };
+
+  static recommedation = async (req: Request, res: Response) => {
+    const { postId } = req.params;
+    const userId = res.locals.userId;
+
+    try {
+      await PostService.recommedation(userId, postId);
+      res.status(200).json();
+    } catch (err: any) {
+      console.error(err);
+      res.status(err.status || 500).json({ code: err.code, message: err.message });
+    }
+  };
+
+  static views = async (req: Request, res: Response) => {
+    const { postId } = req.params;
+
+    try {
+      await PostService.views(postId);
+      res.status(200).json();
+    } catch (err: any) {
+      res.status(err.status || 500).json({ code: err.code, message: err.message });
+    }
+  };
+
+  static updateComment = async (req: Request, res: Response) => {
+    const { commentText } = req.body;
+    const { commentId } = req.params;
+
+    try {
+      await PostService.updateComment(commentId, commentText);
+      res.status(200).json();
+    } catch (err: any) {
+      res.status(err.status || 500).json({ code: err.code, message: err.message });
+    }
+  };
+
+  static updateReComment = async (req: Request, res: Response) => {
+    const { reCommentText } = req.body;
+    const { reCommentId } = req.params;
+
+    try {
+      await PostService.updateReComment(reCommentId, reCommentText);
+      res.status(200).json();
+    } catch (err: any) {
+      res.status(err.status || 500).json({ code: err.code, message: err.message });
+    }
+  };
 }
 
 export default PostController;

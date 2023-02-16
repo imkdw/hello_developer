@@ -1,7 +1,7 @@
 import { changePropertySnakeToCamel } from "../db/snakeToCamel";
 import { PostModel } from "../models/post.model";
 import { UserModel } from "../models/user.model";
-import { AddPostUserDTO, FindPostByCategoryIdReturn } from "../types/post";
+import { AddPostUserDTO, AllComments, FindPostByCategoryIdReturn } from "../types/post";
 import Secure from "../utils/secure";
 
 export class PostService {
@@ -153,6 +153,14 @@ export class PostService {
       /** 게시글 정보 */
       const post = await PostModel.findPostByPostId(postId);
 
+      if (!post) {
+        throw {
+          status: 404,
+          code: "post-005",
+          message: "post_not_found",
+        };
+      }
+
       /** 유저 정보 */
       const user = await UserModel.findUserByUserId(post.user_id);
 
@@ -168,7 +176,7 @@ export class PostService {
       /** 댓글 목록 */
       const comments = await PostModel.findCommentByPostId(post.post_id);
 
-      let allComments: any = [];
+      let allComments: AllComments[] = [];
       /** 대댓글 추가하기 */
       await Promise.all(
         comments.map(async (comment) => {
@@ -199,6 +207,10 @@ export class PostService {
         })
       );
 
+      /** 조회수 */
+      const viewCnt = await PostModel.findViewCntByPostId(postId);
+      const viewCntNumber = viewCnt.view_cnt;
+
       return {
         user: {
           profileImg: user.profile_img,
@@ -209,6 +221,8 @@ export class PostService {
         content: post.content,
         tags: tagNames,
         comments: allComments,
+        recommendCnt: post.recommend_cnt,
+        viewCount: viewCntNumber,
       };
     } catch (err: any) {
       throw err;
@@ -270,6 +284,62 @@ export class PostService {
   static deleteReComment = async (userId: string, reCommentId: number) => {
     try {
       await PostModel.deleteReComment(userId, reCommentId);
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  static recommedation = async (userId: string, postId: string) => {
+    try {
+      let type: "add" | "delete" = "add";
+      const recommendation = await PostModel.findRecommedationByUserAndPostId(userId, postId);
+
+      if (recommendation) {
+        type = "delete";
+      }
+
+      await PostModel.recommendation(userId, postId, type);
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  static views = async (postId: string) => {
+    try {
+      await PostModel.views(postId);
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  static updateComment = async (commentId: string, commentText: string) => {
+    try {
+      if (commentText.length === 0) {
+        throw {
+          status: 400,
+          code: "post-006",
+          message: "invalid_updated_comment",
+        };
+      }
+
+      const now = new Date().toISOString().slice(0, 19).replace("T", " ");
+      await PostModel.updateComment(commentId, commentText, now);
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  static updateReComment = async (reCommentId: string, reCommentText: string) => {
+    try {
+      if (reCommentText.length === 0) {
+        throw {
+          status: 400,
+          code: "post-007",
+          message: "invalid_updated_re_comment",
+        };
+      }
+      const now = new Date().toISOString().slice(0, 19).replace("T", " ");
+      await PostModel.updateReComment(reCommentId, reCommentText, now);
     } catch (err: any) {
       throw err;
     }

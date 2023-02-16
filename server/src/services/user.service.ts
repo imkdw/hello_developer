@@ -130,4 +130,42 @@ export class UserService {
       throw err;
     }
   };
+
+  static updateProfile = async (userId: string, tokenUserId: string, nickname: string, introduce: string) => {
+    try {
+      /** 업데이트 해야되는 데이터가 없을경우 400 에러 반환 */
+      if (nickname.length === 0 || introduce.length === 0) {
+        throw {
+          status: 400,
+          code: "user-004",
+          message: "profile_data_not_found",
+        };
+      }
+
+      /** 파라미터로 받은 유저의 아이디와 토큰에서 추출한 유저의 아이디가 다른경우 401 에러 반환 */
+      if (userId !== tokenUserId) {
+        throw {
+          status: 401,
+          code: "user-005",
+          message: "user_mismatch",
+        };
+      }
+
+      /** 기존 데이터와 새로 입력한 데이터가 일치하는 경우 성공으로 처리 */
+      const existingUser = await UserModel.findUserByUserId(tokenUserId);
+      if (existingUser.nickname === nickname && existingUser.introduce === introduce) {
+        return;
+      }
+
+      if (existingUser.nickname !== nickname && existingUser.introduce === introduce) {
+        // 닉네임만 업데이트
+      } else if (existingUser.nickname === nickname && existingUser.introduce !== introduce) {
+        // 소개만 업데이트
+      } else {
+        // 다 업데이트
+      }
+    } catch (err: any) {
+      throw err;
+    }
+  };
 }
