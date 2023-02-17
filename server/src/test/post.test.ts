@@ -16,6 +16,7 @@ const DELETE_COMMENT_API = "/v1/api/post/comment";
 const DELETE_RE_COMMENT_API = "/v1/api/post/re-comment";
 const UPDATE_COMMENT_API = "/v1/api/post/comment";
 const UPDATE_RE_COMMENT_API = "/v1/api/post/re-comment";
+const UPDATE_POST_API = "/v1/api/post";
 
 /** 계정 관련 설정 */
 const EMAIL = "test@test.com";
@@ -29,7 +30,13 @@ const POST_CATEGORY1 = "qna";
 const POST_CATEGORY2 = "tech";
 const POST_TAG1 = "typescript";
 const POST_TAG2 = "express.js";
-const POST_TAG3 = "jest";
+
+const UPDATED_POST_TITLE = "UPDATED_POST_TITLE";
+const UPDATED_POST_CONTENT = "UPDATED_POST_CONTENT";
+const UPDATED_POST_CATEGORY1 = "knowledge";
+const UPDATED_POST_CATEGORY2 = "tip";
+const UPDATED_POST_TAG1 = "javascript";
+const UPDATED_POST_TAG2 = "nodemon";
 
 /** 댓글 관련 설정 */
 const COMMENT_TEXT = "COMENT TEXT";
@@ -196,7 +203,7 @@ describe("게시글 작성 API, [POST] /v1/api/post/add", () => {
       title: POST_TITLE,
       content: POST_CONTENT,
       category: `${POST_CATEGORY1}`,
-      tags: [{ name: POST_TAG1 }, { name: POST_TAG2 }, { name: POST_TAG3 }],
+      tags: [{ name: POST_TAG1 }, { name: POST_TAG2 }],
     };
 
     const res = await request(app).post(ADD_POST_API).send(postData).set({ Authorization });
@@ -287,6 +294,134 @@ describe("게시글 삭제 API, [DELETE] /v1/api/post/:postId", () => {
   test("[게시글 삭제] HTTP 200", async () => {
     const res = await request(app).delete(`${POST_DELETE_API}/${postId}`).set({ Authorization });
     expect(res.status).toBe(200);
+  });
+});
+
+describe("게시글 수정 API, [PUT] /v1/api/post/:postId", () => {
+  let postId: string;
+  let Authorization: string;
+
+  beforeAll(async () => {
+    const data = await SET_UP();
+    postId = data.postId;
+    Authorization = data.Authorization;
+  });
+
+  afterAll(async () => {
+    await TEAR_DOWN();
+  });
+
+  test("[제목 수정] HTTP 200", async () => {
+    const res = await request(app)
+      .put(`${UPDATE_POST_API}/${postId}`)
+      .send({
+        title: UPDATED_POST_TITLE,
+        content: POST_CONTENT,
+        category: `${POST_CATEGORY1}-${POST_CATEGORY2}`,
+        tags: [{ name: POST_TAG1 }, { name: POST_TAG2 }],
+      })
+      .set({ Authorization });
+
+    expect(res.status).toBe(200);
+
+    const postRes = await request(app).get(`${POST_DELETE_API}/${postId}`);
+
+    expect(postRes.status).toBe(200);
+    expect(postRes.body.title).toBe(UPDATED_POST_TITLE);
+  });
+
+  test("[내용 수정] HTTP 200", async () => {
+    const res = await request(app)
+      .put(`${UPDATE_POST_API}/${postId}`)
+      .send({
+        title: POST_TITLE,
+        content: UPDATED_POST_CONTENT,
+        category: `${POST_CATEGORY1}-${POST_CATEGORY2}`,
+        tags: [{ name: POST_TAG1 }, { name: POST_TAG2 }],
+      })
+      .set({ Authorization });
+
+    expect(res.status).toBe(200);
+
+    const postRes = await request(app).get(`${POST_DELETE_API}/${postId}`);
+
+    expect(postRes.status).toBe(200);
+    expect(postRes.body.content).toBe(UPDATED_POST_CONTENT);
+  });
+
+  test("[카테고리 수정] HTTP 200", async () => {
+    const res = await request(app)
+      .put(`${UPDATE_POST_API}/${postId}`)
+      .send({
+        title: POST_TITLE,
+        content: POST_CONTENT,
+        category: `${UPDATED_POST_CATEGORY1}-${UPDATED_POST_CATEGORY2}`,
+        tags: [{ name: POST_TAG1 }, { name: POST_TAG2 }],
+      })
+      .set({ Authorization });
+
+    expect(res.status).toBe(200);
+
+    const postRes = await request(app).get(`${POST_DELETE_API}/${postId}`);
+
+    expect(postRes.status).toBe(200);
+    expect(postRes.body.category).toBe(`${UPDATED_POST_CATEGORY1}-${UPDATED_POST_CATEGORY2}`);
+  });
+
+  test("[태그 수정] HTTP 200", async () => {
+    const res = await request(app)
+      .put(`${UPDATE_POST_API}/${postId}`)
+      .send({
+        title: POST_TITLE,
+        content: POST_CONTENT,
+        category: `${POST_CATEGORY1}-${POST_CATEGORY2}`,
+        tags: [{ name: UPDATED_POST_TAG1 }, { name: UPDATED_POST_TAG2 }],
+      })
+      .set({ Authorization });
+
+    expect(res.status).toBe(200);
+
+    const postRes = await request(app).get(`${POST_DELETE_API}/${postId}`);
+
+    expect(postRes.status).toBe(200);
+    expect(postRes.body.tags).toEqual([{ name: UPDATED_POST_TAG1 }, { name: UPDATED_POST_TAG2 }]);
+  });
+
+  test("[전체내용 수정] HTTP 200", async () => {
+    const res = await request(app)
+      .put(`${UPDATE_POST_API}/${postId}`)
+      .send({
+        title: UPDATED_POST_TITLE,
+        content: UPDATED_POST_CONTENT,
+        category: `${UPDATED_POST_CATEGORY1}-${UPDATED_POST_CATEGORY2}`,
+        tags: [{ name: UPDATED_POST_TAG1 }, { name: UPDATED_POST_TAG2 }],
+      })
+      .set({ Authorization });
+
+    expect(res.status).toBe(200);
+
+    const postRes = await request(app).get(`${POST_DELETE_API}/${postId}`);
+
+    expect(postRes.status).toBe(200);
+    expect(postRes.body.title).toBe(UPDATED_POST_TITLE);
+    expect(postRes.body.content).toBe(UPDATED_POST_CONTENT);
+    expect(postRes.body.category).toBe(`${UPDATED_POST_CATEGORY1}-${UPDATED_POST_CATEGORY2}`);
+    expect(postRes.body.tags).toEqual([{ name: UPDATED_POST_TAG1 }, { name: UPDATED_POST_TAG2 }]);
+  });
+
+  test("[내용에 빈값이 있을경우] HTTP 400, CODE: 'post-008', MESSAGE: 'invalid_post_data'", async () => {
+    const res = await request(app)
+      .put(`${UPDATE_POST_API}/${postId}`)
+      .send({
+        title: "",
+        content: POST_CONTENT,
+        category: `${UPDATED_POST_CATEGORY1}-${UPDATED_POST_CATEGORY2}`,
+        tags: [{ name: POST_TAG1 }, { name: POST_TAG2 }],
+      })
+      .set({ Authorization });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({ code: "post-008", message: "invalid_post_data" });
   });
 });
 

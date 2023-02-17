@@ -8,7 +8,7 @@ const userRouter = express.Router();
 userRouter.get("/:userId", UserController.profile);
 
 /** 프로필 수정 */
-userRouter.put("/:userId", isAuth, UserController.profile);
+userRouter.put("/:userId", isAuth, UserController.updateProfile);
 
 /** 히스토리 가져오기 */
 userRouter.get("/:userId/history", UserController.history);
@@ -18,5 +18,8 @@ userRouter.post("/bookmark", isAuth, UserController.addBookmark);
 
 /** 게시글 북마크 삭제하기 */
 userRouter.delete("/bookmark/:postId", isAuth, UserController.deleteBookmark);
+
+/** 회원탈퇴 */
+userRouter.post("/exit", isAuth, UserController.exit);
 
 export default userRouter;

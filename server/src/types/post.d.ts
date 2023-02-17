@@ -11,8 +11,8 @@ export interface AddPostUserDTO {
 
 export interface HistoryPosts {
   postId: string;
-  category1: string;
-  category2: string;
+  category1: number;
+  category2: number;
   title: string;
   createdAt: string;
 }
@@ -74,8 +74,8 @@ export interface FindPostByPostIdReturn extends RowDataPacket {
   updated_at_date: string;
   content: string;
   user_id: string;
-  category_id1: string;
-  category_id2: string;
+  category_id1: number;
+  category_id2: number;
   recommend_cnt: string;
   non_recommend_cnt: string;
 }
@@ -89,8 +89,8 @@ export interface FindPostByUserIdReturn extends RowDataPacket {
   updated_at_date: string;
   content: string;
   user_id: string;
-  category_id1: string;
-  category_id2: string;
+  category_id1: number;
+  category_id2: number;
   recommend_cnt: string;
   non_recommend_cnt: string;
 }
@@ -136,4 +136,27 @@ export interface AllComments {
     created_at_date: string;
     updated_at_date: string;
   }[];
+}
+
+export interface UpdatePostUserDTO {
+  title: string;
+  content: string;
+  category: string;
+  tags: {
+    name: string;
+  }[];
+}
+
+export interface FindTagIdByNameReturn {
+  tag_id: number;
+}
+
+export interface FindTagsByPostIdReturn {
+  id: number;
+  tag_id: number;
+  post_id: string;
+}
+
+export interface FindCategoryNameByIdReturn extends RowDataPacket {
+  name: string;
 }

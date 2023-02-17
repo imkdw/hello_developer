@@ -16,6 +16,9 @@ postRouter.get("/:postId", PostController.detail);
 /** 게시글 삭제 */
 postRouter.delete("/:postId", isAuth, PostController.deletePost);
 
+/** 게시글 수정 */
+postRouter.put("/:postId", isAuth, PostController.updatePost);
+
 /** 댓글 추가 */
 postRouter.post("/comment/add", isAuth, PostController.addComment);
 

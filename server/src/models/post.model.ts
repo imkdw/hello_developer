@@ -3,6 +3,7 @@ import { pool } from "../db/db";
 import {
   AddPostUserDTO,
   FindCategoryIdByNameReturn,
+  FindCategoryNameByIdReturn,
   FindCommentByIdReturn,
   FindCommentByPostId,
   FindCommentByUserIdReturn,
@@ -16,7 +17,9 @@ import {
   findTagIdByPostIdReturn,
   FindTagNameByIdReturn,
   FindViewCntByPostIdReturn,
+  UpdatePostUserDTO,
 } from "../types/post";
+import { Time } from "../utils/time";
 
 export class PostModel {
   /**
@@ -485,9 +488,9 @@ export class PostModel {
     }
   };
 
-  static updateComment = async (commentId: string, commentText: string, now: string) => {
+  static updateComment = async (commentId: string, commentText: string) => {
     const query = "UPDATE comment SET content = ?, updated_at_date = ? WHERE comment_id = ?";
-    const values = [commentText, now, commentId];
+    const values = [commentText, Time.now(), commentId];
     try {
       const connection = await pool.getConnection();
       await connection.execute(query, values);
@@ -500,13 +503,126 @@ export class PostModel {
     }
   };
 
-  static updateReComment = async (reCommentId: string, reCommentText: string, now: string) => {
+  static updateReComment = async (reCommentId: string, reCommentText: string) => {
     const query = "UPDATE re_comment SET content = ?, updated_at_date = ? WHERE re_comment_id = ?";
-    const values = [reCommentText, now, reCommentId];
+    const values = [reCommentText, Time.now(), reCommentId];
     try {
       const connection = await pool.getConnection();
       await connection.execute(query, values);
       connection.release();
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  static findTagIdByName = async (tagName: string) => {
+    const query = "SELECT tag_id FROM tags WHERE name = ?";
+    try {
+      const connection = await pool.getConnection();
+      const [rows, fields]: [FindTagIdByNameReturn[], FieldPacket[]] = await connection.execute(query, [
+        tagName,
+      ]);
+      connection.release();
+      return rows[0];
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  static findTagsByPostId = async (postId: string) => {
+    const query = "SELECT * FROM post_tags WHERE post_id = ?";
+    try {
+      const connection = await pool.getConnection();
+      const [rows, fields]: [[], FieldPacket[]] = await connection.execute(query, [postId]);
+      connection.release();
+      return rows;
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  static updatePost = async (
+    userId: string,
+    postId: string,
+    userDTO: UpdatePostUserDTO,
+    categoryIds: (number | null)[]
+  ) => {
+    const { title, content, category, tags } = userDTO;
+
+    const connection = await pool.getConnection();
+
+    try {
+      await connection.beginTransaction();
+
+      // 태그를 제외한 컬럼 먼저 업데이트
+      await connection.execute(
+        "UPDATE post SET title=?, content=?, category_id1=?, category_id2=? WHERE post_id = ? AND user_id = ?",
+        [title, content, categoryIds[0], categoryIds[1], postId, userId]
+      );
+
+      /**
+       * 1. 태그 아이디로 태그 네임을 검색
+       * 2. 태그 네임이 없을경우 tags 테이블에 추가
+       * 3. 기존 tagIds의 값과 새로 추가된 값을 post_tags 테이블에 추가
+       */
+      const tagIds = await Promise.all(
+        userDTO.tags.map(async (tag) => {
+          const tagId = await this.findTagIdByName(tag.name);
+
+          // 태그 아이디가 없다면 새로운 태그 추가, id 반환
+          if (!tagId) {
+            const [rows, fields]: [ResultSetHeader, FieldPacket[]] = await connection.execute(
+              "INSERT INTO tags(name) VALUES(?)",
+              [tag.name]
+            );
+
+            return rows.insertId;
+          }
+
+          return tagId.tag_id;
+        })
+      );
+
+      // 기존 tag를 모두 삭제
+      await connection.execute("DELETE FROM post_tags WHERE post_id = ?", [postId]);
+
+      // 새로운 tag를 추가
+      await Promise.all(
+        tagIds.map(async (tagId) => {
+          await connection.execute("INSERT INTO post_tags(post_id, tag_id) VALUES(?,?)", [postId, tagId]);
+        })
+      );
+
+      await connection.commit();
+    } catch (err: any) {
+      await connection.rollback();
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    } finally {
+      connection.release();
+    }
+  };
+
+  static findCategoryNameById = async (categoryId: number) => {
+    const query = "SELECT name FROM post_category WHERE category_id = ?";
+    try {
+      const connection = await pool.getConnection();
+      const [rows, fields]: [FindCategoryNameByIdReturn[], FieldPacket[]] = await connection.execute(query, [
+        categoryId,
+      ]);
+      connection.release();
+      return rows[0];
     } catch (err: any) {
       throw {
         status: 500,

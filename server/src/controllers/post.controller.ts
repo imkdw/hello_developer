@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { PostService } from "../services/post.service";
-import { AddPostUserDTO } from "../types/post";
+import { AddPostUserDTO, UpdatePostUserDTO } from "../types/post";
 
 class PostController {
   static add = async (req: Request, res: Response) => {
@@ -105,7 +105,6 @@ class PostController {
       await PostService.recommedation(userId, postId);
       res.status(200).json();
     } catch (err: any) {
-      console.error(err);
       res.status(err.status || 500).json({ code: err.code, message: err.message });
     }
   };
@@ -139,6 +138,19 @@ class PostController {
 
     try {
       await PostService.updateReComment(reCommentId, reCommentText);
+      res.status(200).json();
+    } catch (err: any) {
+      res.status(err.status || 500).json({ code: err.code, message: err.message });
+    }
+  };
+
+  static updatePost = async (req: Request, res: Response) => {
+    const userDTO: UpdatePostUserDTO = req.body;
+    const userId = res.locals.userId;
+    const postId = req.params.postId;
+
+    try {
+      await PostService.updatePost(userId, postId, userDTO);
       res.status(200).json();
     } catch (err: any) {
       res.status(err.status || 500).json({ code: err.code, message: err.message });

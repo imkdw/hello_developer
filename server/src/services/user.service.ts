@@ -65,6 +65,7 @@ export class UserService {
             });
           });
           break;
+
         case "comment":
           const allComments: AllComments[] = [];
           // 1. 유저 아이디로 댓글목록 조회 및 배열에 저장
@@ -102,6 +103,7 @@ export class UserService {
             })
           );
           break;
+
         case "bookmark":
           const postIds = await UserModel.findBookmarkPostByUserId(userId);
           await Promise.all(
@@ -117,6 +119,7 @@ export class UserService {
             })
           );
           break;
+
         default:
           throw {
             status: 404,
@@ -132,38 +135,61 @@ export class UserService {
   };
 
   static updateProfile = async (userId: string, tokenUserId: string, nickname: string, introduce: string) => {
+    const updateFields = [];
+
+    if (nickname) {
+      updateFields.push({ key: "nickname", value: nickname });
+    }
+
+    if (introduce) {
+      updateFields.push({ key: "introduce", value: introduce });
+    }
+
+    if (updateFields.length === 0) {
+      throw {
+        status: 400,
+        code: "user-004",
+        message: "invalid_profile_data",
+      };
+    }
+
+    if (userId !== tokenUserId) {
+      throw {
+        status: 401,
+        code: "user-005",
+        message: "user_mismatch",
+      };
+    }
+
     try {
-      /** 업데이트 해야되는 데이터가 없을경우 400 에러 반환 */
-      if (nickname.length === 0 || introduce.length === 0) {
-        throw {
-          status: 400,
-          code: "user-004",
-          message: "profile_data_not_found",
-        };
-      }
-
-      /** 파라미터로 받은 유저의 아이디와 토큰에서 추출한 유저의 아이디가 다른경우 401 에러 반환 */
-      if (userId !== tokenUserId) {
-        throw {
-          status: 401,
-          code: "user-005",
-          message: "user_mismatch",
-        };
-      }
-
-      /** 기존 데이터와 새로 입력한 데이터가 일치하는 경우 성공으로 처리 */
       const existingUser = await UserModel.findUserByUserId(tokenUserId);
-      if (existingUser.nickname === nickname && existingUser.introduce === introduce) {
+      const updateFieldQuery = updateFields
+        .map((field) => {
+          if (field.value !== existingUser[field.key]) {
+            return `${field.key} = '${field.value}'`;
+          }
+
+          return null;
+        })
+        .filter((query) => query);
+
+      /** 기존에 존재하던 값과 동일하면 200 코드 반환 */
+      if (updateFieldQuery.length === 0) {
         return;
       }
 
-      if (existingUser.nickname !== nickname && existingUser.introduce === introduce) {
-        // 닉네임만 업데이트
-      } else if (existingUser.nickname === nickname && existingUser.introduce !== introduce) {
-        // 소개만 업데이트
-      } else {
-        // 다 업데이트
-      }
+      await UserModel.updateUser(
+        tokenUserId,
+        updateFieldQuery.length === 1 ? updateFieldQuery.join("") : updateFieldQuery.join(", ")
+      );
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  static exit = async (userId: string) => {
+    try {
+      await UserModel.exit(userId);
     } catch (err: any) {
       throw err;
     }

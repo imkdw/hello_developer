@@ -1,7 +1,7 @@
 import { changePropertySnakeToCamel } from "../db/snakeToCamel";
 import { PostModel } from "../models/post.model";
 import { UserModel } from "../models/user.model";
-import { AddPostUserDTO, AllComments, FindPostByCategoryIdReturn } from "../types/post";
+import { AddPostUserDTO, AllComments, FindPostByCategoryIdReturn, UpdatePostUserDTO } from "../types/post";
 import Secure from "../utils/secure";
 
 export class PostService {
@@ -207,6 +207,15 @@ export class PostService {
         })
       );
 
+      /** 카테고리 */
+      const categorys = await Promise.all(
+        [post.category_id1, post.category_id2].map(async (categoryId) => {
+          const category = await PostModel.findCategoryNameById(categoryId);
+          return category.name;
+        })
+      );
+      const categoryText = categorys.length === 1 ? categorys[0] : categorys.join("-");
+
       /** 조회수 */
       const viewCnt = await PostModel.findViewCntByPostId(postId);
       const viewCntNumber = viewCnt.view_cnt;
@@ -217,6 +226,7 @@ export class PostService {
           nickname: user.nickname,
         },
         title: post.title,
+        category: categoryText,
         createdAt: post.created_at_date,
         content: post.content,
         tags: tagNames,
@@ -322,8 +332,7 @@ export class PostService {
         };
       }
 
-      const now = new Date().toISOString().slice(0, 19).replace("T", " ");
-      await PostModel.updateComment(commentId, commentText, now);
+      await PostModel.updateComment(commentId, commentText);
     } catch (err: any) {
       throw err;
     }
@@ -338,8 +347,47 @@ export class PostService {
           message: "invalid_updated_re_comment",
         };
       }
-      const now = new Date().toISOString().slice(0, 19).replace("T", " ");
-      await PostModel.updateReComment(reCommentId, reCommentText, now);
+      await PostModel.updateReComment(reCommentId, reCommentText);
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  // TODO: 게시글 업데이트로직 재구성 필요
+  static updatePost = async (userId: string, postId: string, userDTO: UpdatePostUserDTO) => {
+    const { title, content, category, tags } = userDTO;
+    if (!category || !content || !tags || !title) {
+      throw {
+        status: 400,
+        code: "post-008",
+        message: "invalid_post_data",
+      };
+    }
+
+    try {
+      const categoryIds = await Promise.all(
+        category.split("-").map(async (category) => {
+          const categoryId = await PostModel.findCategoryIdByName(category);
+
+          if (!categoryId) {
+            return null;
+          }
+
+          return categoryId.category_id;
+        })
+      );
+
+      /** 이상한 카테고리가 입력된경우 에러반환 */
+      categoryIds.forEach((categoryId) => {
+        if (!categoryId) {
+          throw {
+            status: 400,
+            code: "post-008",
+            message: "invalid_post_data",
+          };
+        }
+      });
+      await PostModel.updatePost(userId, postId, userDTO, categoryIds);
     } catch (err: any) {
       throw err;
     }

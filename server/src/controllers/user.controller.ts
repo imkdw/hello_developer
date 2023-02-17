@@ -51,11 +51,31 @@ class UserController {
 
   static updateProfile = async (req: Request, res: Response) => {
     const { userId } = req.params;
-    const { name, introduce } = req.body;
+    const { nickname, introduce } = req.body;
     const tokenUserId = res.locals.userId;
 
     try {
-      await UserService.updateProfile(userId, tokenUserId, name, introduce);
+      await UserService.updateProfile(userId, tokenUserId, nickname, introduce);
+      res.status(200).json();
+    } catch (err: any) {
+      res.status(err.status || 500).json({ code: err.code, message: err.message });
+    }
+  };
+
+  static exit = async (req: Request, res: Response) => {
+    const userId = res.locals.userId;
+    const { password, rePassword } = req.body;
+
+    if (password !== rePassword) {
+      throw {
+        status: 400,
+        code: "user-006",
+        message: "password-mismatch",
+      };
+    }
+
+    try {
+      await UserService.exit(userId);
       res.status(200).json();
     } catch (err: any) {
       res.status(err.status || 500).json({ code: err.code, message: err.message });

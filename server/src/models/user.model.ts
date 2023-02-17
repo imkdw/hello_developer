@@ -73,4 +73,32 @@ export class UserModel {
       throw err;
     }
   };
+
+  static updateUser = async (userId: string, updateFieldQuery: string) => {
+    const query = `UPDATE user SET ${updateFieldQuery} WHERE user_id = ?`;
+    try {
+      const connection = await pool.getConnection();
+      await connection.execute(query, [userId]);
+      connection.release();
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  static exit = async (userId: string) => {
+    const query = "DELETE FROM user WHERE user_id = ?";
+    try {
+      const connection = await pool.getConnection();
+      await connection.execute(query, [userId]);
+      connection.release();
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
 }
