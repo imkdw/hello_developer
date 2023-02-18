@@ -1,6 +1,9 @@
+import { createTransport } from "nodemailer";
+import config from "../config";
 import AuthModel from "../models/auth.model";
 import { LoginUserDTO, RegisterUserDTO } from "../types/auth";
 import Jwt from "../utils/jwt";
+import { Mailer } from "../utils/mailer";
 import Secure from "../utils/secure";
 
 class AuthService {
@@ -52,7 +55,15 @@ class AuthService {
       /** 유저 고유아이디 생성 */
       const userId = Secure.getUUID();
 
-      await AuthModel.register(userId, userDTO);
+      /** 이메일 인증을 위힌 토큰 생성 */
+      const emailVerifyToken = Secure.getUUID();
+
+      /** 회원가입 데이터 추가 */
+      await AuthModel.register(userId, userDTO, emailVerifyToken);
+
+      /** 인증 관련 메일 발송 */
+      await Mailer.sendVerifyToken(userDTO.email, userDTO.nickname, emailVerifyToken);
+
       return userId;
     } catch (err: any) {
       /** 데이터가 중복된 경우 */
@@ -82,6 +93,57 @@ class AuthService {
         status: 500,
         message: err.message,
       };
+    }
+  };
+
+  /** 회원가입 비즈니스 로직 */
+  static adminRegister = async (userDTO: RegisterUserDTO) => {
+    try {
+      /** 패스워드 암호화 */
+      const hashedPassword = await Secure.encryptToHash(userDTO.password);
+      userDTO.password = hashedPassword;
+
+      /** 유저 고유아이디 생성 */
+      const userId = Secure.getUUID();
+
+      await AuthModel.adminRegister(userId, userDTO);
+      return userId;
+    } catch (err: any) {
+      /** 데이터가 중복된 경우 */
+      if (err.code === "ER_DUP_ENTRY") {
+        const errMessage = String(err.message);
+
+        /** 이메일이 중복된 경우 */
+        if (errMessage.includes(userDTO.email)) {
+          throw {
+            status: 400,
+            code: "auth-004",
+            message: "exist_email",
+          };
+        }
+
+        /** 닉네임이 중복된 경우 */
+        if (errMessage.includes(userDTO.nickname)) {
+          throw {
+            status: 400,
+            code: "auth-005",
+            message: "exist_nickname",
+          };
+        }
+      }
+
+      throw {
+        status: 500,
+        message: err.message,
+      };
+    }
+  };
+
+  static verify = async (verifyToken: string) => {
+    try {
+      await AuthModel.verify(verifyToken);
+    } catch (err: any) {
+      throw err;
     }
   };
 }

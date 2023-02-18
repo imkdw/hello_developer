@@ -5,7 +5,7 @@ import app from "../app";
 
 /** API 주소 */
 const LOGIN_API = "/v1/api/auth/login";
-const REGISTER_API = "/v1/api/auth/register";
+const REGISTER_API = "/v1/api/auth/admin-register";
 const ADD_POST_API = "/v1/api/post/add";
 const ADD_COMMENT_API = "/v1/api/post/comment/add";
 const ADD_RE_COMMENT_API = "/v1/api/post/re-comment/add";

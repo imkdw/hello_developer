@@ -23,8 +23,22 @@ class AuthModel {
     }
   };
 
-  static register = async (userId: string, userDTO: RegisterUserDTO) => {
-    const query = "INSERT INTO user(user_id, email, password, nickname) VALUES(?, ?, ?, ?)";
+  static register = async (userId: string, userDTO: RegisterUserDTO, emailVerifyToken: string) => {
+    const query = "INSERT INTO user(user_id, email, password, nickname, verify_token) VALUES(?, ?, ?, ?, ?)";
+    const values = [userId, userDTO.email, userDTO.password, userDTO.nickname, emailVerifyToken];
+
+    try {
+      const connection = await pool.getConnection();
+      await connection.execute(query, values);
+      connection.release();
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  static adminRegister = async (userId: string, userDTO: RegisterUserDTO) => {
+    const query =
+      "INSERT INTO user(user_id, email, password, nickname, is_verified_flag) VALUES(?, ?, ?, ?, 1)";
     const values = [userId, userDTO.email, userDTO.password, userDTO.nickname];
 
     try {
@@ -33,6 +47,20 @@ class AuthModel {
       connection.release();
     } catch (err: any) {
       throw err;
+    }
+  };
+
+  static verify = async (verfiyToken: string) => {
+    const query = "UPDATE user SET is_verified_flag = 1 WHERE verify_token = ?";
+    try {
+      const connection = await pool.getConnection();
+      await connection.execute(query, [verfiyToken]);
+      connection.release();
+    } catch (err: any) {
+      throw {
+        status: 500,
+        message: err.message,
+      };
     }
   };
 }

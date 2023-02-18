@@ -75,7 +75,7 @@ class UserController {
     }
 
     try {
-      await UserService.exit(userId);
+      await UserService.exit(userId, password);
       res.status(200).json();
     } catch (err: any) {
       res.status(err.status || 500).json({ code: err.code, message: err.message });

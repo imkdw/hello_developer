@@ -15,13 +15,34 @@ class AuthController {
     }
   };
 
-  /** 회원가입 컨트롤러 */
   static register = async (req: Request, res: Response, next: NextFunction) => {
     const userDTO: RegisterUserDTO = req.body;
 
     try {
       const userId = await AuthService.register(userDTO);
       res.status(201).json({ userId });
+    } catch (err: any) {
+      res.status(err.status || 500).json({ code: err.code, message: err.message });
+    }
+  };
+
+  static adminRegister = async (req: Request, res: Response, next: NextFunction) => {
+    const userDTO: RegisterUserDTO = req.body;
+
+    try {
+      const userId = await AuthService.adminRegister(userDTO);
+      res.status(201).json({ userId });
+    } catch (err: any) {
+      res.status(err.status || 500).json({ code: err.code, message: err.message });
+    }
+  };
+
+  static verify = async (req: Request, res: Response) => {
+    const { verifyToken } = req.body;
+
+    try {
+      await AuthService.verify(verifyToken);
+      res.json(200).json();
     } catch (err: any) {
       res.status(err.status || 500).json({ code: err.code, message: err.message });
     }

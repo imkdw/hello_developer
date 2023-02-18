@@ -1,6 +1,8 @@
 import { Route, Routes } from "react-router";
 import { AddPost } from "./components/AddPost";
 import { AuthPage } from "./components/Auth";
+import Verify from "./components/Auth/Verify/Verify";
+import NotFound from "./components/Error/NotFound";
 import { Main } from "./components/Main";
 import { PostDetail } from "./components/PostDetail";
 import { PostList } from "./components/PostList";
@@ -24,6 +26,8 @@ const App = () => {
         <Route path="/post/:postId" element={<PostDetail />} />
         <Route path="/post/add" element={<AddPost />} />
         <Route path="/profile/:userId" element={<Profile />} />
+        <Route path="/verify/:verifyToken" element={<Verify />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

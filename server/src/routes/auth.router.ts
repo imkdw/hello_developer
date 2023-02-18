@@ -7,7 +7,13 @@ const authRouter = express.Router();
 /** 로그인 엔드포인트 */
 authRouter.post("/login", AuthController.login);
 
-/** 회원가입 엔드포인트 */
-authRouter.post("/register", AuthValidator.register, AuthController.register);
+/** 테스트용 어드민 회원가입 엔드포인트 */
+authRouter.post("/admin-register", AuthValidator.register, AuthController.adminRegister);
+
+/** 일반 회원가입 엔드포인트 */
+authRouter.post("/register", AuthController.register);
+
+/** 이메일 인증 엔드포인트 */
+authRouter.get("/verify/:verifyToken", AuthController.verify);
 
 export default authRouter;

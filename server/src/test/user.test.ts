@@ -4,7 +4,7 @@ import app from "../app";
 
 /** API 주소 */
 const LOGIN_API = "/v1/api/auth/login";
-const REGISTER_API = "/v1/api/auth/register";
+const REGISTER_API = "/v1/api/auth/admin-register";
 const ADD_POST_API = "/v1/api/post/add";
 const ADD_COMMENT_API = "/v1/api/post/comment/add";
 const ADD_RE_COMMENT_API = "/v1/api/post/re-comment/add";
@@ -321,5 +321,34 @@ describe("유저 프로필 수정 API, [PUT] /v1/api/user/:userId/profile", () =
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual({ code: "user-004", message: "invalid_profile_data" });
+  });
+});
+
+describe('회원탈퇴 API, [POST] "/v1/api/user/exit"', () => {
+  let userId: string;
+  let Authorization: string;
+
+  beforeAll(async () => {
+    const data = await SET_UP();
+    userId = data.userId;
+    Authorization = data.Authorization;
+  });
+
+  /** 테스트 후 모든 데이터 초기화 */
+  afterAll(async () => {
+    await TEAR_DOWN();
+  });
+
+  test("[회원탈퇴 성공] HTTP 200", async () => {
+    const res = await request(app)
+      .post(EXIT_USER_API)
+      .send({ password: PASSWORD, rePassword: PASSWORD })
+      .set({ Authorization });
+
+    expect(res.status).toBe(200);
+
+    const profileRes = await request(app).get(`${USER_PROFILE_API}/${userId}`);
+    expect(profileRes.status).toBe(404);
+    expect(profileRes.body).toEqual({ code: "user-001", message: "user_not_found" });
   });
 });

@@ -3,7 +3,7 @@ import app from "../app";
 import { pool } from "../db/db";
 
 const LOGIN_API = "/v1/api/auth/login";
-const REGISTER_API = "/v1/api/auth/register";
+const REGISTER_API = "/v1/api/auth/admin-register";
 const EMAIL = "test@test.com";
 const PASSWORD = "test123!@#";
 const NICKNAME = "test11";

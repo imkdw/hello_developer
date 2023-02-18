@@ -2,6 +2,7 @@ import { PostModel } from "../models/post.model";
 import { UserModel } from "../models/user.model";
 import { HistoryPosts } from "../types/post";
 import { AllComments } from "../types/user";
+import Secure from "../utils/secure";
 
 export class UserService {
   static profile = async (userId: string) => {
@@ -187,8 +188,21 @@ export class UserService {
     }
   };
 
-  static exit = async (userId: string) => {
+  static exit = async (userId: string, password: string) => {
     try {
+      const user = await UserModel.findUserByUserId(userId);
+
+      const isCorrectPassword = await Secure.compareHash(password, user.password);
+
+      // 가입된 유저와 비밀번호가 일치하지 않은경우
+      if (!isCorrectPassword) {
+        throw {
+          status: 400,
+          code: "user-006",
+          message: "password-mismatch",
+        };
+      }
+
       await UserModel.exit(userId);
     } catch (err: any) {
       throw err;
