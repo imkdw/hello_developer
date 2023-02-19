@@ -14,7 +14,7 @@ const App = () => {
     <>
       <GlobalStyles />
       <Routes>
-        <Route path="/" element={<Main currentPage="main" />} />
+        <Route path="/main" element={<Main currentPage="main" />} />
         <Route path="/login" element={<AuthPage />} />
         <Route path="/register" element={<AuthPage />} />
         <Route path="/notice" element={<PostList currentPage="notice" />} />
@@ -27,6 +27,7 @@ const App = () => {
         <Route path="/post/add" element={<AddPost />} />
         <Route path="/profile/:userId" element={<Profile />} />
         <Route path="/verify/:verifyToken" element={<Verify />} />
+        <Route path="/" element={<Main currentPage="main" />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

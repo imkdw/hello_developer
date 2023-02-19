@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { useState, MouseEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const StyledAuthTab = styled.div`

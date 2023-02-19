@@ -25,7 +25,7 @@ export class Mailer {
       <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start">
         <h1 >헬로디벨로퍼에 가입하신걸 환영합니다.</h1>
         <p>안녕하세요 ${nickname}(${email})님. 아래 링크를 클릭해서 인증을 완료해주세요!</p>
-        <a href="http://www.naver.com?token=${verifyToken}" style="background-color: purple; color: white; font-weight: bold">이메일 인증하기</a>
+        <a href="http://localhost:3000/verify/${verifyToken}" style="background-color: purple; color: white; font-weight: bold">이메일 인증하기</a>
       </div>
     </body>
       `,

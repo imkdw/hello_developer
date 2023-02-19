@@ -21,6 +21,14 @@ class AuthService {
         };
       }
 
+      if (user[0].is_verified_flag === 0) {
+        throw {
+          status: 401,
+          code: "auth-007",
+          message: "unverified_user",
+        };
+      }
+
       /** 비밀번호가 일치하지 않은경우 */
       const isSamePassword = await Secure.compareHash(userDTO.password, user[0].password);
       if (!isSamePassword) {
@@ -31,15 +39,16 @@ class AuthService {
         };
       }
 
-      /**
-       * @todo Need to make refresh token login
-       * @body Make https enviroment too
-       */
       /** accessToken 발행 */
       const { user_id, email, nickname } = user[0];
-      const accessToken = Jwt.sign(user_id, email, nickname);
+      const accessToken = Jwt.sign("access", user_id, email, nickname);
+      const refreshToken = Jwt.sign("refresh", user_id, email, nickname);
 
-      return accessToken;
+      return {
+        accessToken,
+        refreshToken,
+        userId: user[0].user_id,
+      };
     } catch (err: any) {
       throw err;
     }
@@ -140,6 +149,13 @@ class AuthService {
   };
 
   static verify = async (verifyToken: string) => {
+    if (!verifyToken) {
+      throw {
+        status: 400,
+        message: "토큰 없음",
+      };
+    }
+
     try {
       await AuthModel.verify(verifyToken);
     } catch (err: any) {

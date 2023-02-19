@@ -1,5 +1,4 @@
 import { useMediaQuery } from "react-responsive";
-import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { enableSideMenuState } from "../../recoil/ui.recoil";
@@ -16,7 +15,7 @@ const StyledProfile = styled.div`
 const Profile = () => {
   const isMobile = useMediaQuery({ maxWidth: "767px" });
   const enableSideMenu = useRecoilValue(enableSideMenuState);
-  const userId = useParams().userId;
+  // const userId = useParams().userId;
 
   return (
     <StyledProfile>

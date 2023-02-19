@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
+import { loggedInUserState } from "../../recoil/auth.recoil";
 
 import { BellIcon, BookIcon, CheckIcon, PersonIcon, QuestionIcon, TalkBallonIcon } from "./SideMenuIcon";
 import SideMenuLinkItem from "./SideMenuLinkItem";
@@ -82,6 +84,17 @@ const SideMenuLink = ({ onClick }: SideMenuLinkProps) => {
     },
   ];
 
+  const [loggedInUser, setLoggedInUser] = useRecoilState(loggedInUserState);
+
+  const onLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("userId");
+    setLoggedInUser((prevState) => {
+      return { ...prevState, accessToken: "", userId: "" };
+    });
+  };
+
   return (
     <StyledSideMenuLink>
       <PostLinks>
@@ -90,9 +103,16 @@ const SideMenuLink = ({ onClick }: SideMenuLinkProps) => {
         ))}
       </PostLinks>
       <UtilLinks>
-        <UtilLink to="/login" onClick={onClick}>
-          로그인 / 회원가입
-        </UtilLink>
+        {loggedInUser.accessToken ? (
+          <>
+            <UtilLink to={"/profile/" + loggedInUser.userId}>프로필</UtilLink>
+            <UtilLink to="" onClick={onLogout}>
+              로그아웃
+            </UtilLink>
+          </>
+        ) : (
+          <UtilLink to="/login">로그인 / 회원가입</UtilLink>
+        )}
       </UtilLinks>
     </StyledSideMenuLink>
   );

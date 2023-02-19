@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { Logo } from "../../Common";
 import { AuthLine, AuthTab, GithubButton } from "../common";
 import RegisterForm from "./RegisterForm";
-import { FormEvent } from "react";
 
 const StyledRegister = styled.div`
   width: 50%;
@@ -23,17 +22,13 @@ const StyledRegister = styled.div`
 `;
 
 const Register = () => {
-  const RegisterHandler = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-  };
-
   return (
     <StyledRegister>
       <AuthTab />
       <Logo width={200} height={70} />
       <GithubButton />
       <AuthLine />
-      <RegisterForm onSubmit={RegisterHandler} />
+      <RegisterForm />
     </StyledRegister>
   );
 };

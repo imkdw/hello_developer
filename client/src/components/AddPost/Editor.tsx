@@ -1,6 +1,6 @@
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import styled from "styled-components";
+// import styled from "styled-components";
 import "./Editor.css";
 
 const TextEditor = () => {

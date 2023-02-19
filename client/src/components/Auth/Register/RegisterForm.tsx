@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { EmailIcon, NicknameIcon, PasswordIcon } from "../common";
-import { FormEvent } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
+import axios from "axios";
+import { REGISTER_URL } from "../../../config/api";
 
 const StyledRegisterForm = styled.form`
   width: 100%;
@@ -58,32 +60,74 @@ const Button = styled.button`
   }
 `;
 
-interface RegisterFormProps {
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-}
+const RegisterForm = () => {
+  const [account, setAccount] = useState({
+    email: "",
+    password: "",
+    nickname: "",
+  });
 
-const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
+  const { email, password, nickname } = account;
+
+  const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try {
+      const res = await axios.post(REGISTER_URL, { email, password, nickname });
+      if (res.status === 201) {
+        alert("인증코드를 입력하신 이메일로 발송했습니다. 인증코드를 확인해주세요.");
+      }
+    } catch (err: any) {
+      console.error(err);
+    }
+  };
+
+  const accountChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.currentTarget;
+    setAccount((prevState) => {
+      return { ...prevState, [name]: value };
+    });
+  };
+
   return (
-    <StyledRegisterForm onSubmit={onSubmit}>
+    <StyledRegisterForm onSubmit={submitHandler}>
       <FormControl>
         <Label>이메일</Label>
         <InputWrapper>
           <EmailIcon />
-          <Input type="text" placeholder="이메일 입력해주세요" />
+          <Input
+            type="text"
+            placeholder="이메일 입력해주세요"
+            name="email"
+            onChange={accountChangeHandler}
+            value={email}
+          />
         </InputWrapper>
       </FormControl>
       <FormControl>
         <Label>비밀번호</Label>
         <InputWrapper>
           <PasswordIcon />
-          <Input type="password" placeholder="비밀번호를 입력해주세요" />
+          <Input
+            type="password"
+            placeholder="비밀번호를 입력해주세요"
+            name="password"
+            onChange={accountChangeHandler}
+            value={password}
+          />
         </InputWrapper>
       </FormControl>
       <FormControl>
         <Label>닉네임</Label>
         <InputWrapper>
           <NicknameIcon />
-          <Input type="text" placeholder="닉네임을 입력해주세요" />
+          <Input
+            type="text"
+            placeholder="닉네임을 입력해주세요"
+            name="nickname"
+            onChange={accountChangeHandler}
+            value={nickname}
+          />
         </InputWrapper>
       </FormControl>
       <Button type="submit">회원가입</Button>

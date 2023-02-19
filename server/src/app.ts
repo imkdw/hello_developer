@@ -12,7 +12,15 @@ app.set("port", process.env.PORT);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-// app.use(morgan("dev"));
+app.use(morgan("dev"));
+
+/** CORS */
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, PATCH ,DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
 
 /** Routers */
 app.use("/v1/api/auth", authRouter);

@@ -30,7 +30,7 @@ const Main = ({ currentPage }: MainProps) => {
 
   useEffect(() => {
     setCurrentPage(currentPage);
-  }, [currentPage]);
+  }, [currentPage, setCurrentPage]);
 
   return (
     <StyledMain>

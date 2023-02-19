@@ -14,6 +14,7 @@ export default {
   jwt: {
     secretKey: process.env.JWT_SECRET_KEY,
     atkExpiresIn: process.env.JWT_ATK_EXPIRES_IN,
+    rtkExpiresIn: process.env.JWT_RTK_EXPIRES_IN,
   },
   mailer: {
     gmailUser: process.env.GMAIL_OAUTH_USER,

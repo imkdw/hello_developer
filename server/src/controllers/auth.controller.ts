@@ -8,8 +8,8 @@ class AuthController {
     const userDTO: LoginUserDTO = req.body;
 
     try {
-      const accessToken = await AuthService.login(userDTO);
-      res.status(200).json({ accessToken });
+      const { accessToken, refreshToken, userId } = await AuthService.login(userDTO);
+      res.status(200).json({ accessToken, refreshToken, userId });
     } catch (err: any) {
       res.status(err.status || 500).json({ code: err.code, message: err.message });
     }
@@ -38,11 +38,11 @@ class AuthController {
   };
 
   static verify = async (req: Request, res: Response) => {
-    const { verifyToken } = req.body;
+    const { verifyToken } = req.params;
 
     try {
       await AuthService.verify(verifyToken);
-      res.json(200).json();
+      res.status(200).json();
     } catch (err: any) {
       res.status(err.status || 500).json({ code: err.code, message: err.message });
     }

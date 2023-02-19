@@ -1,6 +1,11 @@
 import styled from "styled-components";
 import { EmailIcon, PasswordIcon } from "../common";
-import { FormEvent } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
+import axios from "axios";
+import { LOGIN_URL } from "../../../config/api";
+import { useSetRecoilState } from "recoil";
+import { loggedInUserState } from "../../../recoil/auth.recoil";
+import { useNavigate } from "react-router-dom";
 
 const StyledLoginForm = styled.form`
   width: 100%;
@@ -54,25 +59,78 @@ const Button = styled.button`
   margin-top: 50px;
 `;
 
-interface LoginFormProps {
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-}
+const LoginForm = () => {
+  const [account, setAccount] = useState({
+    email: "",
+    password: "",
+  });
 
-const LoginForm = ({ onSubmit }: LoginFormProps) => {
+  const { email, password } = account;
+  const setLoggedInUser = useSetRecoilState(loggedInUserState);
+  const navigator = useNavigate();
+
+  const accountChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.currentTarget;
+    setAccount((prevState) => {
+      return { ...prevState, [name]: value };
+    });
+  };
+
+  const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try {
+      const res = await axios.post(LOGIN_URL, { email, password });
+      if (res.status === 200) {
+        const { accessToken, refreshToken, userId } = res.data;
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+        localStorage.setItem("userId", userId);
+
+        setLoggedInUser((prevState) => {
+          return { ...prevState, accessToken, userId };
+        });
+
+        navigator("/main");
+      }
+    } catch (err: any) {
+      const status = err.response.status;
+      const { code, message } = err.response.data;
+      if (status === 400 && code === "auth-006" && message === "invalid_email_or_password") {
+        alert("존재하지 않는 이메일이거나 비밀번호가 올바르지 않습니다.");
+        return;
+      }
+
+      alert("서버 오류입니다. 잠시후 다시 시도해주세요");
+    }
+  };
+
   return (
-    <StyledLoginForm onSubmit={onSubmit}>
+    <StyledLoginForm onSubmit={submitHandler}>
       <FormControl>
         <Label>이메일</Label>
         <InputWrapper>
           <EmailIcon />
-          <Input type="text" placeholder="이메일 입력해주세요" />
+          <Input
+            type="text"
+            placeholder="이메일 입력해주세요"
+            value={email}
+            name="email"
+            onChange={accountChangeHandler}
+          />
         </InputWrapper>
       </FormControl>
       <FormControl>
         <Label>비밀번호</Label>
         <InputWrapper>
           <PasswordIcon />
-          <Input type="password" placeholder="비밀번호를 입력해주세요" />
+          <Input
+            type="password"
+            placeholder="비밀번호를 입력해주세요"
+            value={password}
+            name="password"
+            onChange={accountChangeHandler}
+          />
         </InputWrapper>
       </FormControl>
       <Button type="submit">로그인</Button>

@@ -3,9 +3,10 @@ import config from "../config";
 import { JwtVerifyReturn } from "../types/jwt";
 
 class Jwt {
-  static sign = (userId: string, email: string, nickname: string) => {
+  static sign = (kindOfToken: string, userId: string, email: string, nickname: string) => {
+    const [atkExpiresIn, rtkExpiresIn] = [config.jwt.atkExpiresIn, config.jwt.rtkExpiresIn];
     return jwt.sign({ userId, email, nickname }, config.jwt.secretKey, {
-      expiresIn: config.jwt.atkExpiresIn,
+      expiresIn: kindOfToken === "access" ? atkExpiresIn : rtkExpiresIn,
     });
   };
 

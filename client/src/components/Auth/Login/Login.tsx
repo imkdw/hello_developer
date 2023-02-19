@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { Logo } from "../../Common";
 import { AuthLine, AuthTab, GithubButton } from "../common";
 import LoginForm from "./LoginForm";
-import { FormEvent } from "react";
 
 const StyledLogin = styled.div`
   width: 50%;
@@ -23,17 +22,13 @@ const StyledLogin = styled.div`
 `;
 
 const Login = () => {
-  const loginHandler = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-  };
-
   return (
     <StyledLogin>
       <AuthTab />
       <Logo width={200} height={70} />
       <GithubButton />
       <AuthLine />
-      <LoginForm onSubmit={loginHandler} />
+      <LoginForm />
     </StyledLogin>
   );
 };
