@@ -18,6 +18,7 @@ const Verify = () => {
         const res = await axios.get(`${VERIFY_URL}/${verifyToken}`);
         if (res.status === 200) {
           alert("인증이 완료되었습니다.");
+          return;
         }
       } catch (err: any) {
         console.error(err);

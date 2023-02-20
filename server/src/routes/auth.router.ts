@@ -16,4 +16,7 @@ authRouter.post("/register", AuthController.register);
 /** 이메일 인증 엔드포인트 */
 authRouter.get("/verify/:verifyToken", AuthController.verify);
 
+/** 리프레쉬 토큰으로 엑세스 토큰 재발급 엔드포인트 */
+authRouter.post("/token", AuthController.token);
+
 export default authRouter;

@@ -60,6 +60,7 @@ const Button = styled.button`
   }
 `;
 
+// TODO: 회원가입시 사용자 입력값 검증로직 추가필요
 const RegisterForm = () => {
   const [account, setAccount] = useState({
     email: "",
@@ -78,7 +79,24 @@ const RegisterForm = () => {
         alert("인증코드를 입력하신 이메일로 발송했습니다. 인증코드를 확인해주세요.");
       }
     } catch (err: any) {
-      console.error(err);
+      const status = err.response.status;
+      const { code, message } = err.response.data;
+      if (status === 400) {
+        if (code === "auth-001" && message === "invalid_email") {
+          alert("이메일 형식이 올바르지 않습니다.");
+        } else if (code === "auth-002" && message === "invalid_password") {
+          alert("비밀번호 형식이 올바르지 않습니다.");
+        } else if (code === "auth-003" && message === "invalid_nickname") {
+          alert("닉네임 형식이 올바르지 않습니다.");
+        } else if (code === "auth-004" && message === "exist_email") {
+          alert("이미 사용중인 이메일 입니다.");
+        } else if (code === "auth-005" && message === "exist_nickname") {
+          alert("이미 사용중인 닉네임 입니다.");
+        }
+      } else {
+        alert("서버 오류입니다. 잠시후 다시 시도해주세요.");
+        console.error(err);
+      }
     }
   };
 

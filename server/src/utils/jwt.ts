@@ -29,6 +29,15 @@ class Jwt {
       }
     }
   };
+
+  static decode = (token: string) => {
+    try {
+      const decodedToken = jwt.decode(token);
+      return decodedToken;
+    } catch (err: any) {
+      throw err;
+    }
+  };
 }
 
 export default Jwt;

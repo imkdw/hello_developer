@@ -45,7 +45,6 @@ const PostList = ({ currentPage }: PostListProps) => {
 
   /** currentPage Props가 전달이 안된경우 path 기준으로 갱신 */
   if (!currentPage) {
-    console.log(pathname);
     setCurrentPage(pathname.replace("/", ""));
   }
 

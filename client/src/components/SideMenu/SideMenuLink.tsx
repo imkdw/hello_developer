@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { loggedInUserState } from "../../recoil/auth.recoil";
@@ -45,6 +45,7 @@ interface SideMenuLinkProps {
 }
 
 const SideMenuLink = ({ onClick }: SideMenuLinkProps) => {
+  const navigator = useNavigate();
   const sideMenuData = [
     {
       id: "notice",
@@ -93,6 +94,7 @@ const SideMenuLink = ({ onClick }: SideMenuLinkProps) => {
     setLoggedInUser((prevState) => {
       return { ...prevState, accessToken: "", userId: "" };
     });
+    navigator("/main");
   };
 
   return (

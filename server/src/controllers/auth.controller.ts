@@ -47,6 +47,17 @@ class AuthController {
       res.status(err.status || 500).json({ code: err.code, message: err.message });
     }
   };
+
+  static token = async (req: Request, res: Response) => {
+    const { refreshToken } = req.body;
+
+    try {
+      const accessToken = await AuthService.token(refreshToken);
+      res.status(200).json(accessToken);
+    } catch (err: any) {
+      res.status(err.status || 500).json({ code: err.code, message: err.message });
+    }
+  };
 }
 
 export default AuthController;

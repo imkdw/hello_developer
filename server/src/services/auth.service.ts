@@ -162,6 +162,13 @@ class AuthService {
       throw err;
     }
   };
+
+  static token = async (refreshToken: string) => {
+    try {
+    } catch (err: any) {
+      throw err;
+    }
+  };
 }
 
 export default AuthService;

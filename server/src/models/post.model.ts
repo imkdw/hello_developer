@@ -51,6 +51,10 @@ export class PostModel {
 
       /** 2. 태그 추가 */
       for (const tag of userDTO.tags) {
+        if (tag.name.length === 0) {
+          continue;
+        }
+
         const tagName = tag.name.toLowerCase();
 
         const [tagResult, tagFields]: [FindTagIdByNameReturn[], FieldPacket[]] = await connection.query(
