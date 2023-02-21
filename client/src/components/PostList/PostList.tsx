@@ -48,6 +48,15 @@ const PostList = ({ currentPage }: PostListProps) => {
     setCurrentPage(pathname.replace("/", ""));
   }
 
+  /** 게시글 카테고리 지정 */
+  const category1 = currentPage;
+  let category2 = "";
+
+  if (pathname.split("/").length === 3) {
+    const pathnameArr = pathname.split("/");
+    category2 = pathnameArr[pathnameArr.length - 1];
+  }
+
   return (
     <StyledPostList>
       {enableSideMenu && <SideMenu />}
@@ -55,7 +64,7 @@ const PostList = ({ currentPage }: PostListProps) => {
       <Wrapper>
         <Header />
         <Utils />
-        <List />
+        <List category1={category1} category2={category2} />
       </Wrapper>
     </StyledPostList>
   );

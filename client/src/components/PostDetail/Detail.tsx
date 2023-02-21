@@ -1,4 +1,8 @@
+import { useEffect } from "react";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
+import { postDetailDataState } from "../../recoil/post.recoil";
+import { PostService } from "../../services/post";
 import CommentCount from "./CommentCount";
 import Comments from "./Comments";
 import Content from "./Content";

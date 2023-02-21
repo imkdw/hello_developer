@@ -11,7 +11,7 @@ authRouter.post("/login", AuthController.login);
 authRouter.post("/admin-register", AuthValidator.register, AuthController.adminRegister);
 
 /** 일반 회원가입 엔드포인트 */
-authRouter.post("/register", AuthController.register);
+authRouter.post("/register", AuthValidator.register, AuthController.register);
 
 /** 이메일 인증 엔드포인트 */
 authRouter.get("/verify/:verifyToken", AuthController.verify);

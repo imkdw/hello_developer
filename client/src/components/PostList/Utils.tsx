@@ -45,7 +45,7 @@ const Input = styled.input`
   font-size: 20px;
 `;
 
-const Sort = styled.button`
+const Sort = styled.div`
   width: 20%;
   height: 100%;
   display: flex;

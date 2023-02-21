@@ -1,10 +1,9 @@
-import { createTransport } from "nodemailer";
-import config from "../config";
 import AuthModel from "../models/auth.model";
 import { LoginUserDTO, RegisterUserDTO } from "../types/auth";
 import Jwt from "../utils/jwt";
 import { Mailer } from "../utils/mailer";
 import Secure from "../utils/secure";
+import app from "../app";
 
 class AuthService {
   static login = async (userDTO: LoginUserDTO) => {
@@ -40,9 +39,13 @@ class AuthService {
       }
 
       /** accessToken 발행 */
-      const { user_id, email, nickname } = user[0];
-      const accessToken = Jwt.sign("access", user_id, email, nickname);
-      const refreshToken = Jwt.sign("refresh", user_id, email, nickname);
+      const { user_id } = user[0];
+      const accessToken = Jwt.sign("access", user_id);
+      const refreshToken = Jwt.sign("refresh", user_id);
+
+      /** 로그인시 생성되는 토큰을 전역변수에 저장 */
+      // TODO: 토큰 저장공간 redis로 이관 필요
+      app.set("tokens", Object.assign(app.get("tokens"), { userId: { accessToken, refreshToken } }));
 
       return {
         accessToken,
@@ -163,8 +166,36 @@ class AuthService {
     }
   };
 
-  static token = async (refreshToken: string) => {
+  static token = async (accessToken: string, refreshToken: string) => {
     try {
+      const decodedToken = Jwt.verify(refreshToken);
+
+      if (decodedToken) {
+        const userId = decodedToken.userId;
+        const existTokens = app.get("tokens");
+        const userToken = existTokens[userId];
+
+        /** 서버에 유저 아이디로 저장된 토큰이 없을경우 */
+        if (!userToken) {
+          throw {
+            status: 401,
+            code: "auth-009",
+            message: "invalid_token",
+          };
+        }
+
+        /** 저장된 토큰은 있으나 토큰값이 일치하지 않는경우 */
+        if (!(userToken.accessToken === accessToken && userToken.refreshToken === refreshToken)) {
+          throw {
+            status: 401,
+            code: "auth-009",
+            message: "invalid_token",
+          };
+        }
+
+        const token = Jwt.sign("access", userId);
+        return token;
+      }
     } catch (err: any) {
       throw err;
     }

@@ -260,9 +260,9 @@ export class PostModel {
    * @returns {FindPostByCategoryIdReturn[]} - 게시글 목록을 반환
    */
   static findPostByCategoryId = async (categoryId1: number, categoryId2?: number) => {
-    const query = `SELECT post_id, title, created_at_date, content, user_id FROM post WHERE category_id1 = ? ${
+    const query = `SELECT post_id, title, created_at_date, content, user_id, category_id2 FROM post WHERE category_id1 = ? ${
       categoryId2 ? "AND category_id2 = ?" : ""
-    }`;
+    } ORDER BY created_at_date DESC `;
     const values = categoryId2 ? [categoryId1, categoryId2] : [categoryId1];
 
     try {
@@ -560,7 +560,7 @@ export class PostModel {
     userDTO: UpdatePostUserDTO,
     categoryIds: (number | null)[]
   ) => {
-    const { title, content, category, tags } = userDTO;
+    const { title, content } = userDTO;
 
     const connection = await pool.getConnection();
 

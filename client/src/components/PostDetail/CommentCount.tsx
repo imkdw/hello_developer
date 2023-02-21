@@ -1,4 +1,6 @@
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
+import { postDetailDataState } from "../../recoil/post.recoil";
 
 const StyledCommentCount = styled.div`
   width: 100%;
@@ -7,7 +9,9 @@ const StyledCommentCount = styled.div`
 `;
 
 const CommentCount = () => {
-  return <StyledCommentCount>16개의 댓글이 있습니다.</StyledCommentCount>;
+  const postDetailData = useRecoilValue(postDetailDataState);
+
+  return <StyledCommentCount>{postDetailData.comments.length}개의 댓글이 있습니다.</StyledCommentCount>;
 };
 
 export default CommentCount;

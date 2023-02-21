@@ -1,4 +1,6 @@
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
+import { postDetailDataState } from "../../recoil/post.recoil";
 
 const StyledContent = styled.div`
   width: 100%;
@@ -7,38 +9,9 @@ const StyledContent = styled.div`
 `;
 
 const Content = () => {
-  return (
-    <StyledContent>
-      타입스크립트 이렇게쓰면 안됩니다.
-      <br />
-      타입스크립트 이렇게쓰면 안됩니다.
-      <br />
-      타입스크립트 이렇게쓰면 안됩니다.
-      <br />
-      타입스크립트 이렇게쓰면 안됩니다.
-      <br />
-      타입스크립트 이렇게쓰면 안됩니다.
-      <br />
-      타입스크립트 이렇게쓰면 안됩니다.
-      <br />
-      타입스크립트 이렇게쓰면 안됩니다.
-      <br />
-      타입스크립트 이렇게쓰면 안됩니다.
-      <br />
-      타입스크립트 이렇게쓰면 안됩니다.
-      <br />
-      타입스크립트 이렇게쓰면 안됩니다.
-      <br />
-      타입스크립트 이렇게쓰면 안됩니다.
-      <br />
-      타입스크립트 이렇게쓰면 안됩니다.
-      <br />
-      타입스크립트 이렇게쓰면 안됩니다.
-      <br />
-      타입스크립트 이렇게쓰면 안됩니다.
-      <br />
-    </StyledContent>
-  );
+  const postDetailData = useRecoilValue(postDetailDataState);
+
+  return <StyledContent>{postDetailData.content}</StyledContent>;
 };
 
 export default Content;

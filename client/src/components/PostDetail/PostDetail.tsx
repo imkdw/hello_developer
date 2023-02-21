@@ -1,11 +1,14 @@
 import { useMediaQuery } from "react-responsive";
 import { useParams } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
+import { postDetailDataState } from "../../recoil/post.recoil";
 import { enableSideMenuState } from "../../recoil/ui.recoil";
 import { MobileHeader } from "../Common";
 import { SideMenu } from "../SideMenu";
 import Detail from "./Detail";
+import { useEffect } from "react";
+import { PostService } from "../../services/post";
 
 const StyledPostDetail = styled.div`
   width: 100%;
@@ -18,11 +21,29 @@ const StyledPostDetail = styled.div`
 `;
 
 const PostDetail = () => {
-  const params = useParams();
+  const postId = useParams().postId;
   const isMobile = useMediaQuery({ maxWidth: "767px" });
   const enableSideMenu = useRecoilValue(enableSideMenuState);
 
-  console.log(params);
+  const setPostDetailData = useSetRecoilState(postDetailDataState);
+
+  useEffect(() => {
+    const getDetail = async () => {
+      try {
+        const { status, post } = await PostService.detail(postId);
+
+        if (status === 200 || status === 304) {
+          setPostDetailData(post);
+        }
+      } catch (err: any) {
+        alert("서버 오류 발생");
+      }
+    };
+
+    if (postId) {
+      getDetail();
+    }
+  }, [postId]);
 
   return (
     <StyledPostDetail>

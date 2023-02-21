@@ -133,10 +133,14 @@ export class PostService {
       /** 6. 게시글에 태그 추가 */
       const postData = posts.map((post, index) => {
         return {
-          user: userInfo[index],
-          ...changePropertySnakeToCamel(post),
-          tags: tags[index],
-          commentCount: allCommentCount[index],
+          user: { ...userInfo[index], userId: post.user_id },
+          post: {
+            ...changePropertySnakeToCamel(post),
+            category2,
+            tags: tags[index],
+            commentCount: allCommentCount[index],
+            topic: post.category_id2,
+          },
         };
       });
 
@@ -211,6 +215,7 @@ export class PostService {
       const categorys = await Promise.all(
         [post.category_id1, post.category_id2].map(async (categoryId) => {
           const category = await PostModel.findCategoryNameById(categoryId);
+
           return category.name;
         })
       );
@@ -379,7 +384,7 @@ export class PostService {
 
       /** 이상한 카테고리가 입력된경우 에러반환 */
       categoryIds.forEach((categoryId) => {
-        if (!categoryId) {
+        if (categoryId !== null && !categoryId) {
           throw {
             status: 400,
             code: "post-008",

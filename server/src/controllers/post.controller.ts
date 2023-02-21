@@ -10,7 +10,6 @@ class PostController {
       const postId = await PostService.add(res.locals.userId, userDTO);
       res.status(201).json({ postId });
     } catch (err: any) {
-      console.error(err.message);
       res.status(err.status || 500).json({ code: err.code, message: err.message });
     }
   };

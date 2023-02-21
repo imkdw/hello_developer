@@ -38,7 +38,7 @@ class AuthModel {
 
   static adminRegister = async (userId: string, userDTO: RegisterUserDTO) => {
     const query =
-      "INSERT INTO user(user_id, email, password, nickname, is_verified_flag) VALUES(?, ?, ?, ?, 1)";
+      "INSERT INTO user(user_id, email, password, nickname, is_verified_flag, verify_token) VALUES(?, ?, ?, ?, 1, 'test')";
     const values = [userId, userDTO.email, userDTO.password, userDTO.nickname];
 
     try {

@@ -5,6 +5,9 @@ import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { ADD_POST_URL } from "../../config/api";
 import { loggedInUserState } from "../../recoil/auth.recoil";
+import { AuthService } from "../../services/auth";
+import { PostService } from "../../services/post";
+import { AddPostData } from "../../types/post";
 import TextEditor from "./TextEditor";
 
 const StyledAddPostForm = styled.form`
@@ -117,7 +120,7 @@ const InputWrapper = styled.div`
 
 // TODO: 글 작성시 사용자 입력값 검증로직 추가필요
 const AddPostForm = () => {
-  const [postData, setPostData] = useState({
+  const [postData, setPostData] = useState<AddPostData>({
     category: "none",
     title: "",
     tags: [{ name: "" }, { name: "" }, { name: "" }],
@@ -182,41 +185,26 @@ const AddPostForm = () => {
     };
 
     try {
-      const res = await axios.post(
-        ADD_POST_URL,
-        { ...body },
-        {
-          headers: {
-            Authorization: `Bearer ${loggedInUser.accessToken}`,
-          },
-        }
-      );
+      const status = await PostService.add(loggedInUser.accessToken, body);
 
-      if (res.status === 201) {
+      if (status === 201) {
         alert("게시글 작성이 완료되었습니다.");
         navigator(-1);
       }
     } catch (err: any) {
-      const status = err.response.status;
-      const { code, message } = err.response.data;
-      if (status === 400) {
-        if (code === "auth-001" && message === "invalid_email") {
-          alert("이메일 형식이 올바르지 않습니다.");
-        } else if (code === "auth-002" && message === "invalid_password") {
-          alert("비밀번호 형식이 올바르지 않습니다.");
-        } else if (code === "auth-003" && message === "invalid_nickname") {
-          alert("닉네임 형식이 올바르지 않습니다.");
-        } else if (code === "auth-004" && message === "exist_email") {
-          alert("이미 사용중인 이메일 입니다.");
-        } else if (code === "auth-005" && message === "exist_nickname") {
-          alert("이미 사용중인 닉네임 입니다.");
-        }
-      } else if (status === 401) {
-        if (code === "auth-008" && message === "expired_token") {
-        }
-      } else {
-        alert("서버 오류입니다. 잠시후 다시 시도해주세요.");
-        console.error(err);
+      const { status } = err;
+
+      switch (status) {
+        case 400:
+          alert("입력값이 이상합니다.");
+          break;
+        case 401:
+          alert("인증이 만료되었습니다.");
+          navigator("/login");
+          break;
+        default:
+          alert("서버 오류입니다. 잠시후 다시 시도해주세요.");
+          console.error(err);
       }
     }
   };

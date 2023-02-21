@@ -49,11 +49,11 @@ class AuthController {
   };
 
   static token = async (req: Request, res: Response) => {
-    const { refreshToken } = req.body;
+    const { accessToken, refreshToken } = req.body;
 
     try {
-      const accessToken = await AuthService.token(refreshToken);
-      res.status(200).json(accessToken);
+      const token = await AuthService.token(accessToken, refreshToken);
+      res.status(200).json(token);
     } catch (err: any) {
       res.status(err.status || 500).json({ code: err.code, message: err.message });
     }

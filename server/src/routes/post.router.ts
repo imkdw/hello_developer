@@ -4,6 +4,7 @@ import { isAuth } from "../middlewares/isAuth";
 
 const postRouter = express.Router();
 
+// TODO: 게시글 추가시 내용 검증로직 추가필요
 /** 게시글 추가 */
 postRouter.post("/add", isAuth, PostController.add);
 

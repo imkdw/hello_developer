@@ -1,4 +1,6 @@
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
+import { postDetailDataState } from "../../recoil/post.recoil";
 
 const StyledData = styled.div`
   width: 100%;
@@ -84,19 +86,19 @@ const NonRecommendIcon = () => {
 };
 
 const Data = () => {
+  const postDetailData = useRecoilValue(postDetailDataState);
+
   return (
     <StyledData>
       <Tags>
-        <TagText>#Typescript</TagText>
-        <TagText>#node.js</TagText>
+        {postDetailData.tags.map((tag) => (
+          <TagText># {tag.name}</TagText>
+        ))}
       </Tags>
       <RecommendData>
         <RecommendCount>
           <RecommendIcon />
-          10
-        </RecommendCount>
-        <RecommendCount>
-          <NonRecommendIcon />0
+          {postDetailData.recommendCnt}
         </RecommendCount>
       </RecommendData>
     </StyledData>

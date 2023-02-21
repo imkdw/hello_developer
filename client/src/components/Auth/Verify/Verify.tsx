@@ -9,6 +9,7 @@ const StyledVerify = styled.div`
   height: 100%;
 `;
 
+// TODO: 인증 완료창이 2번 뜨는 현상 개선필요
 const Verify = () => {
   const verifyToken = useParams().verifyToken;
 

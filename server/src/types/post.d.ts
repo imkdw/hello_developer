@@ -34,6 +34,7 @@ export interface FindPostByCategoryIdReturn extends RowDataPacket {
   created_at_date: string;
   content: string;
   user_id: string;
+  category_id2: number;
 }
 
 /** Model : 게시글 아이디로 태그 아이디 가져오는 쿼리 반환값 */

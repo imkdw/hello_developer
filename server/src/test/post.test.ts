@@ -34,7 +34,7 @@ const POST_TAG2 = "express.js";
 const UPDATED_POST_TITLE = "UPDATED_POST_TITLE";
 const UPDATED_POST_CONTENT = "UPDATED_POST_CONTENT";
 const UPDATED_POST_CATEGORY1 = "knowledge";
-const UPDATED_POST_CATEGORY2 = "tip";
+const UPDATED_POST_CATEGORY2 = "tips";
 const UPDATED_POST_TAG1 = "javascript";
 const UPDATED_POST_TAG2 = "nodemon";
 

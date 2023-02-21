@@ -190,8 +190,8 @@ const PostDataHeader = () => {
           link: "/tips",
         },
         {
-          text: "기술",
-          link: "/tech",
+          text: "리뷰",
+          link: "/review",
         },
       ],
     },

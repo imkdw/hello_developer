@@ -3,6 +3,7 @@ import { EmailIcon, NicknameIcon, PasswordIcon } from "../common";
 import { ChangeEvent, FormEvent, useState } from "react";
 import axios from "axios";
 import { REGISTER_URL } from "../../../config/api";
+import { AuthService } from "../../../services/auth";
 
 const StyledRegisterForm = styled.form`
   width: 100%;
@@ -74,13 +75,15 @@ const RegisterForm = () => {
     event.preventDefault();
 
     try {
-      const res = await axios.post(REGISTER_URL, { email, password, nickname });
-      if (res.status === 201) {
+      const status = await AuthService.register(email, password, nickname);
+
+      if (status === 201) {
         alert("인증코드를 입력하신 이메일로 발송했습니다. 인증코드를 확인해주세요.");
       }
+      return;
     } catch (err: any) {
-      const status = err.response.status;
-      const { code, message } = err.response.data;
+      const { status, code, message } = err;
+
       if (status === 400) {
         if (code === "auth-001" && message === "invalid_email") {
           alert("이메일 형식이 올바르지 않습니다.");

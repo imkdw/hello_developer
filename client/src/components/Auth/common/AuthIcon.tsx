@@ -40,7 +40,7 @@ export const PasswordIcon = () => {
 export const NicknameIcon = () => {
   return (
     <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <g clip-path="url(#clip0_92_208)">
+      <g clipPath="url(#clip0_92_208)">
         <path
           d="M12.5 12.4375C13.9624 12.4375 15.1479 11.252 15.1479 9.78958C15.1479 8.32718 13.9624 7.14166 12.5 7.14166C11.0376 7.14166 9.85205 8.32718 9.85205 9.78958C9.85205 11.252 11.0376 12.4375 12.5 12.4375Z"
           fill="#A6A6A6"

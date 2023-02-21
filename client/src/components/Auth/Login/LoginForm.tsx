@@ -6,6 +6,7 @@ import { LOGIN_URL } from "../../../config/api";
 import { useSetRecoilState } from "recoil";
 import { loggedInUserState } from "../../../recoil/auth.recoil";
 import { useNavigate } from "react-router-dom";
+import { AuthService } from "../../../services/auth";
 
 const StyledLoginForm = styled.form`
   width: 100%;
@@ -66,8 +67,9 @@ const LoginForm = () => {
   });
 
   const { email, password } = account;
-  const setLoggedInUser = useSetRecoilState(loggedInUserState);
   const navigator = useNavigate();
+
+  const setLoggedInUser = useSetRecoilState(loggedInUserState);
 
   const accountChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.currentTarget;
@@ -80,22 +82,16 @@ const LoginForm = () => {
     event.preventDefault();
 
     try {
-      const res = await axios.post(LOGIN_URL, { email, password });
-      if (res.status === 200) {
-        const { accessToken, refreshToken, userId } = res.data;
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
-        localStorage.setItem("userId", userId);
+      const { status, data } = await AuthService.login(email, password);
 
-        setLoggedInUser((prevState) => {
-          return { ...prevState, accessToken, userId };
-        });
-
+      if (status === 200) {
         navigator("/main");
+        setLoggedInUser((prevState) => {
+          return { ...prevState, accessToken: data.accessToken, userId: data.userId };
+        });
       }
     } catch (err: any) {
-      const status = err.response.status;
-      const { code, message } = err.response.data;
+      const { status, code, message } = err;
       if (status === 400 && code === "auth-006" && message === "invalid_email_or_password") {
         alert("존재하지 않는 이메일이거나 비밀번호가 올바르지 않습니다.");
         return;
