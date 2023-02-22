@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LOGIN_URL, REGISTER_URL, TOKEN_URL } from "../config/api";
+import { LOGIN_URL, REGISTER_URL, TOKEN_URL, LOGOUT_URL } from "../config/api";
 
 export class AuthService {
   static token = async (accessToken: string, refreshToken: string) => {
@@ -31,11 +31,13 @@ export class AuthService {
     try {
       const res = await axios.post(LOGIN_URL, { email, password });
 
-      const { accessToken, refreshToken, userId } = res.data;
+      const { accessToken, refreshToken, userId, profileImg, nickname } = res.data;
 
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
       localStorage.setItem("userId", userId);
+      localStorage.setItem("profileImg", profileImg);
+      localStorage.setItem("nickname", nickname);
 
       return {
         status: res.status,
@@ -43,6 +45,33 @@ export class AuthService {
       };
     } catch (err: any) {
       console.log(err);
+      throw Object.assign(new Error(), {
+        status: err.response.status,
+        code: err.response.data.code,
+        message: err.response.data.message,
+      });
+    }
+  };
+
+  static logout = async (userId: string, accessToken: string) => {
+    try {
+      const res = await axios.get(`${LOGOUT_URL}/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      console.log(res.status);
+      if (res.status === 200) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("profileImg");
+        localStorage.removeItem("nickname");
+      }
+
+      return res.status;
+    } catch (err: any) {
       throw Object.assign(new Error(), {
         status: err.response.status,
         code: err.response.data.code,

@@ -45,12 +45,22 @@ class AuthService {
 
       /** 로그인시 생성되는 토큰을 전역변수에 저장 */
       // TODO: 토큰 저장공간 redis로 이관 필요
-      app.set("tokens", Object.assign(app.get("tokens"), { userId: { accessToken, refreshToken } }));
+      const userTokens = {
+        [user_id]: {
+          accessToken,
+          refreshToken,
+        },
+      };
+      app.set("tokens", Object.assign(app.get("tokens"), userTokens));
+
+      console.log(app.get("tokens"));
 
       return {
         accessToken,
         refreshToken,
         userId: user[0].user_id,
+        profileImg: user[0].profile_img,
+        nickname: user[0].nickname,
       };
     } catch (err: any) {
       throw err;
@@ -196,6 +206,33 @@ class AuthService {
         const token = Jwt.sign("access", userId);
         return token;
       }
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  // TODO: token 저장공간 redis로 이관필요
+  static logout = (userId: string, accessToken: string) => {
+    try {
+      const userTokens = app.get("tokens")[userId];
+
+      if (!userTokens) {
+        throw {
+          status: 404,
+          code: "auth-011",
+          message: "logged_in_user_not_found",
+        };
+      }
+
+      if (userTokens.accessToken !== accessToken) {
+        throw {
+          status: 401,
+          code: "auth-010",
+          message: "invalid_token",
+        };
+      }
+
+      delete app.get("tokens")[userId];
     } catch (err: any) {
       throw err;
     }

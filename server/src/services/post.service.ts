@@ -194,6 +194,7 @@ export class PostService {
                 user: {
                   nickname: reCommentUser.nickname,
                   profileImg: reCommentUser.profile_img,
+                  userId: reCommentUser.user_id,
                 },
                 ...reComment,
               };
@@ -204,9 +205,10 @@ export class PostService {
             user: {
               nickname: commentUser.nickname,
               profileImg: commentUser.profile_img,
+              userId: commentUser.user_id,
             },
-            ...comment,
-            reComment: reCommentWithUser,
+            ...changePropertySnakeToCamel(comment),
+            reComment: [changePropertySnakeToCamel(reCommentWithUser)],
           });
         })
       );
@@ -245,6 +247,7 @@ export class PostService {
   };
 
   static addComment = async (userId: string, postId: string, comment: string) => {
+    console.log(userId, postId, comment);
     try {
       /** 댓글이 비어있을 경우 */
       if (comment.length === 0) {

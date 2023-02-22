@@ -2,23 +2,25 @@ import { ChangeEvent, useState, FormEvent } from "react";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { loggedInUserState } from "../../recoil/auth.recoil";
-import { currentPostIdState } from "../../recoil/post.recoil";
 import { PostService } from "../../services/post";
 
-const StyledWriteComment = styled.div`
-  width: 100%;
+const StyledWriteReComment = styled.div`
+  align-self: flex-end;
+  width: 99%;
   display: flex;
-  justify-content: space-between;
+  border-left: 3px solid #d9d9d9;
+  gap: 20px;
 `;
 
 const Profile = styled.img`
   width: 50px;
   height: 50px;
   border-radius: 50%;
+  margin-left: 20px;
 `;
 
 const InputWrapper = styled.form`
-  width: 94%;
+  width: 90%;
   height: 150px;
   display: flex;
   flex-direction: column;
@@ -54,26 +56,28 @@ const SubmitButton = styled.button`
   font-size: 16px;
 `;
 
-const WriteComment = () => {
+interface WriteReCommentProps {
+  commentId: number;
+}
+
+const WriteReComment = ({ commentId }: WriteReCommentProps) => {
   const loggedInUser = useRecoilValue(loggedInUserState);
-  const currentPostId = useRecoilValue(currentPostIdState);
 
-  const [comment, setComment] = useState("");
+  const [reComment, setReComment] = useState("");
 
-  const commentChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
+  const reCommentChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = event.currentTarget;
-    setComment(value);
+    setReComment(value);
   };
 
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
-      const status = await PostService.addComment(currentPostId, comment, loggedInUser.accessToken);
+      const status = await PostService.addReComment(commentId, reComment, loggedInUser.accessToken);
 
       if (status === 201) {
-        alert("댓글 작성이 완료되었습니다.");
-        setComment("");
+        alert("대댓글 작성이 완료되었습니다.");
       }
     } catch (err: any) {
       alert("에러발생");
@@ -81,18 +85,18 @@ const WriteComment = () => {
   };
 
   return (
-    <StyledWriteComment>
+    <StyledWriteReComment>
       <Profile src={loggedInUser.profileImg} />
       <InputWrapper onSubmit={submitHandler}>
         <Textarea
           placeholder="사용자들의 댓글은 작성자에게 큰 힘이됩니다."
-          onChange={commentChangeHandler}
-          value={comment}
+          onChange={reCommentChangeHandler}
+          value={reComment}
         />
-        <SubmitButton type="submit">댓글 쓰기</SubmitButton>
+        <SubmitButton type="submit">답글 쓰기</SubmitButton>
       </InputWrapper>
-    </StyledWriteComment>
+    </StyledWriteReComment>
   );
 };
 
-export default WriteComment;
+export default WriteReComment;

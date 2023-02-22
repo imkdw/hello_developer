@@ -92,7 +92,7 @@ const Data = () => {
     <StyledData>
       <Tags>
         {postDetailData.tags.map((tag) => (
-          <TagText># {tag.name}</TagText>
+          <TagText key={tag.name}># {tag.name}</TagText>
         ))}
       </Tags>
       <RecommendData>

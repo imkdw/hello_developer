@@ -2,7 +2,7 @@ import { useMediaQuery } from "react-responsive";
 import { useParams } from "react-router-dom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { postDetailDataState } from "../../recoil/post.recoil";
+import { currentPostIdState, postDetailDataState } from "../../recoil/post.recoil";
 import { enableSideMenuState } from "../../recoil/ui.recoil";
 import { MobileHeader } from "../Common";
 import { SideMenu } from "../SideMenu";
@@ -26,6 +26,7 @@ const PostDetail = () => {
   const enableSideMenu = useRecoilValue(enableSideMenuState);
 
   const setPostDetailData = useSetRecoilState(postDetailDataState);
+  const setCurrentPostId = useSetRecoilState(currentPostIdState);
 
   useEffect(() => {
     const getDetail = async () => {
@@ -34,6 +35,7 @@ const PostDetail = () => {
 
         if (status === 200 || status === 304) {
           setPostDetailData(post);
+          console.log(post);
         }
       } catch (err: any) {
         alert("서버 오류 발생");
@@ -41,6 +43,7 @@ const PostDetail = () => {
     };
 
     if (postId) {
+      setCurrentPostId(postId);
       getDetail();
     }
   }, [postId]);

@@ -58,6 +58,19 @@ class AuthController {
       res.status(err.status || 500).json({ code: err.code, message: err.message });
     }
   };
+
+  static logout = async (req: Request, res: Response) => {
+    const { userId } = req.params;
+    const accessToken = req.headers.authorization?.split(" ")[1] as string;
+
+    try {
+      AuthService.logout(userId, accessToken);
+      res.status(200).json();
+    } catch (err: any) {
+      console.log(err);
+      res.status(err.status || 500).json({ message: err.message });
+    }
+  };
 }
 
 export default AuthController;

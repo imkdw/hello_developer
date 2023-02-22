@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { loggedInUserState } from "../../recoil/auth.recoil";
+import { AuthService } from "../../services/auth";
 
 import { BellIcon, BookIcon, CheckIcon, PersonIcon, QuestionIcon, TalkBallonIcon } from "./SideMenuIcon";
 import SideMenuLinkItem from "./SideMenuLinkItem";
@@ -87,14 +88,22 @@ const SideMenuLink = ({ onClick }: SideMenuLinkProps) => {
 
   const [loggedInUser, setLoggedInUser] = useRecoilState(loggedInUserState);
 
-  const onLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("userId");
-    setLoggedInUser((prevState) => {
-      return { ...prevState, accessToken: "", userId: "" };
-    });
-    navigator("/main");
+  const onLogout = async () => {
+    try {
+      const status = await AuthService.logout(loggedInUser.userId, loggedInUser.accessToken);
+
+      if (status === 200) {
+        setLoggedInUser((prevState) => {
+          return { ...prevState, accessToken: "", userId: "", profileImg: "", nickname: "" };
+        });
+
+        alert("로그아웃이 완료되었습니다.");
+        navigator("/main");
+      }
+    } catch (err: any) {
+      alert("오류 발생");
+      console.error(err);
+    }
   };
 
   return (

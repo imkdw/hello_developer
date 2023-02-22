@@ -16,7 +16,6 @@ export const isAuth = (req: Request, res: Response, next: NextFunction) => {
     res.locals.userId = decodedToken?.userId;
     next();
   } catch (err: any) {
-    console.log(err);
     res.status(err.status || 500).json({ code: err.code, message: err.message });
   }
 };

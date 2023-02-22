@@ -45,6 +45,7 @@ class PostController {
       const commentId = await PostService.addComment(userId, postId, comment);
       res.status(201).json({ commentId });
     } catch (err: any) {
+      console.error(err);
       res.status(err.status || 500).json({ code: err.code, message: err.message });
     }
   };

@@ -42,7 +42,7 @@ const List = ({ category1, category2 }: ListProps) => {
       {postList.map((postItem) => {
         const { user, post } = postItem;
 
-        return <ListItem user={user} post={post} />;
+        return <ListItem key={post.postId} user={user} post={post} />;
       })}
     </StyledList>
   );

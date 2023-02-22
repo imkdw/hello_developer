@@ -157,7 +157,7 @@ const ListItem = ({ user, post }: PostListData) => {
         {post.topic && <Topic>{topicData[post.topic]}</Topic>}
         <Hashtag>
           {post.tags.map((tag) => (
-            <HashtagText>#{tag.name}</HashtagText>
+            <HashtagText key={tag.name}>#{tag.name}</HashtagText>
           ))}
         </Hashtag>
       </Tag>

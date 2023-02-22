@@ -34,7 +34,19 @@ export interface PostDetailData {
   };
   tags: { name: string }[];
   createdAt: string;
-  comments: any[];
+  comments: {
+    user: {
+      nickname: string;
+      profileImg: string;
+      userId: string;
+    };
+    commentId: number;
+    content: string;
+    createdAtDate: string;
+    postId: string;
+    reComment: [];
+    userId: string;
+  }[];
   content: string;
   recommendCnt: number;
   title: string;

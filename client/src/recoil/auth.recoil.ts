@@ -5,5 +5,7 @@ export const loggedInUserState = atom({
   default: {
     accessToken: "",
     userId: "",
+    profileImg: "",
+    nickname: "",
   },
 });

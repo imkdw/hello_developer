@@ -17,3 +17,8 @@ export const postDetailDataState = atom<PostDetailData>({
     viewCount: 0,
   },
 });
+
+export const currentPostIdState = atom({
+  key: "currentPostIdState",
+  default: "",
+});

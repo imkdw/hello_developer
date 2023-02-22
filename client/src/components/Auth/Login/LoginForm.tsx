@@ -1,8 +1,6 @@
 import styled from "styled-components";
 import { EmailIcon, PasswordIcon } from "../common";
 import { ChangeEvent, FormEvent, useState } from "react";
-import axios from "axios";
-import { LOGIN_URL } from "../../../config/api";
 import { useSetRecoilState } from "recoil";
 import { loggedInUserState } from "../../../recoil/auth.recoil";
 import { useNavigate } from "react-router-dom";
@@ -83,11 +81,12 @@ const LoginForm = () => {
 
     try {
       const { status, data } = await AuthService.login(email, password);
+      const { accessToken, userId, profileImg, nickname } = data;
 
       if (status === 200) {
         navigator("/main");
         setLoggedInUser((prevState) => {
-          return { ...prevState, accessToken: data.accessToken, userId: data.userId };
+          return { ...prevState, accessToken, userId, profileImg, nickname };
         });
       }
     } catch (err: any) {
