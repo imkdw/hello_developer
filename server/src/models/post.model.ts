@@ -150,9 +150,7 @@ export class PostModel {
     const query = "SELECT tag_id FROM post_tags WHERE post_id = ?";
     try {
       const connection = await pool.getConnection();
-      const [rows, fields]: [findTagIdByPostIdReturn[], FieldPacket[]] = await connection.execute(query, [
-        postId,
-      ]);
+      const [rows, fields]: [findTagIdByPostIdReturn[], FieldPacket[]] = await connection.execute(query, [postId]);
       connection.release();
       return rows;
     } catch (err: any) {
@@ -172,9 +170,7 @@ export class PostModel {
     const query = "SELECT name FROM tags WHERE tag_id = ?";
     try {
       const connection = await pool.getConnection();
-      const [rows, fields]: [FindTagNameByIdReturn[], FieldPacket[]] = await connection.execute(query, [
-        tagId,
-      ]);
+      const [rows, fields]: [FindTagNameByIdReturn[], FieldPacket[]] = await connection.execute(query, [tagId]);
       connection.release();
       return rows[0];
     } catch (err: any) {
@@ -191,12 +187,10 @@ export class PostModel {
    * @return {} - 댓글 정보
    */
   static findCommentByPostId = async (postId: string) => {
-    const query = "SELECT * FROM comment WHERE post_id = ?";
+    const query = "SELECT * FROM comment WHERE post_id = ? ORDER BY comment_id ASC";
     try {
       const connection = await pool.getConnection();
-      const [rows, fields]: [FindCommentByPostId[], FieldPacket[]] = await connection.execute(query, [
-        postId,
-      ]);
+      const [rows, fields]: [FindCommentByPostId[], FieldPacket[]] = await connection.execute(query, [postId]);
       connection.release();
       return rows;
     } catch (err: any) {
@@ -213,13 +207,12 @@ export class PostModel {
    * @return {FindReCommentByCommentIdReturn} - 댓글 정보
    */
   static findReCommentByCommentId = async (commentId: number) => {
-    const query = "SELECT * FROM re_comment WHERE comment_id = ?";
+    const query = "SELECT * FROM re_comment WHERE comment_id = ? ORDER BY  re_comment_id ASC";
     try {
       const connection = await pool.getConnection();
-      const [rows, fields]: [FindReCommentByCommentIdReturn[], FieldPacket[]] = await connection.execute(
-        query,
-        [commentId]
-      );
+      const [rows, fields]: [FindReCommentByCommentIdReturn[], FieldPacket[]] = await connection.execute(query, [
+        commentId,
+      ]);
       connection.release();
       return rows;
     } catch (err: any) {
@@ -240,9 +233,7 @@ export class PostModel {
 
     try {
       const connection = await pool.getConnection();
-      const [rows, fields]: [FindCategoryIdByNameReturn[], FieldPacket[]] = await connection.execute(query, [
-        name,
-      ]);
+      const [rows, fields]: [FindCategoryIdByNameReturn[], FieldPacket[]] = await connection.execute(query, [name]);
       connection.destroy();
       return rows[0];
     } catch (err: any) {
@@ -267,10 +258,7 @@ export class PostModel {
 
     try {
       const connection = await pool.getConnection();
-      const [rows, fields]: [FindPostByCategoryIdReturn[], FieldPacket[]] = await connection.execute(
-        query,
-        values
-      );
+      const [rows, fields]: [FindPostByCategoryIdReturn[], FieldPacket[]] = await connection.execute(query, values);
       connection.release();
       return rows;
     } catch (err: any) {
@@ -285,12 +273,10 @@ export class PostModel {
    * 게시글 검색 (게시글 아이디로)
    */
   static findPostByPostId = async (postId: string) => {
-    const query = "SELECT * FROM post WHERE post_id = ?";
+    const query = "SELECT * FROM post WHERE post_id = ? ORDER BY created_at_date DESC";
     try {
       const connection = await pool.getConnection();
-      const [rows, fields]: [FindPostByPostIdReturn[], FieldPacket[]] = await connection.execute(query, [
-        postId,
-      ]);
+      const [rows, fields]: [FindPostByPostIdReturn[], FieldPacket[]] = await connection.execute(query, [postId]);
       connection.release();
       return rows[0];
     } catch (err: any) {
@@ -305,9 +291,7 @@ export class PostModel {
     const query = "SELECT * FROM post WHERE user_id = ?";
     try {
       const connection = await pool.getConnection();
-      const [rows, fields]: [FindPostByUserIdReturn[], FieldPacket[]] = await connection.execute(query, [
-        userId,
-      ]);
+      const [rows, fields]: [FindPostByUserIdReturn[], FieldPacket[]] = await connection.execute(query, [userId]);
       connection.release();
       return rows;
     } catch (err: any) {
@@ -323,9 +307,7 @@ export class PostModel {
 
     try {
       const connection = await pool.getConnection();
-      const [rows, fields]: [FindCommentByUserIdReturn[], FieldPacket[]] = await connection.execute(query, [
-        userId,
-      ]);
+      const [rows, fields]: [FindCommentByUserIdReturn[], FieldPacket[]] = await connection.execute(query, [userId]);
       connection.release();
       return rows;
     } catch (err: any) {
@@ -341,9 +323,7 @@ export class PostModel {
 
     try {
       const connection = await pool.getConnection();
-      const [rows, fields]: [FindReCommentByUserIdReturn[], FieldPacket[]] = await connection.execute(query, [
-        userId,
-      ]);
+      const [rows, fields]: [FindReCommentByUserIdReturn[], FieldPacket[]] = await connection.execute(query, [userId]);
       connection.release();
       return rows;
     } catch (err: any) {
@@ -359,9 +339,7 @@ export class PostModel {
 
     try {
       const connection = await pool.getConnection();
-      const [rows, fields]: [FindCommentByIdReturn[], FieldPacket[]] = await connection.execute(query, [
-        commentId,
-      ]);
+      const [rows, fields]: [FindCommentByIdReturn[], FieldPacket[]] = await connection.execute(query, [commentId]);
       connection.release();
       return rows;
     } catch (err: any) {
@@ -374,9 +352,12 @@ export class PostModel {
 
   static deletePost = async (userId: string, postId: string) => {
     const query = "DELETE FROM post WHERE post_id = ? AND user_id = ?";
+
+    console.log(`post_id: ${postId}, user_id: ${userId}`);
     try {
       const connection = await pool.getConnection();
-      await connection.query(query, [userId, postId]);
+      await connection.execute(query, [postId, userId]);
+      console.log("삭제완료");
       connection.release();
     } catch (err: any) {
       throw {
@@ -421,9 +402,7 @@ export class PostModel {
       await connection.beginTransaction();
 
       /** POST 테이블 추천수 업데이트 */
-      let postQuery = `UPDATE post SET recommend_cnt = recommend_cnt ${
-        type === "add" ? "+" : "-"
-      } 1 WHERE post_id = ?`;
+      let postQuery = `UPDATE post SET recommend_cnt = recommend_cnt ${type === "add" ? "+" : "-"} 1 WHERE post_id = ?`;
       await connection.execute(postQuery, [postId]);
 
       /** recommedation 테이블 row 추가,삭제 */
@@ -449,8 +428,10 @@ export class PostModel {
     const query = "SELECT recommendation_id FROM post_recommendation WHERE user_id = ? AND post_id = ?";
     try {
       const connection = await pool.getConnection();
-      const [rows, fields]: [FindRecommedationByUserAndPostIdReturn[], FieldPacket[]] =
-        await connection.query(query, [userId, postId]);
+      const [rows, fields]: [FindRecommedationByUserAndPostIdReturn[], FieldPacket[]] = await connection.query(query, [
+        userId,
+        postId,
+      ]);
       connection.release();
       return rows[0];
     } catch (err: any) {
@@ -479,9 +460,7 @@ export class PostModel {
     const query = "SELECT view_cnt FROM post_views WHERE post_id = ?";
     try {
       const connection = await pool.getConnection();
-      const [rows, fields]: [FindViewCntByPostIdReturn[], FieldPacket[]] = await connection.execute(query, [
-        postId,
-      ]);
+      const [rows, fields]: [FindViewCntByPostIdReturn[], FieldPacket[]] = await connection.execute(query, [postId]);
       connection.release();
       return rows[0];
     } catch (err: any) {
@@ -526,9 +505,7 @@ export class PostModel {
     const query = "SELECT tag_id FROM tags WHERE name = ?";
     try {
       const connection = await pool.getConnection();
-      const [rows, fields]: [FindTagIdByNameReturn[], FieldPacket[]] = await connection.execute(query, [
-        tagName,
-      ]);
+      const [rows, fields]: [FindTagIdByNameReturn[], FieldPacket[]] = await connection.execute(query, [tagName]);
       connection.release();
       return rows[0];
     } catch (err: any) {

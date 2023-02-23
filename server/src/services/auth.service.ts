@@ -53,8 +53,6 @@ class AuthService {
       };
       app.set("tokens", Object.assign(app.get("tokens"), userTokens));
 
-      console.log(app.get("tokens"));
-
       return {
         accessToken,
         refreshToken,

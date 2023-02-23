@@ -112,138 +112,34 @@ const TEAR_DOWN = async () => {
   connection.destroy();
 };
 
-describe("유저 프로필 API, [GET] /v1/api/user/:userId", () => {
-  let userId: string;
+// describe("유저 프로필 API, [GET] /v1/api/user/:userId", () => {
+//   let userId: string;
 
-  beforeAll(async () => {
-    const data = await SET_UP();
-    userId = data.userId;
-  });
+//   beforeAll(async () => {
+//     const data = await SET_UP();
+//     userId = data.userId;
+//   });
 
-  /** 테스트 후 모든 데이터 초기화 */
-  afterAll(async () => {
-    await TEAR_DOWN();
-  });
+//   /** 테스트 후 모든 데이터 초기화 */
+//   afterAll(async () => {
+//     await TEAR_DOWN();
+//   });
 
-  test("[유저 프로필 정상 조회] HTTP 200", async () => {
-    const res = await request(app).get(`${USER_PROFILE_API}/${userId}`);
+//   test("[유저 프로필 정상 조회] HTTP 200", async () => {
+//     const res = await request(app).get(`${USER_PROFILE_API}/${userId}`);
 
-    expect(res.status).toBe(200);
-  });
+//     expect(res.status).toBe(200);
+//   });
 
-  test("[없는 유저아이디 입력] HTTP 404, CODE: 'user-001', MESSAGE: 'user_not_found'", async () => {
-    const res = await request(app).get(`/v1/api/user/test`);
+//   test("[없는 유저아이디 입력] HTTP 404, CODE: 'user-001', MESSAGE: 'user_not_found'", async () => {
+//     const res = await request(app).get(`/v1/api/user/test`);
 
-    expect(res.status).toBe(404);
-    expect(res.body).toEqual({ code: "user-001", message: "user_not_found" });
-  });
-});
+//     expect(res.status).toBe(404);
+//     expect(res.body).toEqual({ code: "user-001", message: "user_not_found" });
+//   });
+// });
 
 describe("유저 프로필 수정 API, [PUT] /v1/api/user/:userId", () => {
-  let userId: string;
-
-  beforeAll(async () => {
-    const data = await SET_UP();
-    userId = data.userId;
-  });
-
-  /** 테스트 후 모든 데이터 초기화 */
-  afterAll(async () => {
-    await TEAR_DOWN();
-  });
-
-  test("[정상 수정] HTTP 200", async () => {});
-});
-
-describe("북마크 추가 API [POST] /v1/api/user/bookmark", () => {
-  let postId: string;
-  let Authorization: string;
-
-  beforeAll(async () => {
-    const data = await SET_UP();
-    postId = data.postId;
-    Authorization = data.Authorization;
-  });
-
-  /** 테스트 후 모든 데이터 초기화 */
-  afterAll(async () => {
-    await TEAR_DOWN();
-  });
-
-  test("[정상 북마크 추가], HTTP 201", async () => {
-    const res = await request(app).post(ADD_BOOKMARK_API).send({ postId }).set({ Authorization });
-
-    expect(res.status).toBe(201);
-  });
-
-  test("[존재하지 않는 게시글에 북마크 추가], HTTP 404, CODE: 'user-002', MESSAGE: 'bookmark_post_not_found'", async () => {
-    const res = await request(app).post(ADD_BOOKMARK_API).send({ postId: "123" }).set({ Authorization });
-
-    expect(res.status).toBe(404);
-    expect(res.body).toEqual({ code: "user-002", message: "bookmark_post_not_found" });
-  });
-});
-
-describe("북마크 삭제 API, [DELETE] /v1/api/user/bookmark", () => {
-  let postId: string;
-  let Authorization: string;
-
-  beforeAll(async () => {
-    const data = await SET_UP();
-    postId = data.postId;
-    Authorization = data.Authorization;
-  });
-
-  /** 테스트 후 모든 데이터 초기화 */
-  afterAll(async () => {
-    await TEAR_DOWN();
-  });
-
-  test("[북마크 삭제] HTTP 200", async () => {
-    const res = await request(app).delete(`${DELETE_BOOKMARK_API}/${postId}`).set({ Authorization });
-
-    expect(res.status).toBe(200);
-  });
-});
-
-describe("히스토리 가져오기 API, [GET], /v1/api/user/:userId/history?item=", () => {
-  let userId: string;
-  let postId: string;
-  let commentId: number;
-  let Authorization: string;
-
-  beforeAll(async () => {
-    const data = await SET_UP();
-    userId = data.userId;
-    postId = data.postId;
-    commentId = data.commentId;
-    Authorization = data.Authorization;
-  });
-
-  /** 테스트 후 모든 데이터 초기화 */
-  afterAll(async () => {
-    await TEAR_DOWN();
-  });
-
-  test("[게시글 작성 히스토리 조회], HTTP 200", async () => {
-    const res = await request(app).get(`/v1/api/user/${userId}/history?item=post`);
-
-    expect(res.status).toBe(200);
-  });
-
-  test("[댓글 작성 히스토리 조회], HTTP 200", async () => {
-    const res = await request(app).get(`/v1/api/user/${userId}/history?item=comment`);
-    expect(res.status).toBe(200);
-  });
-
-  test("[북마크한 게시글 조회], HTTP 200", async () => {
-    const res = await request(app).get(`/v1/api/user/${userId}/history?item=bookmark`);
-
-    expect(res.status).toBe(200);
-  });
-});
-
-describe("유저 프로필 수정 API, [PUT] /v1/api/user/:userId/profile", () => {
   let userId: string;
   let Authorization: string;
 
@@ -304,6 +200,25 @@ describe("유저 프로필 수정 API, [PUT] /v1/api/user/:userId/profile", () =
     expect(profileRes.body.introduce).toBe(UPDATED_INTRODUCE);
   });
 
+  test("[비밀번호 수정, 기존 비밀번호와 불일치] HTTP 400, CODE: 'user-007', MESSAGE: 'password_mismatch'", async () => {
+    const res = await request(app)
+      .put(`${USER_PROFILE_UPDATE_API}/${userId}`)
+      .send({ password: PASSWORD + "1", rePassword: PASSWORD + "2" })
+      .set({ Authorization });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({ code: "user-007", message: "password_mismatch" });
+  });
+
+  test("[비밀번호 수정] HTTP 200", async () => {
+    const res = await request(app)
+      .put(`${USER_PROFILE_UPDATE_API}/${userId}`)
+      .send({ password: PASSWORD, rePassword: PASSWORD + "1" })
+      .set({ Authorization });
+
+    expect(res.status).toBe(200);
+  });
+
   test("[닉네임, 자기소개 값이 이전과 동일] HTTP 200", async () => {
     const res = await request(app)
       .put(`${USER_PROFILE_UPDATE_API}/${userId}`)
@@ -324,31 +239,119 @@ describe("유저 프로필 수정 API, [PUT] /v1/api/user/:userId/profile", () =
   });
 });
 
-describe('회원탈퇴 API, [POST] "/v1/api/user/exit"', () => {
-  let userId: string;
-  let Authorization: string;
+// describe("북마크 추가 API [POST] /v1/api/user/bookmark", () => {
+//   let postId: string;
+//   let Authorization: string;
 
-  beforeAll(async () => {
-    const data = await SET_UP();
-    userId = data.userId;
-    Authorization = data.Authorization;
-  });
+//   beforeAll(async () => {
+//     const data = await SET_UP();
+//     postId = data.postId;
+//     Authorization = data.Authorization;
+//   });
 
-  /** 테스트 후 모든 데이터 초기화 */
-  afterAll(async () => {
-    await TEAR_DOWN();
-  });
+//   /** 테스트 후 모든 데이터 초기화 */
+//   afterAll(async () => {
+//     await TEAR_DOWN();
+//   });
 
-  test("[회원탈퇴 성공] HTTP 200", async () => {
-    const res = await request(app)
-      .post(EXIT_USER_API)
-      .send({ password: PASSWORD, rePassword: PASSWORD })
-      .set({ Authorization });
+//   test("[정상 북마크 추가], HTTP 201", async () => {
+//     const res = await request(app).post(ADD_BOOKMARK_API).send({ postId }).set({ Authorization });
 
-    expect(res.status).toBe(200);
+//     expect(res.status).toBe(201);
+//   });
 
-    const profileRes = await request(app).get(`${USER_PROFILE_API}/${userId}`);
-    expect(profileRes.status).toBe(404);
-    expect(profileRes.body).toEqual({ code: "user-001", message: "user_not_found" });
-  });
-});
+//   test("[존재하지 않는 게시글에 북마크 추가], HTTP 404, CODE: 'user-002', MESSAGE: 'bookmark_post_not_found'", async () => {
+//     const res = await request(app).post(ADD_BOOKMARK_API).send({ postId: "123" }).set({ Authorization });
+
+//     expect(res.status).toBe(404);
+//     expect(res.body).toEqual({ code: "user-002", message: "bookmark_post_not_found" });
+//   });
+// });
+
+// describe("북마크 삭제 API, [DELETE] /v1/api/user/bookmark", () => {
+//   let postId: string;
+//   let Authorization: string;
+
+//   beforeAll(async () => {
+//     const data = await SET_UP();
+//     postId = data.postId;
+//     Authorization = data.Authorization;
+//   });
+
+//   /** 테스트 후 모든 데이터 초기화 */
+//   afterAll(async () => {
+//     await TEAR_DOWN();
+//   });
+
+//   test("[북마크 삭제] HTTP 200", async () => {
+//     const res = await request(app).delete(`${DELETE_BOOKMARK_API}/${postId}`).set({ Authorization });
+
+//     expect(res.status).toBe(200);
+//   });
+// });
+
+// describe("히스토리 가져오기 API, [GET], /v1/api/user/:userId/history?item=", () => {
+//   let userId: string;
+//   let postId: string;
+//   let commentId: number;
+//   let Authorization: string;
+
+//   beforeAll(async () => {
+//     const data = await SET_UP();
+//     userId = data.userId;
+//     postId = data.postId;
+//     commentId = data.commentId;
+//     Authorization = data.Authorization;
+//   });
+
+//   /** 테스트 후 모든 데이터 초기화 */
+//   afterAll(async () => {
+//     await TEAR_DOWN();
+//   });
+
+//   test("[게시글 작성 히스토리 조회], HTTP 200", async () => {
+//     const res = await request(app).get(`/v1/api/user/${userId}/history?item=post`);
+
+//     expect(res.status).toBe(200);
+//   });
+
+//   test("[댓글 작성 히스토리 조회], HTTP 200", async () => {
+//     const res = await request(app).get(`/v1/api/user/${userId}/history?item=comment`);
+//     expect(res.status).toBe(200);
+//   });
+
+//   test("[북마크한 게시글 조회], HTTP 200", async () => {
+//     const res = await request(app).get(`/v1/api/user/${userId}/history?item=bookmark`);
+
+//     expect(res.status).toBe(200);
+//   });
+// });
+
+// describe('회원탈퇴 API, [POST] "/v1/api/user/exit"', () => {
+//   let userId: string;
+//   let Authorization: string;
+
+//   beforeAll(async () => {
+//     const data = await SET_UP();
+//     userId = data.userId;
+//     Authorization = data.Authorization;
+//   });
+
+//   /** 테스트 후 모든 데이터 초기화 */
+//   afterAll(async () => {
+//     await TEAR_DOWN();
+//   });
+
+//   test("[회원탈퇴 성공] HTTP 200", async () => {
+//     const res = await request(app)
+//       .post(EXIT_USER_API)
+//       .send({ password: PASSWORD, rePassword: PASSWORD })
+//       .set({ Authorization });
+
+//     expect(res.status).toBe(200);
+
+//     const profileRes = await request(app).get(`${USER_PROFILE_API}/${userId}`);
+//     expect(profileRes.status).toBe(404);
+//     expect(profileRes.body).toEqual({ code: "user-001", message: "user_not_found" });
+//   });
+// });

@@ -1,8 +1,8 @@
 import { ChangeEvent, useState, FormEvent } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { loggedInUserState } from "../../recoil/auth.recoil";
-import { currentPostIdState } from "../../recoil/post.recoil";
+import { currentPostIdState, postDetailDataState } from "../../recoil/post.recoil";
 import { PostService } from "../../services/post";
 
 const StyledWriteComment = styled.div`
@@ -57,6 +57,7 @@ const SubmitButton = styled.button`
 const WriteComment = () => {
   const loggedInUser = useRecoilValue(loggedInUserState);
   const currentPostId = useRecoilValue(currentPostIdState);
+  const setPostDetailData = useSetRecoilState(postDetailDataState);
 
   const [comment, setComment] = useState("");
 
@@ -75,6 +76,10 @@ const WriteComment = () => {
         alert("댓글 작성이 완료되었습니다.");
         setComment("");
       }
+
+      // 댓글 작성이후 api 호출해서 댓글 내용 최신화
+      const { post } = await PostService.detail(currentPostId);
+      setPostDetailData(post);
     } catch (err: any) {
       alert("에러발생");
     }

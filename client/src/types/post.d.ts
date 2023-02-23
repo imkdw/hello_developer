@@ -44,11 +44,51 @@ export interface PostDetailData {
     content: string;
     createdAtDate: string;
     postId: string;
-    reComment: [];
+    reComment: {
+      user: {
+        nickname: string;
+        profileImg: string;
+        userId: string;
+      };
+      reCommentId: number;
+      commentId: number;
+      userId: string;
+      content: string;
+      createdAtDate: string;
+      updatedAtDate: string;
+    }[];
     userId: string;
   }[];
   content: string;
   recommendCnt: number;
   title: string;
   viewCount: number;
+}
+
+export interface PostDetailDataComments {
+  comments: {
+    user: {
+      nickname: string;
+      profileImg: string;
+      userId: string;
+    };
+    commentId: number;
+    content: string;
+    createdAtDate: string;
+    postId: string;
+    reComment: {
+      user: {
+        nickname: string;
+        profileImg: string;
+        userId: string;
+      };
+      reCommentId: number;
+      commentId: number;
+      userId: string;
+      content: string;
+      createdAtDate: string;
+      updatedAtDate: string;
+    }[];
+    userId: string;
+  };
 }

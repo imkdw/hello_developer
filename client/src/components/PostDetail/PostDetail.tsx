@@ -35,7 +35,6 @@ const PostDetail = () => {
 
         if (status === 200 || status === 304) {
           setPostDetailData(post);
-          console.log(post);
         }
       } catch (err: any) {
         alert("서버 오류 발생");

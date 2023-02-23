@@ -1,7 +1,8 @@
+import { changePropertySnakeToCamel } from "../db/snakeToCamel";
 import { PostModel } from "../models/post.model";
 import { UserModel } from "../models/user.model";
 import { HistoryPosts } from "../types/post";
-import { AllComments } from "../types/user";
+import { AllComments, UpdateProfileUserDTO } from "../types/user";
 import Secure from "../utils/secure";
 
 export class UserService {
@@ -16,7 +17,15 @@ export class UserService {
           message: "user_not_found",
         };
       }
-      return profile;
+
+      return {
+        createdAtDate: profile.created_at_date,
+        email: profile.email,
+        introduce: profile.introduce,
+        nickname: profile.nickname,
+        profileImg: profile.profile_img,
+        userId: profile.user_id,
+      };
     } catch (err: any) {
       throw err;
     }
@@ -135,15 +144,19 @@ export class UserService {
     }
   };
 
-  static updateProfile = async (userId: string, tokenUserId: string, nickname: string, introduce: string) => {
+  static updateProfile = async (userId: string, tokenUserId: string, userDTO: UpdateProfileUserDTO) => {
     const updateFields = [];
 
-    if (nickname) {
-      updateFields.push({ key: "nickname", value: nickname });
+    if (userDTO.nickname) {
+      updateFields.push({ key: "nickname", value: userDTO.nickname });
     }
 
-    if (introduce) {
-      updateFields.push({ key: "introduce", value: introduce });
+    if (userDTO.introduce) {
+      updateFields.push({ key: "introduce", value: userDTO.introduce });
+    }
+
+    if (userDTO.rePassword) {
+      updateFields.push({ key: "password", value: await Secure.encryptToHash(userDTO.rePassword) });
     }
 
     if (updateFields.length === 0) {
@@ -164,6 +177,19 @@ export class UserService {
 
     try {
       const existingUser = await UserModel.findUserByUserId(tokenUserId);
+
+      // 변경하고싶은 비밀번호가 존재할경우
+      if (userDTO.rePassword) {
+        // 기존 비밀번호와 입력받은 비밀번호가 다를경우
+        if (!(await Secure.compareHash(userDTO.password, existingUser.password))) {
+          throw {
+            status: 400,
+            code: "user-007",
+            message: "password_mismatch",
+          };
+        }
+      }
+
       const updateFieldQuery = updateFields
         .map((field) => {
           if (field.value !== existingUser[field.key]) {
@@ -181,7 +207,7 @@ export class UserService {
 
       await UserModel.updateUser(
         tokenUserId,
-        updateFieldQuery.length === 1 ? updateFieldQuery.join("") : updateFieldQuery.join(", ")
+        updateFieldQuery.length === 1 ? updateFieldQuery.join("") : updateFieldQuery.join(", ") // 값이 여러개면 콤마로 구분하고 아니면 그냥 입력
       );
     } catch (err: any) {
       throw err;

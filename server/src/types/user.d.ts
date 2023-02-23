@@ -5,6 +5,13 @@ export interface AllComments {
   createdAt: string;
 }
 
+export interface UpdateProfileUserDTO {
+  nickname: string;
+  introduce: string;
+  password: string;
+  rePassword: string;
+}
+
 /** Model : 사용자 아이디로 유저 정보 가져오는 쿼리 반환값 */
 export interface FindUserByUserIdReturn extends RowDataPacket {
   user_id: string;

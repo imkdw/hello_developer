@@ -3,9 +3,7 @@ import { ChangeEvent, useState, useCallback, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { ADD_POST_URL } from "../../config/api";
 import { loggedInUserState } from "../../recoil/auth.recoil";
-import { AuthService } from "../../services/auth";
 import { PostService } from "../../services/post";
 import { AddPostData } from "../../types/post";
 import TextEditor from "./TextEditor";
@@ -128,6 +126,7 @@ const AddPostForm = () => {
   });
 
   const loggedInUser = useRecoilValue(loggedInUserState);
+
   const navigator = useNavigate();
 
   const changeCategory = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -176,6 +175,7 @@ const AddPostForm = () => {
 
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    console.log(postData);
 
     const body = {
       title: postData.title,
@@ -192,7 +192,8 @@ const AddPostForm = () => {
         navigator(-1);
       }
     } catch (err: any) {
-      const { status } = err;
+      const { status, code, message } = err;
+      console.error(status, code, message);
 
       switch (status) {
         case 400:
@@ -219,7 +220,7 @@ const AddPostForm = () => {
             <Option value="none">카테고리를 선택해주세요</Option>
             <Option value="suggestion">건의사항</Option>
             <Option value="free">자유주제</Option>
-            <Option value="knowledge-tip">지식공유 - 꿀팁</Option>
+            <Option value="knowledge-tips">지식공유 - 꿀팁</Option>
             <Option value="knowledge-review">지식공유 - 리뷰</Option>
             <Option value="qna-career">질문답변 - 커리어</Option>
             <Option value="qna-tech">질문답변 - 기술</Option>
@@ -230,42 +231,17 @@ const AddPostForm = () => {
         </FormControl>
         <FormControl>
           <Label>제목</Label>
-          <Input
-            type="text"
-            placeholder="제목을 입력해주세요"
-            onChange={changeTitle}
-            value={postData.title}
-          />
+          <Input type="text" placeholder="제목을 입력해주세요" onChange={changeTitle} value={postData.title} />
         </FormControl>
         <FormControl>
           <Label>
             태그 -{" "}
-            <span style={{ fontSize: "14px", color: "#005DFF" }}>
-              내용을 대표하는 태그를 입력해주세요. (0개 가능)
-            </span>
+            <span style={{ fontSize: "14px", color: "#005DFF" }}>내용을 대표하는 태그를 입력해주세요. (0개 가능)</span>
           </Label>
           <InputWrapper>
-            <Input
-              type="text"
-              placeholder="첫번째 태그"
-              style={{ flex: 1 }}
-              name="tag1"
-              onChange={changeTags}
-            />
-            <Input
-              type="text"
-              placeholder="두번째 태그"
-              style={{ flex: 1 }}
-              name="tag2"
-              onChange={changeTags}
-            />
-            <Input
-              type="text"
-              placeholder="세번째 태그"
-              style={{ flex: 1 }}
-              name="tag3"
-              onChange={changeTags}
-            />
+            <Input type="text" placeholder="첫번째 태그" style={{ flex: 1 }} name="tag1" onChange={changeTags} />
+            <Input type="text" placeholder="두번째 태그" style={{ flex: 1 }} name="tag2" onChange={changeTags} />
+            <Input type="text" placeholder="세번째 태그" style={{ flex: 1 }} name="tag3" onChange={changeTags} />
           </InputWrapper>
         </FormControl>
         <FormControl>

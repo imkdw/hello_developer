@@ -190,6 +190,8 @@ export class PostService {
           const reCommentWithUser = await Promise.all(
             reComments.map(async (reComment) => {
               const reCommentUser = await UserModel.findUserByUserId(reComment.user_id);
+
+              // user, {...reComment Data}
               return {
                 user: {
                   nickname: reCommentUser.nickname,
@@ -208,10 +210,15 @@ export class PostService {
               userId: commentUser.user_id,
             },
             ...changePropertySnakeToCamel(comment),
-            reComment: [changePropertySnakeToCamel(reCommentWithUser)],
+            reComment: reCommentWithUser.map((data) => changePropertySnakeToCamel(data)),
           });
         })
       );
+
+      // 댓글 ID 기준으로 정렬
+      allComments.sort((a, b) => {
+        return a.comment_id - b.comment_id;
+      });
 
       /** 카테고리 */
       const categorys = await Promise.all(
@@ -247,7 +254,6 @@ export class PostService {
   };
 
   static addComment = async (userId: string, postId: string, comment: string) => {
-    console.log(userId, postId, comment);
     try {
       /** 댓글이 비어있을 경우 */
       if (comment.length === 0) {

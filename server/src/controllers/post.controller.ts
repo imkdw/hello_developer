@@ -33,6 +33,7 @@ class PostController {
       const post = await PostService.detail(postId);
       res.status(200).json(post);
     } catch (err: any) {
+      console.error(err);
       res.status(err.status || 500).json({ code: err.code, message: err.message });
     }
   };

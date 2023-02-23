@@ -3,6 +3,7 @@ import {
   ADD_COMMENT_URL,
   ADD_POST_URL,
   ADD_RE_COMMENT_URL,
+  DELETE_POST_URL,
   POST_DETAIL_URL,
   POST_LIST_URL,
 } from "../config/api";
@@ -97,6 +98,24 @@ export class PostService {
           },
         }
       );
+
+      return res.status;
+    } catch (err: any) {
+      throw Object.assign(new Error(), {
+        status: err.response.status,
+        code: err.response.data.code,
+        message: err.response.data.me,
+      });
+    }
+  };
+
+  static delete = async (postId: string, accessToken: string) => {
+    try {
+      const res = await axios.delete(`${DELETE_POST_URL}/${postId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
       return res.status;
     } catch (err: any) {

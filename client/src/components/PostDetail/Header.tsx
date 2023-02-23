@@ -1,6 +1,10 @@
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { postDetailDataState } from "../../recoil/post.recoil";
+import { currentPostIdState, postDetailDataState } from "../../recoil/post.recoil";
+import { useState } from "react";
+import { PostService } from "../../services/post";
+import { loggedInUserState } from "../../recoil/auth.recoil";
+import { useNavigate } from "react-router-dom";
 
 const StyledHeader = styled.div`
   width: 100%;
@@ -41,16 +45,38 @@ const UtilButtons = styled.div`
   right: 0;
 `;
 
-const Button = styled.button`
+const Button = styled.div`
   width: 50px;
   height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  cursor: pointer;
 
   @media screen and (max-width: 767px) {
     width: 40px;
     height: 40px;
+  }
+`;
+
+const ButtonMenu = styled.div`
+  width: 100px;
+  height: 80px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  border-radius: 10px;
+  border: 1px solid #dbdbdb;
+`;
+
+const MenuItem = styled.button`
+  width: 100%;
+  height: 50%;
+  border-radius: 10px;
+
+  &:hover {
+    background-color: #dbdbdb;
   }
 `;
 
@@ -98,6 +124,38 @@ const MenuIcon = () => {
 const Header = () => {
   const postDetailData = useRecoilValue(postDetailDataState);
   const { user } = postDetailData;
+  const currentPostId = useRecoilValue(currentPostIdState);
+  const loggedInUser = useRecoilValue(loggedInUserState);
+  const navigator = useNavigate();
+
+  interface EnableMenu {
+    [key: string]: boolean;
+  }
+  const [enableMenu, setEnablueMenu] = useState<EnableMenu>({
+    share: false,
+    menu: false,
+  });
+
+  const enableMenuHandler = (menu: string) => {
+    setEnablueMenu((prevState) => {
+      return { ...prevState, [menu]: !prevState[menu] };
+    });
+  };
+
+  const deleteHandler = async () => {
+    try {
+      const res = await PostService.delete(currentPostId, loggedInUser.accessToken);
+
+      if (res === 200) {
+        alert("게시글 삭제가 완료되었습니다.");
+        navigator(-1);
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert("에러 발생");
+    }
+  };
+
   return (
     <StyledHeader>
       <Profile src={postDetailData.user.profileImg} />
@@ -108,14 +166,26 @@ const Header = () => {
         </CreatedAt>
       </Writer>
       <UtilButtons>
-        <Button>
+        <Button onClick={() => enableMenuHandler("share")}>
           <ShareIcon />
+          {enableMenu.share && (
+            <ButtonMenu>
+              <MenuItem>주소복사</MenuItem>
+              <MenuItem>카카오톡</MenuItem>
+            </ButtonMenu>
+          )}
         </Button>
         <Button>
           <BookmarkIcon />
         </Button>
-        <Button>
+        <Button onClick={() => enableMenuHandler("menu")}>
           <MenuIcon />
+          {enableMenu.menu && (
+            <ButtonMenu>
+              <MenuItem>수정하기</MenuItem>
+              <MenuItem onClick={deleteHandler}>삭제하기</MenuItem>
+            </ButtonMenu>
+          )}
         </Button>
       </UtilButtons>
     </StyledHeader>

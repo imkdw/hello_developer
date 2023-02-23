@@ -1,5 +1,6 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { UserService } from "../services/user.service";
+import { UpdateProfileUserDTO } from "../types/user";
 
 class UserController {
   static profile = async (req: Request, res: Response) => {
@@ -51,13 +52,14 @@ class UserController {
 
   static updateProfile = async (req: Request, res: Response) => {
     const { userId } = req.params;
-    const { nickname, introduce } = req.body;
+    const userDTO: UpdateProfileUserDTO = req.body;
     const tokenUserId = res.locals.userId;
 
     try {
-      await UserService.updateProfile(userId, tokenUserId, nickname, introduce);
+      await UserService.updateProfile(userId, tokenUserId, userDTO);
       res.status(200).json();
     } catch (err: any) {
+      console.error(err);
       res.status(err.status || 500).json({ code: err.code, message: err.message });
     }
   };
