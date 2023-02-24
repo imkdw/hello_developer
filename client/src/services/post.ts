@@ -3,9 +3,14 @@ import {
   ADD_COMMENT_URL,
   ADD_POST_URL,
   ADD_RE_COMMENT_URL,
+  DELETE_COMMENT_URL,
   DELETE_POST_URL,
+  DELETE_RE_COMMENT_URL,
   POST_DETAIL_URL,
   POST_LIST_URL,
+  UPDATE_COMMENT_URL,
+  UPDATE_POST_URL,
+  UPDATE_RE_COMMENT_URL,
 } from "../config/api";
 import { AddPostData } from "../types/post";
 
@@ -46,11 +51,11 @@ export class PostService {
 
   static detail = async (postId?: string) => {
     if (!postId) {
-      throw {
+      throw Object.assign(new Error(), {
         status: 404,
         code: "post-005",
         message: "post_not_found",
-      };
+      });
     }
 
     try {
@@ -119,6 +124,110 @@ export class PostService {
 
       return res.status;
     } catch (err: any) {
+      throw Object.assign(new Error(), {
+        status: err.response.status,
+        code: err.response.data.code,
+        message: err.response.data.me,
+      });
+    }
+  };
+
+  static update = async (updateData: AddPostData, postId: string, accessToken: string) => {
+    try {
+      const res = await axios.put(
+        `${UPDATE_POST_URL}/${postId}`,
+        { ...updateData },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      return res.status;
+    } catch (err: any) {
+      throw Object.assign(new Error(), {
+        status: err.response.status,
+        code: err.response.data.code,
+        message: err.response.data.me,
+      });
+    }
+  };
+
+  static deleteComment = async (commentId: number, accessToken: string) => {
+    try {
+      const res = await axios.delete(`${DELETE_COMMENT_URL}/${commentId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      return res.status;
+    } catch (err: any) {
+      throw Object.assign(new Error(), {
+        status: err.response.status,
+        code: err.response.data.code,
+        message: err.response.data.me,
+      });
+    }
+  };
+
+  static deleteReComment = async (recommentId: number, accessToken: string) => {
+    try {
+      const res = await axios.delete(`${DELETE_RE_COMMENT_URL}/${recommentId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      return res.status;
+    } catch (err: any) {
+      throw Object.assign(new Error(), {
+        status: err.response.status,
+        code: err.response.data.code,
+        message: err.response.data.me,
+      });
+    }
+  };
+
+  static updateComment = async (commetId: number, content: string, accessToken: string) => {
+    try {
+      const res = await axios.put(
+        `${UPDATE_COMMENT_URL}/${commetId}`,
+        { commentText: content },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      return res.status;
+    } catch (err: any) {
+      console.error(err);
+      throw Object.assign(new Error(), {
+        status: err.response.status,
+        code: err.response.data.code,
+        message: err.response.data.me,
+      });
+    }
+  };
+
+  static updateReComment = async (commetId: number, content: string, accessToken: string) => {
+    try {
+      const res = await axios.put(
+        `${UPDATE_RE_COMMENT_URL}/${commetId}`,
+        { reCommentText: content },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      return res.status;
+    } catch (err: any) {
+      console.error(err);
       throw Object.assign(new Error(), {
         status: err.response.status,
         code: err.response.data.code,

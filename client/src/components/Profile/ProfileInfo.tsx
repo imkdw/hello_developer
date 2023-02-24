@@ -19,7 +19,7 @@ const StyledProfileInfo = styled.form`
 
 const ProfileImageWrapper = styled.div`
   width: 100%;
-  height: 40%;
+  height: 38%;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -126,7 +126,7 @@ const ProfileInfo = () => {
       password: "",
       rePassword: "",
     });
-  }, []);
+  }, [isEdit]);
 
   const editHandler = () => {
     setIsEdit(!isEdit);

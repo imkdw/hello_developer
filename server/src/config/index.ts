@@ -22,4 +22,7 @@ export default {
     gmailClientSecret: process.env.GAMIL_OAUTH_CLIENT_SECRET,
     gmailRefreshToken: process.env.GAMIL_OAUTH_REFRESH_TOKEN,
   },
+  sentry: {
+    dsn: process.env.SENTRY_DSN,
+  },
 };

@@ -225,10 +225,13 @@ export class PostService {
         [post.category_id1, post.category_id2].map(async (categoryId) => {
           const category = await PostModel.findCategoryNameById(categoryId);
 
-          return category.name;
+          if (category) {
+            return category.name;
+          }
         })
       );
-      const categoryText = categorys.length === 1 ? categorys[0] : categorys.join("-");
+
+      const categoryText = categorys.filter((category) => category).length === 1 ? categorys[0] : categorys.join("-");
 
       /** 조회수 */
       const viewCnt = await PostModel.findViewCntByPostId(postId);
@@ -401,6 +404,7 @@ export class PostService {
           };
         }
       });
+
       await PostModel.updatePost(userId, postId, userDTO, categoryIds);
     } catch (err: any) {
       throw err;

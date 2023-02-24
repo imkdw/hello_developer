@@ -17,4 +17,5 @@ export interface findUserByEmailReturn extends RowDataPacket {
   password: string;
   nickname: string;
   profile_img: string;
+  is_verified_flag: number;
 }

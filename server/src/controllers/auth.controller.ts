@@ -3,18 +3,22 @@ import AuthService from "../services/auth.service";
 import { LoginUserDTO, RegisterUserDTO } from "../types/auth";
 
 class AuthController {
-  /** 로그인 컨트롤러 */
+  /**
+   * 회원가입 컨트롤러
+   * @returns - 엑세스토큰, 리프레쉬토큰, 사용자 아이디, 프로필사진, 닉네임 반환
+   */
   static login = async (req: Request, res: Response, next: NextFunction) => {
     const userDTO: LoginUserDTO = req.body;
 
     try {
-      const { accessToken, refreshToken, userId } = await AuthService.login(userDTO);
-      res.status(200).json({ accessToken, refreshToken, userId });
+      const loginRecords = await AuthService.login(userDTO);
+      res.status(200).json({ ...loginRecords });
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
+  /** 회원가입 컨트롤러 */
   static register = async (req: Request, res: Response, next: NextFunction) => {
     const userDTO: RegisterUserDTO = req.body;
 
@@ -22,7 +26,7 @@ class AuthController {
       const userId = await AuthService.register(userDTO);
       res.status(201).json({ userId });
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
@@ -33,7 +37,7 @@ class AuthController {
       const userId = await AuthService.adminRegister(userDTO);
       res.status(201).json({ userId });
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 

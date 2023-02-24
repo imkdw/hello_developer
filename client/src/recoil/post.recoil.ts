@@ -15,6 +15,7 @@ export const postDetailDataState = atom<PostDetailData>({
     recommendCnt: 0,
     title: "",
     viewCount: 0,
+    category: "",
   },
 });
 

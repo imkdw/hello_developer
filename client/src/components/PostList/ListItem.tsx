@@ -2,6 +2,7 @@ import { copyFileSync } from "fs";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { PostListData } from "../../types/post";
+import { dateFormat } from "../../utils/dateFormat";
 
 const StyledListItem = styled(Link)`
   width: 45%;
@@ -146,7 +147,7 @@ const ListItem = ({ user, post }: PostListData) => {
         <Profile src={user.profileImg} />
         <ProfileData>
           <Username>{user.nickname}</Username>
-          <CreatedAt>{post.createdAtDate}</CreatedAt>
+          <CreatedAt>{dateFormat(post.createdAtDate)}</CreatedAt>
         </ProfileData>
       </Writer>
       <Content>

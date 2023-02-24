@@ -49,9 +49,11 @@ export class PostModel {
       ];
       await connection.execute(postQuery, postValues);
 
+      console.log(userDTO.tags);
+
       /** 2. 태그 추가 */
       for (const tag of userDTO.tags) {
-        if (tag.name.length === 0) {
+        if (tag.name.trim().length === 0) {
           continue;
         }
 
@@ -538,17 +540,16 @@ export class PostModel {
     categoryIds: (number | null)[]
   ) => {
     const { title, content } = userDTO;
-
     const connection = await pool.getConnection();
 
     try {
       await connection.beginTransaction();
+      const query =
+        "UPDATE post SET title=?, content=?, category_id1=?, category_id2=? WHERE post_id = ? AND user_id = ?";
+      const valeus = [title, content, categoryIds[0], categoryIds[1] ? categoryIds[1] : null, postId, userId];
 
       // 태그를 제외한 컬럼 먼저 업데이트
-      await connection.execute(
-        "UPDATE post SET title=?, content=?, category_id1=?, category_id2=? WHERE post_id = ? AND user_id = ?",
-        [title, content, categoryIds[0], categoryIds[1], postId, userId]
-      );
+      await connection.execute(query, valeus);
 
       /**
        * 1. 태그 아이디로 태그 네임을 검색

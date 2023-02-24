@@ -44,7 +44,11 @@ const Input = styled.input`
   width: 85%;
   height: 100%;
   border-radius: 10px;
-  font-size: 16px;
+  font-size: 13px;
+
+  @media screen and (max-width: 767px) {
+    font-size: 11px;
+  }
 `;
 
 const Button = styled.button`
@@ -118,7 +122,7 @@ const RegisterForm = () => {
           <EmailIcon />
           <Input
             type="text"
-            placeholder="이메일 입력해주세요"
+            placeholder="이메일 형식에 맞추어 입력해주세요"
             name="email"
             onChange={accountChangeHandler}
             value={email}
@@ -131,7 +135,7 @@ const RegisterForm = () => {
           <PasswordIcon />
           <Input
             type="password"
-            placeholder="비밀번호를 입력해주세요"
+            placeholder="영문, 숫자, 특수문자를 포함하여 10자리 이상 입력해주세요"
             name="password"
             onChange={accountChangeHandler}
             value={password}
@@ -144,7 +148,7 @@ const RegisterForm = () => {
           <NicknameIcon />
           <Input
             type="text"
-            placeholder="닉네임을 입력해주세요"
+            placeholder="공백과 특수문자없이 8자리 이하로 입력해주세요"
             name="nickname"
             onChange={accountChangeHandler}
             value={nickname}

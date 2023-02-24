@@ -35,7 +35,7 @@ postRouter.post("/re-comment/add", isAuth, PostController.addReComment);
 /** 대댓글 삭제 */
 postRouter.delete("/re-comment/:reCommentId", isAuth, PostController.deleteReComment);
 
-/** 댓글 수정 */
+/** 대댓글 수정 */
 postRouter.put("/re-comment/:reCommentId", isAuth, PostController.updateReComment);
 
 /** 게시글 추천 추가/삭제*/

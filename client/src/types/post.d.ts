@@ -34,6 +34,7 @@ export interface PostDetailData {
   };
   tags: { name: string }[];
   createdAt: string;
+  category: string;
   comments: {
     user: {
       nickname: string;

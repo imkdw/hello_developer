@@ -5,6 +5,8 @@ import { useState } from "react";
 import { PostService } from "../../services/post";
 import { loggedInUserState } from "../../recoil/auth.recoil";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { dateFormat } from "../../utils/dateFormat";
 
 const StyledHeader = styled.div`
   width: 100%;
@@ -70,10 +72,14 @@ const ButtonMenu = styled.div`
   border: 1px solid #dbdbdb;
 `;
 
-const MenuItem = styled.button`
+const MenuItem = styled(Link)`
   width: 100%;
   height: 50%;
   border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
 
   &:hover {
     background-color: #dbdbdb;
@@ -144,11 +150,13 @@ const Header = () => {
 
   const deleteHandler = async () => {
     try {
-      const res = await PostService.delete(currentPostId, loggedInUser.accessToken);
+      if (window.confirm("정말 게시글을 삭제하실껀가요?")) {
+        const res = await PostService.delete(currentPostId, loggedInUser.accessToken);
 
-      if (res === 200) {
-        alert("게시글 삭제가 완료되었습니다.");
-        navigator(-1);
+        if (res === 200) {
+          alert("게시글 삭제가 완료되었습니다.");
+          navigator(-1);
+        }
       }
     } catch (err: any) {
       console.error(err);
@@ -162,7 +170,7 @@ const Header = () => {
       <Writer>
         <Username>{user.nickname}</Username>
         <CreatedAt>
-          {postDetailData.createdAt} · 조회수 : {postDetailData.viewCount}회
+          {dateFormat(postDetailData.createdAt)} · 조회수 {postDetailData.viewCount}회
         </CreatedAt>
       </Writer>
       <UtilButtons>
@@ -170,8 +178,8 @@ const Header = () => {
           <ShareIcon />
           {enableMenu.share && (
             <ButtonMenu>
-              <MenuItem>주소복사</MenuItem>
-              <MenuItem>카카오톡</MenuItem>
+              <MenuItem to="">주소복사</MenuItem>
+              <MenuItem to="">카카오톡</MenuItem>
             </ButtonMenu>
           )}
         </Button>
@@ -182,8 +190,10 @@ const Header = () => {
           <MenuIcon />
           {enableMenu.menu && (
             <ButtonMenu>
-              <MenuItem>수정하기</MenuItem>
-              <MenuItem onClick={deleteHandler}>삭제하기</MenuItem>
+              <MenuItem to={"/post/update/" + currentPostId}>수정하기</MenuItem>
+              <MenuItem to="" onClick={deleteHandler}>
+                삭제하기
+              </MenuItem>
             </ButtonMenu>
           )}
         </Button>

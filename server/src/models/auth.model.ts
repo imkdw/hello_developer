@@ -9,13 +9,11 @@ class AuthModel {
    * @returns {findUserByEmailReturn[]} - user_id, email, password, nickname
    */
   static findUserByEmail = async (email: string): Promise<findUserByEmailReturn[] | never[]> => {
-    const query = "SELECT user_id, email, password, nickname, profile_img FROM user WHERE email = ?";
+    const query = "SELECT user_id, email, password, nickname, profile_img, is_verified_flag FROM user WHERE email = ?";
 
     try {
       const connection = await pool.getConnection();
-      const [rows, fields]: [findUserByEmailReturn[], FieldPacket[]] = await connection.execute(query, [
-        email,
-      ]);
+      const [rows, fields]: [findUserByEmailReturn[], FieldPacket[]] = await connection.execute(query, [email]);
       connection.release();
       return rows;
     } catch (err: any) {

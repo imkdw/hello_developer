@@ -7,10 +7,6 @@ import { RegisterUserDTO } from "../types/auth";
  * @param {string} code - 에러 코드
  * @param {string} message - 에러 메세지
  */
-const errorHandler = (res: Response, code: string, message: string) => {
-  res.status(400).json({ code, message });
-};
-
 class AuthValidator {
   /**
    * 회원가입시 userDTO의 형식이 올바른지 검사하는 미들웨어
@@ -28,8 +24,17 @@ class AuthValidator {
       const emailRegExp =
         /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/g;
       if (email.length === 0 || !email.match(emailRegExp)) {
-        errorHandler(res, "auth-001", "invalid_email");
-        return;
+        const err = Object.assign(new Error(), {
+          status: 400,
+          message: "Bad Request",
+          description: "Email format is invalid",
+          data: {
+            action: "register",
+            parameter: userDTO.email,
+            message: "invalid_email",
+          },
+        });
+        next(err);
       }
 
       /**
@@ -39,8 +44,17 @@ class AuthValidator {
        */
       const specialCharRegExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g;
       if (password.length < 10 || !password.match(specialCharRegExp)) {
-        errorHandler(res, "auth-002", "invalid_password");
-        return;
+        const err = Object.assign(new Error(), {
+          status: 400,
+          message: "Bad Request",
+          description: "Password format is invalid",
+          data: {
+            action: "register",
+            parameter: "password",
+            message: "invalid_password",
+          },
+        });
+        next(err);
       }
 
       /** 닉네임 유효성 검증
@@ -48,13 +62,22 @@ class AuthValidator {
        * 2. 닉네임에 특수문자가 미포함 되어있는지 확인
        */
       if (!(nickname.length >= 2 && nickname.length <= 8) || nickname.match(specialCharRegExp)) {
-        errorHandler(res, "auth-003", "invalid_nickname");
-        return;
+        const err = Object.assign(new Error(), {
+          status: 400,
+          message: "Bad Request",
+          description: "Nickname format is invalid",
+          data: {
+            action: "register",
+            parameter: userDTO.nickname,
+            message: "invalid_nickname",
+          },
+        });
+        next(err);
       }
 
       next();
     } catch (err: any) {
-      res.status(400).json({ message: err.message });
+      next(err);
     }
   };
 }

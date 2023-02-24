@@ -7,11 +7,14 @@ import { Main } from "./components/Main";
 import { PostDetail } from "./components/PostDetail";
 import { PostList } from "./components/PostList";
 import { Profile } from "./components/Profile";
+import Test from "./components/Test";
+import { UpdatePost } from "./components/UpdatePost";
 import GlobalStyles from "./GlobalStyles";
 
 const App = () => {
   return (
     <>
+      {/* <Test /> */}
       <GlobalStyles />
       <Routes>
         <Route path="/main" element={<Main currentPage="main" />} />
@@ -27,6 +30,7 @@ const App = () => {
         <Route path="/post/add" element={<AddPost />} />
         <Route path="/profile/:userId" element={<Profile />} />
         <Route path="/verify/:verifyToken" element={<Verify />} />
+        <Route path="/post/update/:postId" element={<UpdatePost />} />
         <Route path="/" element={<Main currentPage="main" />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

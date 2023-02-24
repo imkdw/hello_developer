@@ -1,9 +1,14 @@
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { postDetailDataState } from "../../recoil/post.recoil";
+import { currentPostIdState, postDetailDataState } from "../../recoil/post.recoil";
 import WriteReComment from "./WriteReComment";
 import { useState } from "react";
 import { PostDetailData, PostDetailDataComments } from "../../types/post";
+import { loggedInUserState } from "../../recoil/auth.recoil";
+import { PostService } from "../../services/post";
+import UpdateComment from "./UpdateComment";
+import UpdateReComment from "./UpdateReComment";
+import { dateFormat } from "../../utils/dateFormat";
 
 const StyledComments = styled.div`
   width: 100%;
@@ -63,7 +68,7 @@ const ReCommentButton = styled.button`
 
 const ReComment = styled.div`
   width: 99%;
-  height: 120px;
+  height: 140px;
   position: relative;
   border-left: 3px solid #d9d9d9;
   display: flex;
@@ -74,8 +79,32 @@ const ReComment = styled.div`
 `;
 
 const MenuButton = styled.div`
+  width: 100px;
   position: absolute;
   right: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const ButtonMenu = styled.div`
+  width: 100px;
+  height: 80px;
+  border: 1px solid #dbdbdb;
+  border-radius: 10px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+`;
+
+const Button = styled.button`
+  width: 100%;
+  height: 50%;
+  border-radius: 10px;
+
+  &:hover {
+    background-color: #dbdbdb;
+  }
 `;
 
 const MenuIcon = () => {
@@ -103,13 +132,53 @@ interface EnableWriter {
   };
 }
 
+interface EnableButton {
+  [key: string]: {
+    isEnable: boolean;
+  };
+}
+
+interface IsEditComment {
+  [key: string]: {
+    isEditing: boolean;
+  };
+}
+
 const Comments = () => {
-  const postDetailData = useRecoilValue(postDetailDataState);
   const [enableWriter, setEnableWriter] = useState<EnableWriter>({});
+  const [enableButton, setEnableButton] = useState<EnableButton>({});
+  const [isEditComment, setIsEditComment] = useState<IsEditComment>({});
 
-  const tempComments = [...postDetailData.comments];
-  tempComments.sort((a, b) => a.commentId - b.commentId);
+  const currentPostId = useRecoilValue(currentPostIdState);
+  const setPostDetailData = useSetRecoilState(postDetailDataState);
+  const loggedInUser = useRecoilValue(loggedInUserState);
+  const postDetailData = useRecoilValue(postDetailDataState);
 
+  /** 댓글 순서를 입력시간에 따라 정렬 */
+  const sortedComments = [...postDetailData.comments];
+  sortedComments.sort((a, b) => a.commentId - b.commentId);
+
+  /** 댓글 내 메뉴버튼 컨트롤 */
+  const enableButtonHandler = (commentIdentifier: string) => {
+    setEnableButton((prevState) => {
+      const existData = prevState[commentIdentifier];
+      let newData;
+      if (existData) {
+        newData = { isEnable: !prevState[commentIdentifier].isEnable };
+      } else {
+        newData = {
+          isEnable: true,
+        };
+      }
+
+      return {
+        ...prevState,
+        [commentIdentifier]: newData,
+      };
+    });
+  };
+
+  /** 댓글 내 답글쓰기 창 컨트롤 */
   const writerHandler = (commentId: number) => {
     setEnableWriter((prevState) => {
       const existData = prevState[commentId];
@@ -131,38 +200,132 @@ const Comments = () => {
     });
   };
 
+  /** 댓글 내 수정하기 창 컨트롤 */
+  const editingHandler = (commentIdentifier: string) => {
+    setIsEditComment((prevState) => {
+      const existData = prevState[commentIdentifier];
+      let newData;
+      if (existData) {
+        newData = {
+          isEditing: !prevState[commentIdentifier].isEditing,
+        };
+      } else {
+        newData = {
+          isEditing: true,
+        };
+      }
+
+      return {
+        ...prevState,
+        [commentIdentifier]: newData,
+      };
+    });
+
+    console.log(isEditComment);
+  };
+
+  /** 댓글 삭제 */
+  const commentDeleteHandler = async (commentId: number) => {
+    try {
+      const res = await PostService.deleteComment(commentId, loggedInUser.accessToken);
+
+      if (res === 200 && window.confirm("정말 댓글을 삭제하실껀가요?")) {
+        const { post } = await PostService.detail(currentPostId);
+        setPostDetailData(post);
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert("에러 발생");
+    }
+  };
+
+  /** 대댓글 삭제 */
+  const reCommentDeleteHandler = async (reCommentId: number) => {
+    try {
+      const res = await PostService.deleteReComment(reCommentId, loggedInUser.accessToken);
+
+      if (res === 200 && window.confirm("정말 대댓글을 삭제하실껀가요?")) {
+        const { post } = await PostService.detail(currentPostId);
+        setPostDetailData(post);
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert("에러 발생");
+    }
+  };
+
   return (
     <StyledComments>
-      {tempComments.map((comment) => (
+      {sortedComments.map((comment) => (
         <Comment key={comment.commentId}>
-          <Header>
-            <Profile src={comment.user.profileImg} />
-            <Writer>
-              <Username>{comment.user.nickname}</Username>
-              <CreatedAt>{comment.createdAtDate}</CreatedAt>
-            </Writer>
-            <MenuButton>
-              <MenuIcon />
-            </MenuButton>
-          </Header>
-          <Text>{comment.content}</Text>
-          <ReCommentButton onClick={() => writerHandler(comment.commentId)}>
-            {enableWriter[comment.commentId]?.isEnable ? "답글취소" : "답글쓰기"}
-          </ReCommentButton>
-          {enableWriter[comment.commentId]?.isEnable && <WriteReComment commentId={comment.commentId} />}
+          {isEditComment[`co-${comment.commentId}`]?.isEditing ? (
+            <UpdateComment
+              commentId={comment.commentId}
+              content={comment.content}
+              editingHandler={editingHandler}
+              commentIdentifier={"co-" + comment.commentId}
+            />
+          ) : (
+            <>
+              <Header>
+                <Profile src={comment.user.profileImg} />
+                <Writer>
+                  <Username>{comment.user.nickname}</Username>
+                  <CreatedAt>{dateFormat(comment.createdAtDate)}</CreatedAt>
+                </Writer>
+                {comment.userId === loggedInUser.userId && (
+                  <MenuButton onClick={() => enableButtonHandler(`co-${comment.commentId}`)}>
+                    <MenuIcon />
+                    {enableButton[`co-${comment.commentId}`]?.isEnable && (
+                      <ButtonMenu>
+                        <Button onClick={() => editingHandler(`co-${comment.commentId}`)}>수정하기</Button>
+                        <Button onClick={() => commentDeleteHandler(comment.commentId)}>삭제하기</Button>
+                      </ButtonMenu>
+                    )}
+                  </MenuButton>
+                )}
+              </Header>
+              <Text>{comment.content}</Text>
+              <ReCommentButton onClick={() => writerHandler(comment.commentId)}>
+                {enableWriter[comment.commentId]?.isEnable ? "답글취소" : "답글쓰기"}
+              </ReCommentButton>
+            </>
+          )}
+          {enableWriter[comment.commentId]?.isEnable && (
+            <WriteReComment commentId={comment.commentId} writingHanlder={writerHandler} />
+          )}
           {comment.reComment.map((data) => (
             <ReComment key={data.reCommentId}>
-              <Header style={{ marginLeft: "10px" }}>
-                <Profile src={data.user.profileImg} />
-                <Writer>
-                  <Username>{data.user.nickname}</Username>
-                  <CreatedAt>{data.createdAtDate}</CreatedAt>
-                </Writer>
-                <MenuButton>
-                  <MenuIcon />
-                </MenuButton>
-              </Header>
-              <Text style={{ marginLeft: "10px" }}>{data.content}</Text>
+              {isEditComment[`re-${data.reCommentId}`]?.isEditing ? (
+                <UpdateReComment
+                  commentId={data.reCommentId}
+                  content={data.content}
+                  editingHandler={editingHandler}
+                  commentIdentifier={"re-" + data.reCommentId}
+                />
+              ) : (
+                <>
+                  <Header style={{ marginLeft: "10px" }}>
+                    <Profile src={data.user.profileImg} />
+                    <Writer>
+                      <Username>{data.user.nickname}</Username>
+                      <CreatedAt>{dateFormat(data.createdAtDate)}</CreatedAt>
+                    </Writer>
+                    {comment.userId === loggedInUser.userId && (
+                      <MenuButton onClick={() => enableButtonHandler(`re-${data.reCommentId}`)}>
+                        <MenuIcon />
+                        {enableButton[`re-${data.reCommentId}`]?.isEnable && (
+                          <ButtonMenu>
+                            <Button onClick={() => editingHandler(`re-${data.reCommentId}`)}>수정하기</Button>
+                            <Button onClick={() => reCommentDeleteHandler(data.reCommentId)}>삭제하기</Button>
+                          </ButtonMenu>
+                        )}
+                      </MenuButton>
+                    )}
+                  </Header>
+                  <Text style={{ marginLeft: "10px" }}>{data.content}</Text>
+                </>
+              )}
             </ReComment>
           ))}
         </Comment>

@@ -32,6 +32,7 @@ const PostDetail = () => {
     const getDetail = async () => {
       try {
         const { status, post } = await PostService.detail(postId);
+        console.log(post);
 
         if (status === 200 || status === 304) {
           setPostDetailData(post);

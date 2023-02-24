@@ -5,23 +5,20 @@ import { loggedInUserState } from "../../recoil/auth.recoil";
 import { currentPostIdState, postDetailDataState } from "../../recoil/post.recoil";
 import { PostService } from "../../services/post";
 
-const StyledWriteReComment = styled.div`
-  align-self: flex-end;
-  width: 99%;
+const StyledUpdateComment = styled.div`
+  width: 100%;
   display: flex;
-  border-left: 3px solid #d9d9d9;
-  gap: 20px;
+  justify-content: space-between;
 `;
 
 const Profile = styled.img`
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  margin-left: 20px;
 `;
 
 const InputWrapper = styled.form`
-  width: 90%;
+  width: 94%;
   height: 150px;
   display: flex;
   flex-direction: column;
@@ -48,6 +45,18 @@ const Textarea = styled.textarea`
   }
 `;
 
+const Buttons = styled.div`
+  display: flex;
+  gap: 20px;
+`;
+
+const CancelButton = styled.button`
+  width: 60px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #a8a8a8;
+`;
+
 const SubmitButton = styled.button`
   width: 100px;
   height: 40px;
@@ -57,55 +66,66 @@ const SubmitButton = styled.button`
   font-size: 16px;
 `;
 
-interface WriteReCommentProps {
+interface UpdateCommentProps {
   commentId: number;
-  writingHanlder(commentId: number): void;
+  content: string;
+  editingHandler(commentIdentifier: string): void;
+  commentIdentifier: string;
 }
 
-const WriteReComment = ({ commentId, writingHanlder }: WriteReCommentProps) => {
+const UpdateComment = ({ commentId, content, editingHandler, commentIdentifier }: UpdateCommentProps) => {
   const loggedInUser = useRecoilValue(loggedInUserState);
-  const setPostDetailData = useSetRecoilState(postDetailDataState);
   const currentPostId = useRecoilValue(currentPostIdState);
+  const setPostDetailData = useSetRecoilState(postDetailDataState);
 
-  const [reComment, setReComment] = useState("");
+  const [comment, setComment] = useState(content);
 
-  const reCommentChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
+  const commentChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = event.currentTarget;
-    setReComment(value);
+    setComment(value);
   };
 
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
-      const status = await PostService.addReComment(commentId, reComment, loggedInUser.accessToken);
+      const status = await PostService.updateComment(commentId, comment, loggedInUser.accessToken);
 
-      if (status === 201) {
-        alert("대댓글 작성이 완료되었습니다.");
-        setReComment("");
-        // 댓글 작성이후 api 호출해서 댓글 내용 최신화
+      if (status === 200) {
+        alert("수정이 완료되었습니다.");
+        setComment("");
+        editingHandler(commentIdentifier);
+
         const { post } = await PostService.detail(currentPostId);
         setPostDetailData(post);
-        writingHanlder(commentId);
       }
+
+      // 댓글 작성이후 api 호출해서 댓글 내용 최신화
+      const { post } = await PostService.detail(currentPostId);
+      setPostDetailData(post);
     } catch (err: any) {
       alert("에러발생");
     }
   };
 
   return (
-    <StyledWriteReComment>
+    <StyledUpdateComment>
       <Profile src={loggedInUser.profileImg} />
       <InputWrapper onSubmit={submitHandler}>
         <Textarea
           placeholder="사용자들의 댓글은 작성자에게 큰 힘이됩니다."
-          onChange={reCommentChangeHandler}
-          value={reComment}
+          onChange={commentChangeHandler}
+          value={comment}
         />
-        <SubmitButton type="submit">답글 쓰기</SubmitButton>
+        <Buttons>
+          <CancelButton type="button" onClick={() => editingHandler(commentIdentifier)}>
+            취소
+          </CancelButton>
+          <SubmitButton type="submit">저장하기</SubmitButton>
+        </Buttons>
       </InputWrapper>
-    </StyledWriteReComment>
+    </StyledUpdateComment>
   );
 };
 
-export default WriteReComment;
+export default UpdateComment;
