@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { loggedInUserState } from "../../recoil/auth.recoil";
 import { PostService } from "../../services/post";
 import { AddPostData } from "../../types/post";
+import { categoryValidation } from "../../utils/validation";
 import TextEditor from "./TextEditor";
 
 const StyledAddPostForm = styled.form`
@@ -125,14 +126,30 @@ const AddPostForm = () => {
     content: "",
   });
 
+  interface IsPostDataValid {
+    [key: string]: null | boolean;
+  }
+
+  const [isPostDataValid, setIsPostDataValid] = useState<IsPostDataValid>({
+    category: null,
+    title: null,
+    tags: null,
+    content: null,
+  });
+
   const loggedInUser = useRecoilValue(loggedInUserState);
 
   const navigator = useNavigate();
 
   const changeCategory = (event: ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.currentTarget;
+
     setPostData((prevState) => {
       return { ...prevState, category: value };
+    });
+
+    setIsPostDataValid((prevState) => {
+      return { ...prevState, category: categoryValidation(postData.category) };
     });
   };
 
@@ -175,7 +192,6 @@ const AddPostForm = () => {
 
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(postData);
 
     const body = {
       title: postData.title,
@@ -231,12 +247,19 @@ const AddPostForm = () => {
         </FormControl>
         <FormControl>
           <Label>제목</Label>
-          <Input type="text" placeholder="제목을 입력해주세요" onChange={changeTitle} value={postData.title} />
+          <Input
+            type="text"
+            placeholder="제목은 1~50자 사이로 입력해주세요"
+            onChange={changeTitle}
+            value={postData.title}
+          />
         </FormControl>
         <FormControl>
           <Label>
             태그 -{" "}
-            <span style={{ fontSize: "14px", color: "#005DFF" }}>내용을 대표하는 태그를 입력해주세요. (0개 가능)</span>
+            <span style={{ fontSize: "14px", color: "#005DFF" }}>
+              내용을 대표하는 태그를 입력해주세요. (미입력 가능)
+            </span>
           </Label>
           <InputWrapper>
             <Input type="text" placeholder="첫번째 태그" style={{ flex: 1 }} name="tag1" onChange={changeTags} />

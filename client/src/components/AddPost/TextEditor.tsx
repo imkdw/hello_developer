@@ -19,7 +19,7 @@ const TextEditor = ({ onChange }: TextEditorProps) => {
         initialEditType: "markdown",
         previewStyle: "vertical",
         hideModeSwitch: true,
-        initialValue: "내용을 입력해주세요!",
+        initialValue: "# 내용은 최소 10자부터 100,000자 까지 입력이 가능합니다.",
       });
 
       editor.on("change", () => {

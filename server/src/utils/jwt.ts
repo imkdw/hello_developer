@@ -14,18 +14,29 @@ class Jwt {
     try {
       return jwt.verify(accessToken, config.jwt.secretKey) as JwtVerifyReturn;
     } catch (err: any) {
+      /** 토큰이 만료됬을경우 */
       if (err instanceof jwt.TokenExpiredError) {
-        throw {
-          status: 401,
-          code: "auth-008",
-          message: "expired_token",
-        };
+        throw Object.assign(new Error(), {
+          status: 400,
+          message: "Bad Request",
+          description: "Your token is expired",
+          data: {
+            action: "jwt",
+            parameter: "",
+            message: "expired_token",
+          },
+        });
       } else if (err instanceof jwt.JsonWebTokenError) {
-        throw {
-          status: 401,
-          code: "auth-007",
-          message: "invalid_token",
-        };
+        throw Object.assign(new Error(), {
+          status: 400,
+          message: "Bad Request",
+          description: "Your token is invalid",
+          data: {
+            action: "jwt",
+            parameter: "",
+            message: "invalid_token",
+          },
+        });
       }
     }
   };

@@ -1,16 +1,20 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { PostService } from "../services/post.service";
 import { AddPostUserDTO, UpdatePostUserDTO } from "../types/post";
 
 class PostController {
-  static add = async (req: Request, res: Response) => {
+  /**
+   * 게시글 추가 컨트롤러
+   * @returns {postId} - 추가된 게시글 아이디를 반환(테스트용)
+   */
+  static add = async (req: Request, res: Response, next: NextFunction) => {
     const userDTO: AddPostUserDTO = req.body;
 
     try {
       const postId = await PostService.add(res.locals.userId, userDTO);
       res.status(201).json({ postId });
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 

@@ -5,6 +5,7 @@ import { useSetRecoilState } from "recoil";
 import { loggedInUserState } from "../../../recoil/auth.recoil";
 import { useNavigate } from "react-router-dom";
 import { AuthService } from "../../../services/auth";
+import { isLoadingState } from "../../../recoil/ui.recoil";
 
 const StyledLoginForm = styled.form`
   width: 100%;
@@ -64,10 +65,9 @@ const LoginForm = () => {
     password: "",
   });
 
-  const { email, password } = account;
   const navigator = useNavigate();
-
   const setLoggedInUser = useSetRecoilState(loggedInUserState);
+  const setIsLoading = useSetRecoilState(isLoadingState);
 
   const accountChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.currentTarget;
@@ -80,23 +80,35 @@ const LoginForm = () => {
     event.preventDefault();
 
     try {
-      const { status, data } = await AuthService.login(email, password);
+      setIsLoading(true);
+      const { status, data } = await AuthService.login(account.email, account.password);
       const { accessToken, userId, profileImg, nickname } = data;
 
       if (status === 200) {
         navigator("/main");
+
         setLoggedInUser((prevState) => {
           return { ...prevState, accessToken, userId, profileImg, nickname };
         });
       }
+
+      setIsLoading(false);
     } catch (err: any) {
-      const { status, code, message } = err;
-      if (status === 400 && code === "auth-006" && message === "invalid_email_or_password") {
-        alert("존재하지 않는 이메일이거나 비밀번호가 올바르지 않습니다.");
-        return;
+      setIsLoading(false);
+      let errMessage = "";
+
+      switch (err.status) {
+        case 400:
+          errMessage = "이메일이 존재하지 않거나 비밀번호가 일치하지 않습니다.";
+          break;
+        case 401:
+          errMessage = "인증되지 않은 사용자입니다. 이메일을 확인해주세요.";
+          break;
+        default:
+          errMessage = "서버 오류입니다. 잠시후 다시 시도해주세요.";
       }
 
-      alert("서버 오류입니다. 잠시후 다시 시도해주세요");
+      alert(errMessage);
     }
   };
 
@@ -109,7 +121,7 @@ const LoginForm = () => {
           <Input
             type="text"
             placeholder="이메일 입력해주세요"
-            value={email}
+            value={account.email}
             name="email"
             onChange={accountChangeHandler}
           />
@@ -122,7 +134,7 @@ const LoginForm = () => {
           <Input
             type="password"
             placeholder="비밀번호를 입력해주세요"
-            value={password}
+            value={account.password}
             name="password"
             onChange={accountChangeHandler}
           />

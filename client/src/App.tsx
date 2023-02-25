@@ -1,21 +1,24 @@
 import { Route, Routes } from "react-router";
+import { useRecoilValue } from "recoil";
 import { AddPost } from "./components/AddPost";
 import { AuthPage } from "./components/Auth";
 import Verify from "./components/Auth/Verify/Verify";
+import Loading from "./components/Common/Loading";
 import NotFound from "./components/Error/NotFound";
 import { Main } from "./components/Main";
 import { PostDetail } from "./components/PostDetail";
 import { PostList } from "./components/PostList";
 import { Profile } from "./components/Profile";
-import Test from "./components/Test";
 import { UpdatePost } from "./components/UpdatePost";
 import GlobalStyles from "./GlobalStyles";
+import { isLoadingState } from "./recoil/ui.recoil";
 
 const App = () => {
+  const isLoading = useRecoilValue(isLoadingState);
   return (
     <>
-      {/* <Test /> */}
       <GlobalStyles />
+      {isLoading && <Loading />}
       <Routes>
         <Route path="/main" element={<Main currentPage="main" />} />
         <Route path="/login" element={<AuthPage />} />

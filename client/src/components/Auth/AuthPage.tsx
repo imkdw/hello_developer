@@ -1,4 +1,5 @@
 import { useLocation } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { Intro } from "./common";
 import { Login } from "./Login";
@@ -42,7 +43,6 @@ const Content = styled.div`
 const AuthPage = () => {
   /** 현재 접속중인 경로의 path 가져오기 */
   const pathname = useLocation().pathname;
-
   return (
     <StyledAuthPage>
       <AuthPageBar />

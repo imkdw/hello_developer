@@ -1,9 +1,10 @@
 import styled from "styled-components";
 import { EmailIcon, NicknameIcon, PasswordIcon } from "../common";
 import { ChangeEvent, FormEvent, useState } from "react";
-import axios from "axios";
-import { REGISTER_URL } from "../../../config/api";
 import { AuthService } from "../../../services/auth";
+import { emailValidation, nicknameValidation, passwordValidation } from "../../../utils/validation";
+import { useSetRecoilState } from "recoil";
+import { isLoadingState } from "../../../recoil/ui.recoil";
 
 const StyledRegisterForm = styled.form`
   width: 100%;
@@ -20,7 +21,6 @@ const FormControl = styled.div`
   height: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
   align-items: center;
 `;
 
@@ -38,6 +38,7 @@ const InputWrapper = styled.div`
   align-items: center;
   justify-content: center;
   gap: 10px;
+  margin-top: 10px;
 `;
 
 const Input = styled.input`
@@ -58,11 +59,31 @@ const Button = styled.button`
   color: white;
   font-size: 18px;
   border-radius: 10px;
-  margin-top: 60px;
+  margin-top: 10px;
 
   @media screen and (max-width: 767px) {
     margin-top: 20px;
   }
+`;
+
+const DisableButton = styled.button`
+  width: 90%;
+  height: 40px;
+  background-color: #80a1fd;
+  color: white;
+  font-size: 18px;
+  border-radius: 10px;
+  margin-top: 10px;
+
+  @media screen and (max-width: 767px) {
+    margin-top: 20px;
+  }
+`;
+
+const ErrMessage = styled.p`
+  width: 90%;
+  color: red;
+  margin-top: 5px;
 `;
 
 // TODO: 회원가입시 사용자 입력값 검증로직 추가필요
@@ -73,44 +94,82 @@ const RegisterForm = () => {
     nickname: "",
   });
 
-  const { email, password, nickname } = account;
+  const [isValidAccount, setIsValidAccount] = useState({
+    email: null,
+    password: null,
+    nickname: null,
+  });
+
+  const setIsLoading = useSetRecoilState(isLoadingState);
 
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!(isValidAccount.email || isValidAccount.password || isValidAccount.nickname)) {
+      alert("올바르지 않은 계정 형식입니다.");
+      return;
+    }
 
     try {
-      const status = await AuthService.register(email, password, nickname);
+      setIsLoading(true);
+      const status = await AuthService.register(account.email, account.password, account.nickname);
 
       if (status === 201) {
         alert("인증코드를 입력하신 이메일로 발송했습니다. 인증코드를 확인해주세요.");
       }
-      return;
-    } catch (err: any) {
-      const { status, code, message } = err;
 
-      if (status === 400) {
-        if (code === "auth-001" && message === "invalid_email") {
-          alert("이메일 형식이 올바르지 않습니다.");
-        } else if (code === "auth-002" && message === "invalid_password") {
-          alert("비밀번호 형식이 올바르지 않습니다.");
-        } else if (code === "auth-003" && message === "invalid_nickname") {
-          alert("닉네임 형식이 올바르지 않습니다.");
-        } else if (code === "auth-004" && message === "exist_email") {
-          alert("이미 사용중인 이메일 입니다.");
-        } else if (code === "auth-005" && message === "exist_nickname") {
-          alert("이미 사용중인 닉네임 입니다.");
+      setIsLoading(false);
+    } catch (err: any) {
+      setIsLoading(false);
+      if (err.status === 400) {
+        let errMessage: string = "";
+
+        switch (err.data.message) {
+          case "invalid_email":
+            errMessage = "이메일 형식이 올바르지 않습니다.";
+            break;
+          case "invalid_password":
+            errMessage = "비밀번호 형식이 올바르지 않습니다.";
+            break;
+          case "invalid_nickname":
+            errMessage = "닉네임 형식이 올바르지 않습니다.";
+            break;
+          case "exist_email":
+            errMessage = "중복된 이메일 입니다.";
+            break;
+          case "exist_nickname":
+            errMessage = "중복된 닉네임 입니다.";
+            break;
         }
+
+        alert(errMessage);
       } else {
         alert("서버 오류입니다. 잠시후 다시 시도해주세요.");
-        console.error(err);
       }
     }
   };
 
   const accountChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.currentTarget;
+
     setAccount((prevState) => {
       return { ...prevState, [name]: value };
+    });
+
+    let validator: boolean;
+    switch (name) {
+      case "email":
+        validator = emailValidation(value);
+        break;
+      case "password":
+        validator = passwordValidation(value);
+        break;
+      case "nickname":
+        validator = nicknameValidation(value);
+        break;
+    }
+
+    setIsValidAccount((prevState) => {
+      return { ...prevState, [name]: validator };
     });
   };
 
@@ -125,9 +184,12 @@ const RegisterForm = () => {
             placeholder="이메일 형식에 맞추어 입력해주세요"
             name="email"
             onChange={accountChangeHandler}
-            value={email}
+            value={account.email}
           />
         </InputWrapper>
+        {isValidAccount.email !== null && !isValidAccount.email && (
+          <ErrMessage>이메일 형식이 올바르지 않습니다.</ErrMessage>
+        )}
       </FormControl>
       <FormControl>
         <Label>비밀번호</Label>
@@ -138,9 +200,12 @@ const RegisterForm = () => {
             placeholder="영문, 숫자, 특수문자를 포함하여 10자리 이상 입력해주세요"
             name="password"
             onChange={accountChangeHandler}
-            value={password}
+            value={account.password}
           />
         </InputWrapper>
+        {isValidAccount.password !== null && !isValidAccount.password && (
+          <ErrMessage>비밀번호 형식이 올바르지 않습니다.</ErrMessage>
+        )}
       </FormControl>
       <FormControl>
         <Label>닉네임</Label>
@@ -151,11 +216,20 @@ const RegisterForm = () => {
             placeholder="공백과 특수문자없이 8자리 이하로 입력해주세요"
             name="nickname"
             onChange={accountChangeHandler}
-            value={nickname}
+            value={account.nickname}
           />
         </InputWrapper>
+        {isValidAccount.nickname !== null && !isValidAccount.nickname && (
+          <ErrMessage>닉네임 형식이 올바르지 않습니다.</ErrMessage>
+        )}
       </FormControl>
-      <Button type="submit">회원가입</Button>
+      {isValidAccount.nickname && isValidAccount.password && isValidAccount.nickname ? (
+        <Button type="submit">회원가입</Button>
+      ) : (
+        <DisableButton type="button" disabled>
+          회원가입
+        </DisableButton>
+      )}
     </StyledRegisterForm>
   );
 };

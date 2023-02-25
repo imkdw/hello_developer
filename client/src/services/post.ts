@@ -13,6 +13,31 @@ import {
   UPDATE_RE_COMMENT_URL,
 } from "../config/api";
 import { AddPostData } from "../types/post";
+import * as Sentry from "@sentry/react";
+
+/**
+ * 공통된 에러처리를 위한 에러 핸들러
+ * @param {any} err - axios 에러 데이터
+ */
+const errorHandler = (err: any) => {
+  console.log(err);
+
+  /** 500에러 또는 상태코드가 없는 에러 발생시 Sentry에 Logging */
+  if (err.status === 500 || !err.status) {
+    Sentry.captureEvent(err);
+  }
+
+  throw Object.assign(new Error(), {
+    status: err.response.data.status || 500,
+    message: err.response.data.message || "",
+    description: err.response.data.description || "",
+    data: {
+      action: err.response.data.data.action || "",
+      parameter: err.response.data.data.parameter || "",
+      message: err.response.data.data.message || "",
+    },
+  });
+};
 
 export class PostService {
   static add = async (accessToken: string, postData: AddPostData) => {

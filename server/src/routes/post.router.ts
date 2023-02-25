@@ -1,12 +1,13 @@
 import express from "express";
 import PostController from "../controllers/post.controller";
 import { isAuth } from "../middlewares/isAuth";
+import { PostValidator } from "../validators/post.validator";
 
 const postRouter = express.Router();
 
 // TODO: 게시글 추가시 내용 검증로직 추가필요
 /** 게시글 추가 */
-postRouter.post("/add", isAuth, PostController.add);
+postRouter.post("/add", isAuth, PostValidator.add, PostController.add);
 
 /** 게시글 목록 가져오기 */
 postRouter.get("/list", PostController.list);

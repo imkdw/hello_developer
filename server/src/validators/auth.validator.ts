@@ -1,12 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { RegisterUserDTO } from "../types/auth";
 
-/**
- * 클라이언트로 에러를 반환하는 함수
- * @param {Response } res - express res 객체
- * @param {string} code - 에러 코드
- * @param {string} message - 에러 메세지
- */
 class AuthValidator {
   /**
    * 회원가입시 userDTO의 형식이 올바른지 검사하는 미들웨어

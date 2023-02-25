@@ -5,7 +5,14 @@ import { AddPostUserDTO, AllComments, FindPostByCategoryIdReturn, UpdatePostUser
 import Secure from "../utils/secure";
 
 export class PostService {
+  /**
+   * 게시글 추가 서비스 로직
+   * @param userId - 게시글 추가를 요청한 유저의 아이디
+   * @param {AddPostUserDTO} userDTO - 게시글 내용을 담은 userDTO
+   * @returns {postId} - 게시글 아이디 반환
+   */
   static add = async (userId: string, userDTO: AddPostUserDTO) => {
+    /** 게시글 아이디는 hash값을 사용 */
     const postId = Secure.getUUID();
 
     try {
@@ -22,20 +29,8 @@ export class PostService {
         })
       );
 
-      /** 이상한 카테고리를 받았을경우 에러 반환 */
-      categoryId.forEach((id) => {
-        if (!id) {
-          throw {
-            status: 400,
-            code: "post-001",
-            message: "unknown_category",
-          };
-        }
-        return;
-      });
-
-      /** 데이터 삽입 */
       await PostModel.add(userId, postId, categoryId, userDTO);
+
       return postId;
     } catch (err: any) {
       throw err;

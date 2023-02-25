@@ -37,7 +37,7 @@ class AuthService {
         throw Object.assign(new Error(), {
           status: 401,
           message: "Unauthorized",
-          description: "You're not authorized user",
+          description: "Not authorized user",
           data: {
             action: "login",
             parameter: userDTO.email,
@@ -199,11 +199,18 @@ class AuthService {
   };
 
   static verify = async (verifyToken: string) => {
+    /** 파라미터에서 토큰을 찾을 수 없을때 */
     if (!verifyToken) {
-      throw {
-        status: 400,
-        message: "토큰 없음",
-      };
+      throw Object.assign(new Error(), {
+        status: 404,
+        message: "Not Found",
+        description: "Verify token not found",
+        data: {
+          action: "verify",
+          parameter: verifyToken,
+          message: "verfiy_token_not_found",
+        },
+      });
     }
 
     try {
@@ -248,27 +255,27 @@ class AuthService {
     }
   };
 
+  /**
+   * 로그아웃 서비스 로직
+   * @param {string} userId - 로그인된 유저를 식별하기 위한 아이디
+   * @param {string} accessToken - 현재 로그인된 유저의 엑세스 토큰
+   */
   // TODO: token 저장공간 redis로 이관필요
   static logout = (userId: string, accessToken: string) => {
     try {
       const userTokens = app.get("tokens")[userId];
 
+      /** 서버에 저장된 유저의 토큰이 없을경우 */
       if (!userTokens) {
-        throw {
-          status: 404,
-          code: "auth-011",
-          message: "logged_in_user_not_found",
-        };
+        return;
       }
 
+      /** 서버에 저장된 유저의 토큰과 전달받은 토큰이 없을경우*/
       if (userTokens.accessToken !== accessToken) {
-        throw {
-          status: 401,
-          code: "auth-010",
-          message: "invalid_token",
-        };
+        return;
       }
 
+      /** 유저 아이디와 엑세스 토큰이 일치한경우 서버에서 로그아웃 처리 */
       delete app.get("tokens")[userId];
     } catch (err: any) {
       throw err;

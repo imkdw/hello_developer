@@ -26,13 +26,13 @@ app.set("tokens", {});
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-// app.use(morgan("dev"));
+app.use(morgan("dev"));
 
 /** CORS */
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
   res.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, PATCH ,DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, baggage, sentry-trace");
   next();
 });
 
@@ -45,15 +45,15 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     Sentry.captureException(err);
   }
 
-  console.error(err);
+  console.log(err);
   res.status(err.status).json({
-    status: err.status,
-    message: err.message,
-    description: err.description,
+    status: err.status || 500,
+    message: err.message || "",
+    description: err.description || "",
     data: {
-      action: err.data.action,
-      parameter: err.data.parameter,
-      message: err.data.message,
+      action: err.data.action || "",
+      parameter: err.data.parameter || "",
+      message: err.data.message || "",
     },
   });
 });

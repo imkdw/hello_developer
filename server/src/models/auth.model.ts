@@ -55,10 +55,7 @@ class AuthModel {
       await connection.execute(query, [verfiyToken]);
       connection.release();
     } catch (err: any) {
-      throw {
-        status: 500,
-        message: err.message,
-      };
+      throw err;
     }
   };
 }

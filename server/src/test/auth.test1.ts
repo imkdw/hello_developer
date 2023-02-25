@@ -221,6 +221,16 @@ describe(`로그인 API, [POST] ${LOGIN_API}`, () => {
     expect(registerRes.body).toHaveProperty("userId");
 
     const res = await request(app).post(LOGIN_API).send(account);
-    expect(res.status);
+    expect(res.status).toBe(401);
+    expect(res.body).toEqual({
+      status: 401,
+      message: "Unauthorized",
+      description: "Not authorized user",
+      data: {
+        action: "login",
+        parameter: EMAIL,
+        message: "unauthorized_user",
+      },
+    });
   });
 });

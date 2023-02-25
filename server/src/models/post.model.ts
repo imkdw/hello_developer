@@ -23,12 +23,11 @@ import { Time } from "../utils/time";
 
 export class PostModel {
   /**
-   * 새로운 게시글 생성
-   * @param {string} userId - 유저의 ID(uuid)
-   * @param {string} postId - 게시물 ID(uuid)
-   * @param {number[]} category - 게시물 카테고리 ID들
-   * @param {AddPostUserDTO} userDTO - 사용자가 입력한 값들
-   * @returns {null} - 반환값 없음
+   * 새로운 게시글을 생성
+   * @param {string} userId - 유저의 ID
+   * @param {string} postId - 게시물 ID
+   * @param {number[]} category - 게시물 카테고리 ID 값들
+   * @param {AddPostUserDTO} userDTO - 사용자가 게시글 추가에 입력한 값들
    */
   static add = async (userId: string, postId: string, category: number[], userDTO: AddPostUserDTO) => {
     const connection = await pool.getConnection();
@@ -47,25 +46,23 @@ export class PostModel {
         category[0],
         category[1] ? category[1] : null,
       ];
-      await connection.execute(postQuery, postValues);
 
-      console.log(userDTO.tags);
+      await connection.execute(postQuery, postValues);
 
       /** 2. 태그 추가 */
       for (const tag of userDTO.tags) {
+        /** 태그가 빈값일 경우 추가안함 */
         if (tag.name.trim().length === 0) {
           continue;
         }
 
         const tagName = tag.name.toLowerCase();
-
         const [tagResult, tagFields]: [FindTagIdByNameReturn[], FieldPacket[]] = await connection.query(
-          "SELECT tag_id FROM tags WHERE name=?",
+          "SELECT tag_id FROM tags WHERE name = ?",
           [tagName]
         );
 
         let tagId;
-
         if (tagResult.length === 0) {
           /** 기존에 등록된 태그 없을경우 새로 등록하고 auto_increment로 증가한 아이디를 가져옴 */
           const [tagResult, tagFields]: [ResultSetHeader, FieldPacket[]] = await connection.execute(
@@ -78,6 +75,7 @@ export class PostModel {
           tagId = tagResult[0].tag_id;
         }
 
+        /** post_tags 테이블에 태그값들 추가 */
         const postTagsQuery = "INSERT INTO post_tags(post_id, tag_id) VALUES(?, ?)";
         await connection.execute(postTagsQuery, [postId, tagId]);
       }
@@ -89,10 +87,7 @@ export class PostModel {
       await connection.commit();
     } catch (err: any) {
       await connection.rollback();
-      throw {
-        status: 500,
-        message: err.message,
-      };
+      throw err;
     } finally {
       connection.release();
     }
