@@ -2,9 +2,10 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { loggedInUserState } from "../../recoil/auth.recoil";
 import { userProfileState } from "../../recoil/user.recoil";
-import { useState, FormEvent, ChangeEvent, useEffect } from "react";
+import { useState, FormEvent, ChangeEvent, useEffect, useRef } from "react";
 import { UserProfileUpdateData } from "../../types/user";
 import { UserService } from "../../services/user";
+import { nicknameValidation, passwordValidation } from "../../utils/validation";
 
 const StyledProfileInfo = styled.form`
   width: 48%;
@@ -23,6 +24,7 @@ const ProfileImageWrapper = styled.div`
   position: relative;
   overflow: hidden;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 `;
@@ -46,6 +48,15 @@ const ProfileImage = styled.img`
   box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 `;
 
+const ProfileImageChangeButton = styled.button`
+  position: absolute;
+  bottom: 20px;
+  font-size: 20px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+  padding: 0 10px;
+  border-radius: 10px;
+`;
+
 const FormControl = styled.div`
   width: 95%;
   height: auto;
@@ -65,7 +76,7 @@ const LabelDesc = styled.span`
 
 const Input = styled.input`
   height: 50px;
-  font-size: 18px;
+  font-size: 14px;
   border-radius: 10px;
   border: 1px solid #a1a1a1;
   padding: 0 10px;
@@ -109,6 +120,8 @@ const ProfileInfo = () => {
   const [userProfile, setUserProfile] = useRecoilState(userProfileState);
   const loggedInUser = useRecoilValue(loggedInUserState);
 
+  const [isEdit, setIsEdit] = useState(false);
+  const [isSubmit, setIsSubmit] = useState(false);
   const [updateData, setUpdateData] = useState<UserProfileUpdateData>({
     nickname: userProfile.nickname,
     introduce: userProfile.introduce,
@@ -116,9 +129,18 @@ const ProfileInfo = () => {
     rePassword: "",
   });
 
-  const [isEdit, setIsEdit] = useState(false);
-  const [isSubmit, setIsSubmit] = useState(false);
+  interface ISValidUpdateData {
+    [key: string]: boolean | null;
+  }
 
+  /** 업데이트 데이터 유효성 여부 */
+  const [isValidUpdateData, setIsValidUpdateData] = useState<ISValidUpdateData>({
+    nickname: null,
+    introduce: null,
+    rePassword: null,
+  });
+
+  /** 페이지 렌더링과 동시에 updateProfile 업데이트 */
   useEffect(() => {
     setUpdateData({
       nickname: userProfile.nickname,
@@ -136,16 +158,40 @@ const ProfileInfo = () => {
     setIsSubmit(!isSubmit);
   };
 
-  // TODO: 사용자 정보 수정시 입력값 검증로직 추가필요
+  const updateDataChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.currentTarget;
+
+    setUpdateData((prevState) => {
+      return { ...prevState, [name]: value };
+    });
+
+    setIsValidUpdateData((prevState) => {
+      let isValid = false;
+
+      switch (name) {
+        case "nickname":
+          isValid = nicknameValidation(value);
+          break;
+        case "introduce":
+          isValid = value.length < 31;
+          break;
+        case "rePassword":
+          isValid = passwordValidation(value);
+      }
+
+      return { ...prevState, [name]: isValid };
+    });
+  };
+
   const submitHanlder = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     // 수정 모드일때만 submit 이벤트 처리
     if (isSubmit) {
       try {
-        const { status } = await UserService.updateProfile(userProfile.userId, updateData, loggedInUser.accessToken);
+        const res = await UserService.updateProfile(userProfile.userId, updateData, loggedInUser.accessToken);
 
-        if (status === 200) {
+        if (res === 200) {
           alert("회원정보 수정이 완료되었습니다.");
         }
 
@@ -158,34 +204,84 @@ const ProfileInfo = () => {
           return { ...prevState, password: "", rePassword: "" };
         });
       } catch (err: any) {
-        console.error(err);
-        alert("에러발생");
+        let message = "";
+
+        if (err.status === 400) {
+          switch (err.data.message) {
+            case "invalid_nickname":
+              message = "닉네임 형식이 잘못됬습니다.";
+              break;
+            case "invalid_introduce":
+              message = "자기소개 형식이 잘못되었습니다";
+              break;
+            case "invalid_password":
+              message = "비밀번호 형식이 잘못되었습니다.";
+              break;
+            case "user_not_match":
+              message = "사용자 정보가 일치하지 않습니다.";
+              break;
+            case "password_not_match":
+              message = "비밀번호가 일치하지 않습니다.";
+              break;
+            case "expired_token":
+              message = "인증이 만료되었습니다. 다시 로그인 해주세요";
+              break;
+            default:
+              message = "서버 오류입니다. 다시 시도해주세요";
+          }
+        } else if (err.status === 404) {
+          message = "프로필 업데이트에 필요한 정보를 찾을수 없습니다.";
+        } else {
+          message = "서버 오류입니다. 다시 시도해주세요";
+        }
+
+        alert(message);
       }
     }
   };
 
-  const updateDataChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.currentTarget;
+  const fileUploadRef = useRef<HTMLInputElement | null>(null);
 
-    setUpdateData((prevState) => {
-      return { ...prevState, [name]: value };
-    });
+  const inputClickHandler = () => {
+    fileUploadRef.current?.click();
+  };
+
+  const profileImageChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.currentTarget.files;
+    console.log(file);
   };
 
   return (
     <StyledProfileInfo onSubmit={submitHanlder}>
       <ProfileImageWrapper>
+        <input
+          type="file"
+          name="image"
+          hidden
+          ref={fileUploadRef}
+          accept="image/*"
+          onChange={profileImageChangeHandler}
+        />
         <ProfileImageBackground image={userProfile.profileImg} />
         <ProfileImage src={userProfile.profileImg} />
+        {loggedInUser.userId === userProfile.userId && (
+          <ProfileImageChangeButton onClick={inputClickHandler}>사진변경</ProfileImageChangeButton>
+        )}
       </ProfileImageWrapper>
       <FormControl>
         <Label>
           닉네임 - <LabelDesc>커뮤니티를 사용하면서 사용자를 대표하는 이름입니다</LabelDesc>
         </Label>
         {isEdit ? (
-          <Input type="text" name="nickname" value={updateData.nickname} onChange={updateDataChangeHandler} />
+          <Input
+            type="text"
+            name="nickname"
+            value={updateData.nickname}
+            onChange={updateDataChangeHandler}
+            placeholder="공백과 특수문자없이 8자리 이하로 입력해주세요"
+          />
         ) : (
-          <Input type="text" value={userProfile.nickname} disabled />
+          <Input type="text" name="nickname" value={userProfile.nickname} disabled />
         )}
       </FormControl>
       <FormControl>
@@ -193,31 +289,48 @@ const ProfileInfo = () => {
           자기소개 - <LabelDesc>커뮤니티에서 나는 어떤사람인지 소개해보세요</LabelDesc>
         </Label>
         {isEdit ? (
-          <Input type="text" name="introduce" value={updateData.introduce} onChange={updateDataChangeHandler} />
+          <Input
+            type="text"
+            name="introduce"
+            value={updateData.introduce}
+            onChange={updateDataChangeHandler}
+            placeholder="자기소개는 최대 30자까지 입력이 가능합니다"
+          />
         ) : (
-          <Input type="text" value={userProfile.introduce} disabled />
+          <Input type="text" name="introduce" value={userProfile.introduce} disabled />
         )}
       </FormControl>
-      <FormControl>
-        <Label>
-          현재 비밀번호 - <LabelDesc>비밀번호 변경을 희망하는 경우 입력해주세요</LabelDesc>
-        </Label>
-        {isEdit ? (
-          <Input type="password" name="password" value={updateData.password} onChange={updateDataChangeHandler} />
-        ) : (
-          <Input type="password" disabled />
-        )}
-      </FormControl>
-      <FormControl>
-        <Label>
-          변경할 비밀번호 - <LabelDesc>변경하고 싶은 비밀번호를 입력해주세요</LabelDesc>
-        </Label>
-        {isEdit ? (
-          <Input type="password" name="rePassword" value={updateData.rePassword} onChange={updateDataChangeHandler} />
-        ) : (
-          <Input type="password" disabled />
-        )}
-      </FormControl>
+      {loggedInUser.userId === userProfile.userId && (
+        <FormControl>
+          <Label>
+            현재 비밀번호 - <LabelDesc>비밀번호 변경을 희망하는 경우 입력해주세요</LabelDesc>
+          </Label>
+          {isEdit ? (
+            <Input type="password" name="password" value={updateData.password} onChange={updateDataChangeHandler} />
+          ) : (
+            <Input type="password" name="password" disabled />
+          )}
+        </FormControl>
+      )}
+
+      {loggedInUser.userId === userProfile.userId && (
+        <FormControl>
+          <Label>
+            변경할 비밀번호 - <LabelDesc>변경하고 싶은 비밀번호를 입력해주세요</LabelDesc>
+          </Label>
+          {isEdit ? (
+            <Input
+              type="password"
+              name="rePassword"
+              value={updateData.rePassword}
+              onChange={updateDataChangeHandler}
+              placeholder="영문, 숫자, 특수문자를 포함하여 10자리 이상 입력해주세요"
+            />
+          ) : (
+            <Input type="password" name="rePassword" disabled />
+          )}
+        </FormControl>
+      )}
       {loggedInUser.userId === userProfile.userId && (
         <>
           {isEdit ? (

@@ -1,4 +1,3 @@
-import axios from "axios";
 import { ChangeEvent, useState, useCallback, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
@@ -6,7 +5,7 @@ import styled from "styled-components";
 import { loggedInUserState } from "../../recoil/auth.recoil";
 import { PostService } from "../../services/post";
 import { AddPostData } from "../../types/post";
-import { categoryValidation } from "../../utils/validation";
+import { categoryValidation, contentValidation, tagsValidation, titleValidation } from "../../utils/validation";
 import TextEditor from "./TextEditor";
 
 const StyledAddPostForm = styled.form`
@@ -98,12 +97,22 @@ const CancelButton = styled.button`
   border: 1px solid #bebebe;
   border-radius: 10px;
 `;
+
 const SubmitButton = styled.button`
   width: 90px;
   height: 100%;
   background-color: #0090f9;
   color: white;
   border-radius: 10px;
+`;
+
+const DisabledSubmitButton = styled.button`
+  width: 90px;
+  height: 100%;
+  background-color: #5fbcff;
+  color: white;
+  border-radius: 10px;
+  cursor: default;
 `;
 
 const InputWrapper = styled.div`
@@ -117,7 +126,6 @@ const InputWrapper = styled.div`
   }
 `;
 
-// TODO: 글 작성시 사용자 입력값 검증로직 추가필요
 const AddPostForm = () => {
   const [postData, setPostData] = useState<AddPostData>({
     category: "none",
@@ -133,12 +141,10 @@ const AddPostForm = () => {
   const [isPostDataValid, setIsPostDataValid] = useState<IsPostDataValid>({
     category: null,
     title: null,
-    tags: null,
     content: null,
   });
 
   const loggedInUser = useRecoilValue(loggedInUserState);
-
   const navigator = useNavigate();
 
   const changeCategory = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -149,7 +155,7 @@ const AddPostForm = () => {
     });
 
     setIsPostDataValid((prevState) => {
-      return { ...prevState, category: categoryValidation(postData.category) };
+      return { ...prevState, category: categoryValidation(value) };
     });
   };
 
@@ -158,10 +164,20 @@ const AddPostForm = () => {
     setPostData((prevState) => {
       return { ...prevState, title: value };
     });
+
+    setIsPostDataValid((prevState) => {
+      return { ...prevState, title: titleValidation(value) };
+    });
   };
 
   const changeTags = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.currentTarget;
+
+    if (value.length > 10) {
+      alert("태그는 최대 10자까지 입력이 가능합니다.");
+      event.currentTarget.value = "";
+      return;
+    }
 
     switch (name) {
       case "tag1":
@@ -188,6 +204,10 @@ const AddPostForm = () => {
     setPostData((prevState) => {
       return { ...prevState, content: markdown };
     });
+
+    setIsPostDataValid((prevState) => {
+      return { ...prevState, content: contentValidation(markdown) };
+    });
   }, []);
 
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
@@ -208,21 +228,28 @@ const AddPostForm = () => {
         navigator(-1);
       }
     } catch (err: any) {
-      const { status, code, message } = err;
-      console.error(status, code, message);
+      let message = "";
 
-      switch (status) {
-        case 400:
-          alert("입력값이 이상합니다.");
-          break;
-        case 401:
-          alert("인증이 만료되었습니다.");
-          navigator("/login");
-          break;
-        default:
-          alert("서버 오류입니다. 잠시후 다시 시도해주세요.");
-          console.error(err);
+      if (err.status === 400) {
+        switch (err.data.message) {
+          case "invalid_title":
+            message = "제목의 글이가 너무 길거나 짧습니다.";
+            break;
+          case "invalid_content":
+            message = "본문의 글이가 너무 길거나 짧습니다.";
+            break;
+          case "invalid_category":
+            message = "유효한 카테고리를 설정해주세요";
+            break;
+          case "invalid_tags":
+            message = "하나의 태그는 10자까지 지정이 가능합니다";
+            break;
+        }
+      } else {
+        message = "서버 오류입니다. 다시 시도해주세요";
       }
+
+      alert(message);
     }
   };
 
@@ -258,7 +285,7 @@ const AddPostForm = () => {
           <Label>
             태그 -{" "}
             <span style={{ fontSize: "14px", color: "#005DFF" }}>
-              내용을 대표하는 태그를 입력해주세요. (미입력 가능)
+              내용을 대표하는 태그를 10자까지 입력해주세요. (미입력 가능)
             </span>
           </Label>
           <InputWrapper>
@@ -273,7 +300,13 @@ const AddPostForm = () => {
         </FormControl>
         <Buttons>
           <CancelButton>취소</CancelButton>
-          <SubmitButton>등록</SubmitButton>
+          {isPostDataValid.category && isPostDataValid.title && isPostDataValid.content ? (
+            <SubmitButton type="submit">등록</SubmitButton>
+          ) : (
+            <DisabledSubmitButton disabled type="button">
+              등록
+            </DisabledSubmitButton>
+          )}
         </Buttons>
       </Wrapper>
     </StyledAddPostForm>

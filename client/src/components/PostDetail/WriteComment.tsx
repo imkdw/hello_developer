@@ -54,20 +54,42 @@ const SubmitButton = styled.button`
   font-size: 16px;
 `;
 
+const DisableSubmitButton = styled.button`
+  width: 100px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: #5fbcff;
+  color: white;
+  font-size: 16px;
+  cursor: default;
+`;
+
 const WriteComment = () => {
   const loggedInUser = useRecoilValue(loggedInUserState);
   const currentPostId = useRecoilValue(currentPostIdState);
   const setPostDetailData = useSetRecoilState(postDetailDataState);
 
   const [comment, setComment] = useState("");
+  const [isValidComment, setIsValidComment] = useState(false);
 
   const commentChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = event.currentTarget;
     setComment(value);
+
+    if (value.length === 0 || value.length > 200) {
+      setIsValidComment(false);
+    } else {
+      setIsValidComment(true);
+    }
   };
 
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!isValidComment || comment.length === 0 || comment.length > 200) {
+      alert("댓글은 1~200자 사이로 입력해주세요");
+      return;
+    }
 
     try {
       const status = await PostService.addComment(currentPostId, comment, loggedInUser.accessToken);
@@ -89,12 +111,14 @@ const WriteComment = () => {
     <StyledWriteComment>
       <Profile src={loggedInUser.profileImg} />
       <InputWrapper onSubmit={submitHandler}>
-        <Textarea
-          placeholder="사용자들의 댓글은 작성자에게 큰 힘이됩니다."
-          onChange={commentChangeHandler}
-          value={comment}
-        />
-        <SubmitButton type="submit">댓글 쓰기</SubmitButton>
+        <Textarea placeholder="1~200자 사이로 입력해주세요" onChange={commentChangeHandler} value={comment} />
+        {isValidComment ? (
+          <SubmitButton type="submit">댓글 쓰기</SubmitButton>
+        ) : (
+          <DisableSubmitButton type="button" disabled>
+            댓글 쓰기
+          </DisableSubmitButton>
+        )}
       </InputWrapper>
     </StyledWriteComment>
   );

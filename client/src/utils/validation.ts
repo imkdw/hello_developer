@@ -5,7 +5,6 @@
  */
 export const emailValidation = (email: string) => {
   /**
-   * 이메일 유효성 검증
    * 1. 이메일이 비어있는지 확인
    * 2. 이메일 형식이 올바른지 확인(정규식 / RFC 5322)
    */
@@ -26,7 +25,6 @@ export const emailValidation = (email: string) => {
  */
 export const passwordValidation = (password: string) => {
   /**
-   * 비밀번호 유효성 검증
    * 1. 비밀번호가 10자리 이상인지 확인
    * 2. 비밀번호가 특수문자를 포함하는지 확인
    */
@@ -44,7 +42,7 @@ export const passwordValidation = (password: string) => {
  * @returns {boolean}
  */
 export const nicknameValidation = (nickname: string) => {
-  /** 닉네임 유효성 검증
+  /**
    * 1. 닉네임이 2자리 이상, 8자리 이하인지 확인
    * 2. 닉네임에 특수문자가 미포함 되어있는지 확인
    */
@@ -62,7 +60,6 @@ export const nicknameValidation = (nickname: string) => {
  */
 export const titleValidation = (title: string) => {
   /**
-   * 제목 유효성 검증
    * 1. 제목은 1~50자로 설정 필요
    */
   if (title.length === 0 || title.length >= 50) {
@@ -78,7 +75,6 @@ export const titleValidation = (title: string) => {
  */
 export const categoryValidation = (category: string) => {
   /**
-   * 게시글 카테고리의 유효성 검증
    * 1. 카테고리는 none(선택안함) 외에 값을 골라야함
    */
   if (category === "none") {
@@ -90,18 +86,30 @@ export const categoryValidation = (category: string) => {
 
 /**
  * 게시글 작성시 태그의 유효성 검증
- * @param {{name: string}[]} tags - 게시글의 태그들
+ * @param {string} tag - 게시글의 태그 텍스트
  */
-export const tagsValidation = (tags: { name: string }[]) => {
+export const tagsValidation = (tag: string) => {
   /**
-   * 게시글 태그 유효성 검증
    * 1. 태그는 최대 10자 까지 설정가능
    */
-  tags.forEach((tag) => {
-    if (tag.name.length >= 11) {
-      return false;
-    }
-  });
+  if (tag.length > 10) {
+    return false;
+  }
+
+  return true;
+};
+
+/**
+ * 게시글 작성시 본문의 유효성 검증
+ * @param {string} content - 게시글 내용
+ */
+export const contentValidation = (content: string) => {
+  /**
+   * 1. 내용은 1 ~ 100,000자 사이로 입력 필요
+   */
+  if (content.length === 0 || content.length > 100000) {
+    return false;
+  }
 
   return true;
 };

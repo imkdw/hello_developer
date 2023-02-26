@@ -26,7 +26,7 @@ app.set("tokens", {});
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(morgan("dev"));
+// app.use(morgan("dev"));
 
 /** CORS */
 app.use((req, res, next) => {
@@ -43,9 +43,9 @@ app.use("/v1/api/user", userRouter);
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   if (err.status === 500 || !err.status) {
     Sentry.captureException(err);
+    console.error(err);
   }
 
-  console.log(err);
   res.status(err.status).json({
     status: err.status || 500,
     message: err.message || "",

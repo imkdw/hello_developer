@@ -3,6 +3,7 @@ import styled from "styled-components";
 import SideMenuLink from "./SideMenuLink";
 import SideMenuLogo from "./SideMenuLogo";
 import SideMenuSearch from "./SideMenuSearch";
+import React from "react";
 
 import { useSetRecoilState } from "recoil";
 import { enableSideMenuState } from "../../recoil/ui.recoil";
@@ -54,7 +55,6 @@ const SideMenu = () => {
   const sideMenuHandler = () => {
     setEnableSideMenu((prevState) => !prevState);
     document.body.style.overflow = "scroll";
-    console.log("Hello");
   };
 
   return (
@@ -74,4 +74,4 @@ const SideMenu = () => {
   );
 };
 
-export default SideMenu;
+export default React.memo(SideMenu);

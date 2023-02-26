@@ -9,7 +9,7 @@ export const TOKEN_URL = `${BASE_URL}/auth/token`; // refresh token으로 access
 export const LOGOUT_URL = `${BASE_URL}/auth/logout`; // 로그아웃
 
 /** 유저 관련 */
-export const PROFILE_URL = `${BASE_URL}/user/profile`; // 유저 프로필
+export const PROFILE_URL = `${BASE_URL}/user`; // 유저 프로필
 
 /** 게시글 관련 */
 export const ADD_POST_URL = `${BASE_URL}/post/add`; // 글 작성

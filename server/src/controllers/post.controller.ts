@@ -18,7 +18,7 @@ class PostController {
     }
   };
 
-  static list = async (req: Request, res: Response) => {
+  static list = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const category1 = (req.query.category1 || "") as string;
       const category2 = (req.query.category2 || "") as string;
@@ -26,23 +26,22 @@ class PostController {
       const posts = await PostService.list(category1, category2);
       res.status(200).json(posts);
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
-  static detail = async (req: Request, res: Response) => {
+  static detail = async (req: Request, res: Response, next: NextFunction) => {
     const { postId } = req.params;
 
     try {
       const post = await PostService.detail(postId);
       res.status(200).json(post);
     } catch (err: any) {
-      console.error(err);
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
-  static addComment = async (req: Request, res: Response) => {
+  static addComment = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { postId, comment } = req.body;
       const userId = res.locals.userId;
@@ -50,12 +49,11 @@ class PostController {
       const commentId = await PostService.addComment(userId, postId, comment);
       res.status(201).json({ commentId });
     } catch (err: any) {
-      console.error(err);
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
-  static addReComment = async (req: Request, res: Response) => {
+  static addReComment = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { commentId, reComment } = req.body;
       const userId = res.locals.userId;
@@ -63,11 +61,11 @@ class PostController {
       const reCommentId = await PostService.addRecomment(userId, commentId, reComment);
       res.status(201).json({ reCommentId });
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
-  static deletePost = async (req: Request, res: Response) => {
+  static deletePost = async (req: Request, res: Response, next: NextFunction) => {
     const { postId } = req.params;
     const userId = res.locals.userId;
 
@@ -75,11 +73,11 @@ class PostController {
       await PostService.deletePost(userId, postId);
       res.status(200).json();
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
-  static deleteComment = async (req: Request, res: Response) => {
+  static deleteComment = async (req: Request, res: Response, next: NextFunction) => {
     const commentId = Number(req.params.commentId);
     const userId = res.locals.userId;
 
@@ -87,11 +85,11 @@ class PostController {
       await PostService.deleteComment(userId, commentId);
       res.status(200).json();
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
-  static deleteReComment = async (req: Request, res: Response) => {
+  static deleteReComment = async (req: Request, res: Response, next: NextFunction) => {
     const reCommentId = Number(req.params.reCommentId);
     const userId = res.locals.userId;
 
@@ -99,11 +97,11 @@ class PostController {
       await PostService.deleteReComment(userId, reCommentId);
       res.status(200).json();
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
-  static recommedation = async (req: Request, res: Response) => {
+  static recommedation = async (req: Request, res: Response, next: NextFunction) => {
     const { postId } = req.params;
     const userId = res.locals.userId;
 
@@ -111,22 +109,22 @@ class PostController {
       await PostService.recommedation(userId, postId);
       res.status(200).json();
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
-  static views = async (req: Request, res: Response) => {
+  static views = async (req: Request, res: Response, next: NextFunction) => {
     const { postId } = req.params;
 
     try {
       await PostService.views(postId);
       res.status(200).json();
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
-  static updateComment = async (req: Request, res: Response) => {
+  static updateComment = async (req: Request, res: Response, next: NextFunction) => {
     const { commentText } = req.body;
     const { commentId } = req.params;
 
@@ -134,12 +132,11 @@ class PostController {
       await PostService.updateComment(commentId, commentText);
       res.status(200).json();
     } catch (err: any) {
-      console.error(err);
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
-  static updateReComment = async (req: Request, res: Response) => {
+  static updateReComment = async (req: Request, res: Response, next: NextFunction) => {
     const { reCommentText } = req.body;
     const { reCommentId } = req.params;
 
@@ -147,11 +144,11 @@ class PostController {
       await PostService.updateReComment(reCommentId, reCommentText);
       res.status(200).json();
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
-  static updatePost = async (req: Request, res: Response) => {
+  static updatePost = async (req: Request, res: Response, next: NextFunction) => {
     const userDTO: UpdatePostUserDTO = req.body;
     const userId = res.locals.userId;
     const postId = req.params.postId;
@@ -160,7 +157,7 @@ class PostController {
       await PostService.updatePost(userId, postId, userDTO);
       res.status(200).json();
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 }

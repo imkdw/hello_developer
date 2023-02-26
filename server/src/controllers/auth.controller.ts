@@ -65,7 +65,7 @@ class AuthController {
   /**
    * 로그아웃 컨트롤러
    */
-  static logout = async (req: Request, res: Response) => {
+  static logout = async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.params;
     const accessToken = req.headers.authorization?.split(" ")[1] as string;
 
@@ -73,19 +73,18 @@ class AuthController {
       AuthService.logout(userId, accessToken);
       res.status(200).json();
     } catch (err: any) {
-      console.log(err);
       res.status(err.status || 500).json({ message: err.message });
     }
   };
 
-  static token = async (req: Request, res: Response) => {
+  static token = async (req: Request, res: Response, next: NextFunction) => {
     const { accessToken, refreshToken } = req.body;
 
     try {
       const token = await AuthService.token(accessToken, refreshToken);
       res.status(200).json(token);
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 }

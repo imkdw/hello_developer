@@ -4,7 +4,7 @@ import { currentPostIdState, postDetailDataState } from "../../recoil/post.recoi
 import { useState } from "react";
 import { PostService } from "../../services/post";
 import { loggedInUserState } from "../../recoil/auth.recoil";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { dateFormat } from "../../utils/dateFormat";
 
@@ -132,7 +132,8 @@ const Header = () => {
   const { user } = postDetailData;
   const currentPostId = useRecoilValue(currentPostIdState);
   const loggedInUser = useRecoilValue(loggedInUserState);
-  const navigator = useNavigate();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   interface EnableMenu {
     [key: string]: boolean;
@@ -143,9 +144,15 @@ const Header = () => {
   });
 
   const enableMenuHandler = (menu: string) => {
-    setEnablueMenu((prevState) => {
-      return { ...prevState, [menu]: !prevState[menu] };
-    });
+    if (menu === "share") {
+      setEnablueMenu((prevState) => {
+        return { ...prevState, share: !prevState["share"], menu: false };
+      });
+    } else {
+      setEnablueMenu((prevState) => {
+        return { ...prevState, menu: !prevState["menu"], share: false };
+      });
+    }
   };
 
   const deleteHandler = async () => {
@@ -155,13 +162,18 @@ const Header = () => {
 
         if (res === 200) {
           alert("게시글 삭제가 완료되었습니다.");
-          navigator(-1);
+          navigate(-1);
         }
       }
     } catch (err: any) {
       console.error(err);
       alert("에러 발생");
     }
+  };
+
+  const copyUrlHandler = () => {
+    navigator.clipboard.writeText("http://localhost:3000" + location.pathname);
+    alert("주소 복사가 완료되었습니다.");
   };
 
   return (
@@ -178,7 +190,9 @@ const Header = () => {
           <ShareIcon />
           {enableMenu.share && (
             <ButtonMenu>
-              <MenuItem to="">주소복사</MenuItem>
+              <MenuItem to="" onClick={copyUrlHandler}>
+                주소복사
+              </MenuItem>
               <MenuItem to="">카카오톡</MenuItem>
             </ButtonMenu>
           )}

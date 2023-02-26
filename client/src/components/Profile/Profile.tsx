@@ -36,8 +36,15 @@ const Profile = () => {
           setUserProfile(user);
         }
       } catch (err: any) {
-        console.error(err);
-        alert("에러");
+        let message = "";
+
+        if (err.status === 404) {
+          message = "사용자 정보를 찾을수 없습니다.";
+        } else {
+          message = "서버 오류입니다. 다시 시도해주세요";
+        }
+
+        alert(message);
       }
     };
 

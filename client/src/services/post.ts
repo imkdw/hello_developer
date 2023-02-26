@@ -53,11 +53,8 @@ export class PostService {
       );
       return res.status;
     } catch (err: any) {
-      throw Object.assign(new Error(), {
-        status: err.response.status,
-        code: err.response.data.code,
-        message: err.response.data.me,
-      });
+      errorHandler(err);
+      throw err;
     }
   };
 

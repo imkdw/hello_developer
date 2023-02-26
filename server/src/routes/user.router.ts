@@ -1,6 +1,7 @@
 import express from "express";
 import UserController from "../controllers/user.controller";
 import { isAuth } from "../middlewares/isAuth";
+import { UserValidator } from "../validators/user.validator";
 
 const userRouter = express.Router();
 
@@ -8,7 +9,7 @@ const userRouter = express.Router();
 userRouter.get("/:userId", UserController.profile);
 
 /** 프로필 수정 */
-userRouter.put("/:userId", isAuth, UserController.updateProfile);
+userRouter.put("/:userId", isAuth, UserValidator.profile, UserController.updateProfile);
 
 /** 히스토리 가져오기 */
 userRouter.get("/:userId/history", UserController.history);

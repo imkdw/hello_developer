@@ -173,7 +173,6 @@ describe(`로그인 API, [POST] ${LOGIN_API}`, () => {
 
     const res = await request(app).post(LOGIN_API).send(account);
     expect(res.statusCode).toBe(400);
-    console.log(res.body);
 
     expect(res.body).toEqual({
       status: 400,

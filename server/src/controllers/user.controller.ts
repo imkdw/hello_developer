@@ -1,20 +1,23 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { UserService } from "../services/user.service";
 import { UpdateProfileUserDTO } from "../types/user";
 
 class UserController {
-  static profile = async (req: Request, res: Response) => {
+  /**
+   * 사용자 프로필을 가져오는 컨트롤러
+   */
+  static profile = async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.params;
 
     try {
       const profile = await UserService.profile(userId);
       res.status(200).json(profile);
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
-  static addBookmark = async (req: Request, res: Response) => {
+  static addBookmark = async (req: Request, res: Response, next: NextFunction) => {
     const { postId } = req.body;
     const userId = res.locals.userId;
 
@@ -22,11 +25,11 @@ class UserController {
       await UserService.addBookmark(postId, userId);
       res.status(201).json();
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
-  static deleteBookmark = async (req: Request, res: Response) => {
+  static deleteBookmark = async (req: Request, res: Response, next: NextFunction) => {
     const { postId } = req.params;
     const userId = res.locals.userId;
 
@@ -34,11 +37,11 @@ class UserController {
       await UserService.deleteBookmark(postId, userId);
       res.status(200).json();
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
-  static history = async (req: Request, res: Response) => {
+  static history = async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.params;
     const item = req.query.item as string;
 
@@ -46,11 +49,11 @@ class UserController {
       const history = await UserService.history(userId, item);
       res.status(200).json(history);
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
-  static updateProfile = async (req: Request, res: Response) => {
+  static updateProfile = async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.params;
     const userDTO: UpdateProfileUserDTO = req.body;
     const tokenUserId = res.locals.userId;
@@ -59,12 +62,11 @@ class UserController {
       await UserService.updateProfile(userId, tokenUserId, userDTO);
       res.status(200).json();
     } catch (err: any) {
-      console.error(err);
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 
-  static exit = async (req: Request, res: Response) => {
+  static exit = async (req: Request, res: Response, next: NextFunction) => {
     const userId = res.locals.userId;
     const { password, rePassword } = req.body;
 
@@ -80,7 +82,7 @@ class UserController {
       await UserService.exit(userId, password);
       res.status(200).json();
     } catch (err: any) {
-      res.status(err.status || 500).json({ code: err.code, message: err.message });
+      next(err);
     }
   };
 }

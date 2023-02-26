@@ -7,15 +7,33 @@ import Secure from "../utils/secure";
 
 export class UserService {
   static profile = async (userId: string) => {
+    if (!userId) {
+      throw Object.assign(new Error(), {
+        status: 404,
+        message: "Bad Request",
+        description: "User not found",
+        data: {
+          action: "user",
+          parameter: userId,
+          message: "user_not_found",
+        },
+      });
+    }
+
     try {
       const profile = await UserModel.findUserByUserId(userId);
 
       if (!profile) {
-        throw {
+        throw Object.assign(new Error(), {
           status: 404,
-          code: "user-001",
-          message: "user_not_found",
-        };
+          message: "Bad Request",
+          description: "User not found",
+          data: {
+            action: "user",
+            parameter: userId,
+            message: "user_not_found",
+          },
+        });
       }
 
       return {
@@ -159,20 +177,32 @@ export class UserService {
       updateFields.push({ key: "password", value: await Secure.encryptToHash(userDTO.rePassword) });
     }
 
-    if (updateFields.length === 0) {
-      throw {
-        status: 400,
-        code: "user-004",
-        message: "invalid_profile_data",
-      };
+    /** 파라미터로 전달받은 유저의 아이디와 로그인한 유저의 아이디가 다를때 */
+    if (userId !== tokenUserId) {
+      throw Object.assign(new Error(), {
+        status: 404,
+        message: "Bad Reqeust",
+        description: "The user who requested the update does not match",
+        data: {
+          action: "user",
+          parameter: "",
+          message: "user_not_match",
+        },
+      });
     }
 
-    if (userId !== tokenUserId) {
-      throw {
-        status: 401,
-        code: "user-005",
-        message: "user_mismatch",
-      };
+    /** 프로필 업데이트에 필요한 데이터가 없을때 */
+    if (updateFields.length === 0) {
+      throw Object.assign(new Error(), {
+        status: 404,
+        message: "Not Found",
+        description: "Unable to find data required for profile update",
+        data: {
+          action: "user",
+          parameter: "",
+          message: "profile_data_not_found",
+        },
+      });
     }
 
     try {
@@ -182,11 +212,16 @@ export class UserService {
       if (userDTO.rePassword) {
         // 기존 비밀번호와 입력받은 비밀번호가 다를경우
         if (!(await Secure.compareHash(userDTO.password, existingUser.password))) {
-          throw {
+          throw Object.assign(new Error(), {
             status: 400,
-            code: "user-007",
-            message: "password_mismatch",
-          };
+            message: "Bad Reqeust",
+            description: "Your existing passwords do not match",
+            data: {
+              action: "user",
+              parameter: "",
+              message: "password_not_match",
+            },
+          });
         }
       }
 

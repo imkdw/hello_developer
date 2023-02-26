@@ -57,6 +57,16 @@ const SubmitButton = styled.button`
   font-size: 16px;
 `;
 
+const DisableSubmitButton = styled.button`
+  width: 100px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: #5fbcff;
+  color: white;
+  font-size: 16px;
+  cursor: default;
+`;
+
 interface WriteReCommentProps {
   commentId: number;
   writingHanlder(commentId: number): void;
@@ -68,14 +78,26 @@ const WriteReComment = ({ commentId, writingHanlder }: WriteReCommentProps) => {
   const currentPostId = useRecoilValue(currentPostIdState);
 
   const [reComment, setReComment] = useState("");
+  const [isValidReComment, setIsValidReComment] = useState(false);
 
   const reCommentChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = event.currentTarget;
     setReComment(value);
+
+    if (value.length === 0 || value.length > 200) {
+      setIsValidReComment(false);
+    } else {
+      setIsValidReComment(true);
+    }
   };
 
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!isValidReComment || reComment.length === 0 || reComment.length > 200) {
+      alert("댓글은 1~200자 사이로 입력해주세요");
+      return;
+    }
 
     try {
       const status = await PostService.addReComment(commentId, reComment, loggedInUser.accessToken);
@@ -97,12 +119,14 @@ const WriteReComment = ({ commentId, writingHanlder }: WriteReCommentProps) => {
     <StyledWriteReComment>
       <Profile src={loggedInUser.profileImg} />
       <InputWrapper onSubmit={submitHandler}>
-        <Textarea
-          placeholder="사용자들의 댓글은 작성자에게 큰 힘이됩니다."
-          onChange={reCommentChangeHandler}
-          value={reComment}
-        />
-        <SubmitButton type="submit">답글 쓰기</SubmitButton>
+        <Textarea placeholder="1~200자 사이로 입력해주세요" onChange={reCommentChangeHandler} value={reComment} />
+        {isValidReComment ? (
+          <SubmitButton type="submit">답글 쓰기</SubmitButton>
+        ) : (
+          <DisableSubmitButton type="button" disabled>
+            답글 쓰기
+          </DisableSubmitButton>
+        )}
       </InputWrapper>
     </StyledWriteReComment>
   );

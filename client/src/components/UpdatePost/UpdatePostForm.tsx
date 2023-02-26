@@ -7,6 +7,7 @@ import { PostService } from "../../services/post";
 import { AddPostData } from "../../types/post";
 import TextEditor from "./TextEditor";
 import { currentPostIdState, postDetailDataState } from "../../recoil/post.recoil";
+import { categoryValidation, contentValidation, titleValidation } from "../../utils/validation";
 
 const StyledUpdatePostForm = styled.form`
   flex: 6;
@@ -97,12 +98,22 @@ const CancelButton = styled.button`
   border: 1px solid #bebebe;
   border-radius: 10px;
 `;
+
 const SubmitButton = styled.button`
   width: 90px;
   height: 100%;
   background-color: #0090f9;
   color: white;
   border-radius: 10px;
+`;
+
+const DisabledSubmitButton = styled.button`
+  width: 90px;
+  height: 100%;
+  background-color: #5fbcff;
+  color: white;
+  border-radius: 10px;
+  cursor: default;
 `;
 
 const InputWrapper = styled.div`
@@ -132,6 +143,16 @@ const UpdatePostForm = () => {
     content: postDetailData.content,
   });
 
+  interface IsPostDataValid {
+    [key: string]: null | boolean;
+  }
+
+  const [isPostDataValid, setIsPostDataValid] = useState<IsPostDataValid>({
+    category: true,
+    title: true,
+    content: true,
+  });
+
   const loggedInUser = useRecoilValue(loggedInUserState);
   const navigator = useNavigate();
 
@@ -140,17 +161,32 @@ const UpdatePostForm = () => {
     setPostData((prevState) => {
       return { ...prevState, category: value };
     });
+
+    setIsPostDataValid((prevState) => {
+      return { ...prevState, category: categoryValidation(value) };
+    });
   };
 
   const changeTitle = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
+
     setPostData((prevState) => {
       return { ...prevState, title: value };
+    });
+
+    setIsPostDataValid((prevState) => {
+      return { ...prevState, title: titleValidation(value) };
     });
   };
 
   const changeTags = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.currentTarget;
+
+    if (value.length > 10) {
+      alert("태그는 최대 10자까지 입력이 가능합니다.");
+      event.currentTarget.value = "";
+      return;
+    }
 
     switch (name) {
       case "tag1":
@@ -177,11 +213,14 @@ const UpdatePostForm = () => {
     setPostData((prevState) => {
       return { ...prevState, content: markdown };
     });
+
+    setIsPostDataValid((prevState) => {
+      return { ...prevState, content: contentValidation(markdown) };
+    });
   }, []);
 
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     const body = {
       title: postData.title,
       category: postData.category,
@@ -196,21 +235,28 @@ const UpdatePostForm = () => {
         navigator(-1);
       }
     } catch (err: any) {
-      const { status, code, message } = err;
-      console.error(status, code, message);
+      let message = "";
 
-      switch (status) {
-        case 400:
-          alert("입력값이 이상합니다.");
-          break;
-        case 401:
-          alert("인증이 만료되었습니다.");
-          navigator("/login");
-          break;
-        default:
-          alert("서버 오류입니다. 잠시후 다시 시도해주세요.");
-          console.error(err);
+      if (err.status === 400) {
+        switch (err.data.message) {
+          case "invalid_title":
+            message = "제목의 글이가 너무 길거나 짧습니다.";
+            break;
+          case "invalid_content":
+            message = "본문의 글이가 너무 길거나 짧습니다.";
+            break;
+          case "invalid_category":
+            message = "유효한 카테고리를 설정해주세요";
+            break;
+          case "invalid_tags":
+            message = "하나의 태그는 10자까지 지정이 가능합니다";
+            break;
+        }
+      } else {
+        message = "서버 오류입니다. 다시 시도해주세요";
       }
+
+      alert(message);
     }
   };
 
@@ -275,7 +321,13 @@ const UpdatePostForm = () => {
         </FormControl>
         <Buttons>
           <CancelButton>취소</CancelButton>
-          <SubmitButton>등록</SubmitButton>
+          {isPostDataValid.category && isPostDataValid.title && isPostDataValid.content ? (
+            <SubmitButton type="submit">저장</SubmitButton>
+          ) : (
+            <DisabledSubmitButton disabled type="button">
+              저장
+            </DisabledSubmitButton>
+          )}
         </Buttons>
       </Wrapper>
     </StyledUpdatePostForm>

@@ -21,6 +21,6 @@ authRouter.get("/verify/:verifyToken", AuthController.verify);
 authRouter.post("/token", AuthController.token);
 
 /** 로그아웃 엔드포인트 */
-authRouter.get("/logout/:userId", isAuth, AuthController.logout);
+authRouter.get("/logout/:userId", AuthController.logout);
 
 export default authRouter;

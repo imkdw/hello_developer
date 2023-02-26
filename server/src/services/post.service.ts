@@ -12,11 +12,10 @@ export class PostService {
    * @returns {postId} - 게시글 아이디 반환
    */
   static add = async (userId: string, userDTO: AddPostUserDTO) => {
-    /** 게시글 아이디는 hash값을 사용 */
     const postId = Secure.getUUID();
 
     try {
-      /** 기존에 존재하는 카테고리인지 확인 */
+      /** 전달받은 카테고리 텍스트로 ID를 가져옴 */
       const category = userDTO.category.split("-");
       const categoryId = await Promise.all(
         category.map(async (item) => {
@@ -47,13 +46,9 @@ export class PostService {
         })
       );
 
-      /** 첫번째 카테고리가 존재하지 않는경우엔 에러 반환 */
+      /** 첫번째 카테고리가 존재하지 않는경우 */
       if (!categoryIds[0]) {
-        throw {
-          status: 400,
-          code: "post-002",
-          message: "unknown_category",
-        };
+        return [];
       }
 
       /** 2. 카데고리로 게시글 가져오기 */
@@ -368,14 +363,6 @@ export class PostService {
   // TODO: 게시글 업데이트로직 재구성 필요
   static updatePost = async (userId: string, postId: string, userDTO: UpdatePostUserDTO) => {
     const { title, content, category, tags } = userDTO;
-    if (!category || !content || !tags || !title) {
-      throw {
-        status: 400,
-        code: "post-008",
-        message: "invalid_post_data",
-      };
-    }
-
     try {
       const categoryIds = await Promise.all(
         category.split("-").map(async (category) => {
@@ -388,17 +375,6 @@ export class PostService {
           return categoryId.category_id;
         })
       );
-
-      /** 이상한 카테고리가 입력된경우 에러반환 */
-      categoryIds.forEach((categoryId) => {
-        if (categoryId !== null && !categoryId) {
-          throw {
-            status: 400,
-            code: "post-008",
-            message: "invalid_post_data",
-          };
-        }
-      });
 
       await PostModel.updatePost(userId, postId, userDTO, categoryIds);
     } catch (err: any) {

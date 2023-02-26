@@ -10,12 +10,12 @@ const StyledAuthTab = styled.div`
   gap: 20px;
 `;
 
-const TabButton = styled(Link)<{ isFontWeightBold: boolean }>`
+const TabButton = styled(Link)<{ $isFontWeightBold: boolean }>`
   width: 40%;
   height: 60%;
   font-size: 25px;
   cursor: pointer;
-  font-weight: ${(props) => props.isFontWeightBold && "bold"};
+  font-weight: ${(props) => props.$isFontWeightBold && "bold"};
   text-align: center;
 
   &:first-child {
@@ -29,10 +29,10 @@ const AuthTab = () => {
 
   return (
     <StyledAuthTab>
-      <TabButton isFontWeightBold={pathname === "/login"} to="/login">
+      <TabButton $isFontWeightBold={pathname === "/login"} to="/login">
         로그인
       </TabButton>
-      <TabButton isFontWeightBold={pathname === "/register"} to="/register">
+      <TabButton $isFontWeightBold={pathname === "/register"} to="/register">
         회원가입
       </TabButton>
     </StyledAuthTab>

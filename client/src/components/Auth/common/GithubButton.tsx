@@ -20,8 +20,12 @@ const StyledGithubButton = styled.button`
 `;
 
 const GithubButton = () => {
+  const clickHandler = () => {
+    alert("준비중인 기능입니다.");
+  };
+
   return (
-    <StyledGithubButton>
+    <StyledGithubButton onClick={clickHandler}>
       <GithubIcon />
       Login With Github
     </StyledGithubButton>

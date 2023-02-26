@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { currentPostIdState, postDetailDataState } from "../../recoil/post.recoil";
 import WriteReComment from "./WriteReComment";
 import { useState } from "react";
-import { PostDetailData, PostDetailDataComments } from "../../types/post";
 import { loggedInUserState } from "../../recoil/auth.recoil";
 import { PostService } from "../../services/post";
 import UpdateComment from "./UpdateComment";

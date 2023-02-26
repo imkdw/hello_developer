@@ -88,7 +88,7 @@ const SideMenuLink = ({ onClick }: SideMenuLinkProps) => {
 
   const [loggedInUser, setLoggedInUser] = useRecoilState(loggedInUserState);
 
-  const onLogout = async () => {
+  const logoutHandler = async () => {
     try {
       const status = await AuthService.logout(loggedInUser.userId, loggedInUser.accessToken);
 
@@ -117,7 +117,7 @@ const SideMenuLink = ({ onClick }: SideMenuLinkProps) => {
         {loggedInUser.accessToken ? (
           <>
             <UtilLink to={"/profile/" + loggedInUser.userId}>프로필</UtilLink>
-            <UtilLink to="" onClick={onLogout}>
+            <UtilLink to="" onClick={logoutHandler}>
               로그아웃
             </UtilLink>
           </>

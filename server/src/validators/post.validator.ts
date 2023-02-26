@@ -1,4 +1,4 @@
-import { NextFunction, Request, RequestHandler } from "express";
+import { NextFunction, Request, RequestHandler, Response } from "express";
 import { ParamsDictionary } from "express-serve-static-core";
 import { ParsedQs } from "qs";
 
@@ -24,7 +24,7 @@ export class PostValidator {
           message: "Bad Reqeust",
           description: "The title of the post must be at least 1 to 50 digits.",
           data: {
-            action: "post/add",
+            action: "post",
             parameter: title,
             message: "invalid_title",
           },
@@ -34,7 +34,7 @@ export class PostValidator {
 
       /**
        * 본문 내용 유효성 검증
-       * 1. 본문의 내용은 10 ~ 100,000자 사이의 내용으로 구성되야함
+       * 1. 본문의 내용은 1 ~ 100,000자 사이의 내용으로 구성되야함
        */
       if (content.length === 0 || content.length >= 100000) {
         const err = Object.assign(new Error(), {
@@ -42,7 +42,7 @@ export class PostValidator {
           message: "Bad Reqeust",
           description: "The content of the post must be at least 10 digits to 100000 digits.",
           data: {
-            action: "post/add",
+            action: "post",
             parameter: content,
             message: "invalid_content",
           },
@@ -60,7 +60,7 @@ export class PostValidator {
           message: "Bad Reqeust",
           description: "The category of the post must not be none",
           data: {
-            action: "post/add",
+            action: "post",
             parameter: content,
             message: "invalid_category",
           },
@@ -79,9 +79,9 @@ export class PostValidator {
             message: "Bad Reqeust",
             description: "The name of the post tag can be up to 10 digits.",
             data: {
-              action: "post/add",
+              action: "post",
               parameter: tags,
-              message: "invalid_category",
+              message: "invalid_tags",
             },
           });
           next(err);
@@ -92,5 +92,9 @@ export class PostValidator {
     } catch (err: any) {
       throw err;
     }
+  };
+
+  static addComment = (req: Request, res: Response, next: NextFunction) => {
+    const { comment } = req.body;
   };
 }
