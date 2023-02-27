@@ -94,7 +94,42 @@ export class PostValidator {
     }
   };
 
-  static addComment = (req: Request, res: Response, next: NextFunction) => {
+  static comment = (req: Request, res: Response, next: NextFunction) => {
     const { comment } = req.body;
+
+    if (comment.length === 0 || comment.length > 201) {
+      const err = Object.assign(new Error(), {
+        status: 400,
+        message: "Bad Request",
+        description: "You can enter 1 to 200 digits of the comment phrase.",
+        data: {
+          action: "post",
+          parameter: comment,
+          message: "invalid_comment",
+        },
+      });
+      next(err);
+    }
+
+    next();
+  };
+
+  static reComment = (req: Request, res: Response, next: NextFunction) => {
+    const { reComment } = req.body;
+
+    if (reComment.length === 0 || reComment.length > 201) {
+      const err = Object.assign(new Error(), {
+        status: 400,
+        message: "Bad Request",
+        description: "You can enter 1 to 200 digits of the reComment phrase.",
+        data: {
+          action: "post",
+          parameter: reComment,
+          message: "invalid_re_comment",
+        },
+      });
+      next(err);
+    }
+    next();
   };
 }

@@ -22,22 +22,22 @@ postRouter.delete("/:postId", isAuth, PostController.deletePost);
 postRouter.put("/:postId", isAuth, PostValidator.add, PostController.updatePost);
 
 /** 댓글 추가 */
-postRouter.post("/comment/add", isAuth, PostController.addComment);
+postRouter.post("/comment/add", isAuth, PostValidator.comment, PostController.addComment);
 
 /** 댓글 삭제 */
 postRouter.delete("/comment/:commentId", isAuth, PostController.deleteComment);
 
 /** 댓글 수정 */
-postRouter.put("/comment/:commentId", isAuth, PostController.updateComment);
+postRouter.put("/comment/:commentId", isAuth, PostValidator.comment, PostController.updateComment);
 
 /** 대댓글 추가 */
-postRouter.post("/re-comment/add", isAuth, PostController.addReComment);
+postRouter.post("/re-comment/add", isAuth, PostValidator.reComment, PostController.addReComment);
 
 /** 대댓글 삭제 */
 postRouter.delete("/re-comment/:reCommentId", isAuth, PostController.deleteReComment);
 
 /** 대댓글 수정 */
-postRouter.put("/re-comment/:reCommentId", isAuth, PostController.updateReComment);
+postRouter.put("/re-comment/:reCommentId", isAuth, PostValidator.reComment, PostController.updateReComment);
 
 /** 게시글 추천 추가/삭제*/
 postRouter.post("/:postId/recommend", isAuth, PostController.recommedation);

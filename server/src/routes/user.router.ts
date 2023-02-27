@@ -23,4 +23,7 @@ userRouter.delete("/bookmark/:postId", isAuth, UserController.deleteBookmark);
 /** 회원탈퇴 */
 userRouter.post("/exit", isAuth, UserController.exit);
 
+/** 프로필 이미지 변경 */
+userRouter.post("/image", isAuth, UserController.image);
+
 export default userRouter;

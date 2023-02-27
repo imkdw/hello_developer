@@ -99,9 +99,9 @@ export class PostModel {
    * @param {string} postId - 게시글 아이디
    * @param {string} comment - 댓글 내용
    */
-  static addComment = async (userId: string, postId: string, comment: string) => {
+  static addComment = async (userId: string, postId: string, commentText: string) => {
     const query = "INSERT INTO comment(post_id, user_id, content) VALUES(?, ?, ?)";
-    const values = [postId, userId, comment];
+    const values = [postId, userId, commentText];
 
     try {
       const connection = await pool.getConnection();
@@ -350,11 +350,9 @@ export class PostModel {
   static deletePost = async (userId: string, postId: string) => {
     const query = "DELETE FROM post WHERE post_id = ? AND user_id = ?";
 
-    console.log(`post_id: ${postId}, user_id: ${userId}`);
     try {
       const connection = await pool.getConnection();
       await connection.execute(query, [postId, userId]);
-      console.log("삭제완료");
       connection.release();
     } catch (err: any) {
       throw {
@@ -468,24 +466,21 @@ export class PostModel {
     }
   };
 
-  static updateComment = async (commentId: string, commentText: string) => {
+  static updateComment = async (commentId: string, comment: string) => {
     const query = "UPDATE comment SET content = ?, updated_at_date = ? WHERE comment_id = ?";
-    const values = [commentText, Time.now(), commentId];
+    const values = [comment, Time.now(), commentId];
     try {
       const connection = await pool.getConnection();
       await connection.execute(query, values);
       connection.release();
     } catch (err: any) {
-      throw {
-        status: 500,
-        message: err.message,
-      };
+      throw err;
     }
   };
 
-  static updateReComment = async (reCommentId: string, reCommentText: string) => {
+  static updateReComment = async (reCommentId: string, reComment: string) => {
     const query = "UPDATE re_comment SET content = ?, updated_at_date = ? WHERE re_comment_id = ?";
-    const values = [reCommentText, Time.now(), reCommentId];
+    const values = [reComment, Time.now(), reCommentId];
     try {
       const connection = await pool.getConnection();
       await connection.execute(query, values);

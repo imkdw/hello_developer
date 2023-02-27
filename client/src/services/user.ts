@@ -1,5 +1,5 @@
 import axios from "axios";
-import { PROFILE_URL, USER_PROFILE_UPDATE_URL, USER_PROFILE_URL } from "../config/api";
+import { USER_PROFILE_IMAGE_UPDATE, USER_PROFILE_UPDATE_URL, USER_PROFILE_URL } from "../config/api";
 import { UserProfile, UserProfileUpdateData } from "../types/user";
 import * as Sentry from "@sentry/react";
 
@@ -30,7 +30,7 @@ export class UserService {
    */
   static profile = async (userId: string): Promise<{ status: number; user: UserProfile }> => {
     try {
-      const res = await axios.get(`${PROFILE_URL}/${userId}`);
+      const res = await axios.get(`${USER_PROFILE_URL}/${userId}`);
       return { status: res.status, user: res.data };
     } catch (err: any) {
       errorHandler(err);
@@ -38,6 +38,12 @@ export class UserService {
     }
   };
 
+  /**
+   * 사용자의 프로필 정보를 업데이트하는 서비스 로직
+   * @param {string} userId - 사용자 아이디
+   * @param {UserProfileUpdateData} updateData - 업데이트한 유저의 프로필 정보
+   * @param {string} accessToken - 유저의 엑세스토큰
+   */
   static updateProfile = async (
     userId: string,
     updateData: UserProfileUpdateData,
@@ -55,6 +61,20 @@ export class UserService {
       );
 
       return res.status;
+    } catch (err: any) {
+      errorHandler(err);
+      throw err;
+    }
+  };
+
+  static uploadImage = async (formData: FormData, accessToken: string) => {
+    try {
+      const res = await axios.post(`${USER_PROFILE_IMAGE_UPDATE}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
     } catch (err: any) {
       errorHandler(err);
       throw err;

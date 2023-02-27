@@ -8,6 +8,7 @@ import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
 import * as Sentry from "@sentry/node";
 import "@sentry/tracing";
 import config from "./config";
+import multer from "multer";
 
 dotenv.config();
 
@@ -24,9 +25,13 @@ Sentry.init({
 // TODO: 전역 변수에서 redis로 저장공간 이관 필요
 app.set("tokens", {});
 
+/** 이미지 업로드에 사용할 multer 메모리저장소 */
+const storage = multer.memoryStorage();
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-// app.use(morgan("dev"));
+app.use(morgan("dev"));
+app.use(multer({ storage }).fields([{ name: "image", maxCount: 1 }]));
 
 /** CORS */
 app.use((req, res, next) => {

@@ -85,6 +85,18 @@ class UserController {
       next(err);
     }
   };
+
+  static image = async (req: Request, res: Response, next: NextFunction) => {
+    const userId = res.locals.userId;
+    const image = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+
+    try {
+      await UserService.image(userId, image);
+    } catch (err: any) {
+      next(err);
+    }
+    res.status(200).json();
+  };
 }
 
 export default UserController;

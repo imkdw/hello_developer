@@ -2,12 +2,13 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { loggedInUserState } from "../../recoil/auth.recoil";
 import { userProfileState } from "../../recoil/user.recoil";
-import { useState, FormEvent, ChangeEvent, useEffect, useRef } from "react";
+import { useState, FormEvent, ChangeEvent, useEffect } from "react";
 import { UserProfileUpdateData } from "../../types/user";
 import { UserService } from "../../services/user";
 import { nicknameValidation, passwordValidation } from "../../utils/validation";
+import ProfileImage from "./Info/ProfileImage";
 
-const StyledProfileInfo = styled.form`
+const StyledProfileInfo = styled.div`
   width: 48%;
   height: 100%;
   border-radius: 10px;
@@ -15,46 +16,14 @@ const StyledProfileInfo = styled.form`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
 `;
 
-const ProfileImageWrapper = styled.div`
-  width: 100%;
-  height: 38%;
-  position: relative;
-  overflow: hidden;
+const Form = styled.form`
+  width: 95%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-`;
-
-const ProfileImageBackground = styled.div<{ image: string }>`
-  width: 100%;
-  height: 100%;
-  background-image: url(${(props) => props.image});
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  filter: blur(10px);
-  position: absolute;
-`;
-
-const ProfileImage = styled.img`
-  position: relative;
-  z-index: 1;
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
-`;
-
-const ProfileImageChangeButton = styled.button`
-  position: absolute;
-  bottom: 20px;
-  font-size: 20px;
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
-  padding: 0 10px;
-  border-radius: 10px;
+  gap: 15px;
 `;
 
 const FormControl = styled.div`
@@ -80,16 +49,6 @@ const Input = styled.input`
   border-radius: 10px;
   border: 1px solid #a1a1a1;
   padding: 0 10px;
-`;
-
-const Div = styled.div`
-  height: 50px;
-  font-size: 18px;
-  border-radius: 10px;
-  border: 1px solid #a1a1a1;
-  padding: 0 10px;
-  display: flex;
-  align-items: center;
 `;
 
 const Buttons = styled.div`
@@ -240,118 +199,94 @@ const ProfileInfo = () => {
     }
   };
 
-  const fileUploadRef = useRef<HTMLInputElement | null>(null);
-
-  const inputClickHandler = () => {
-    fileUploadRef.current?.click();
-  };
-
-  const profileImageChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.currentTarget.files;
-    console.log(file);
-  };
-
   return (
-    <StyledProfileInfo onSubmit={submitHanlder}>
-      <ProfileImageWrapper>
-        <input
-          type="file"
-          name="image"
-          hidden
-          ref={fileUploadRef}
-          accept="image/*"
-          onChange={profileImageChangeHandler}
-        />
-        <ProfileImageBackground image={userProfile.profileImg} />
-        <ProfileImage src={userProfile.profileImg} />
-        {loggedInUser.userId === userProfile.userId && (
-          <ProfileImageChangeButton onClick={inputClickHandler}>사진변경</ProfileImageChangeButton>
-        )}
-      </ProfileImageWrapper>
-      <FormControl>
-        <Label>
-          닉네임 - <LabelDesc>커뮤니티를 사용하면서 사용자를 대표하는 이름입니다</LabelDesc>
-        </Label>
-        {isEdit ? (
-          <Input
-            type="text"
-            name="nickname"
-            value={updateData.nickname}
-            onChange={updateDataChangeHandler}
-            placeholder="공백과 특수문자없이 8자리 이하로 입력해주세요"
-          />
-        ) : (
-          <Input type="text" name="nickname" value={userProfile.nickname} disabled />
-        )}
-      </FormControl>
-      <FormControl>
-        <Label>
-          자기소개 - <LabelDesc>커뮤니티에서 나는 어떤사람인지 소개해보세요</LabelDesc>
-        </Label>
-        {isEdit ? (
-          <Input
-            type="text"
-            name="introduce"
-            value={updateData.introduce}
-            onChange={updateDataChangeHandler}
-            placeholder="자기소개는 최대 30자까지 입력이 가능합니다"
-          />
-        ) : (
-          <Input type="text" name="introduce" value={userProfile.introduce} disabled />
-        )}
-      </FormControl>
-      {loggedInUser.userId === userProfile.userId && (
+    <StyledProfileInfo>
+      <ProfileImage />
+      <Form onSubmit={submitHanlder}>
         <FormControl>
           <Label>
-            현재 비밀번호 - <LabelDesc>비밀번호 변경을 희망하는 경우 입력해주세요</LabelDesc>
-          </Label>
-          {isEdit ? (
-            <Input type="password" name="password" value={updateData.password} onChange={updateDataChangeHandler} />
-          ) : (
-            <Input type="password" name="password" disabled />
-          )}
-        </FormControl>
-      )}
-
-      {loggedInUser.userId === userProfile.userId && (
-        <FormControl>
-          <Label>
-            변경할 비밀번호 - <LabelDesc>변경하고 싶은 비밀번호를 입력해주세요</LabelDesc>
+            닉네임 - <LabelDesc>커뮤니티를 사용하면서 사용자를 대표하는 이름입니다</LabelDesc>
           </Label>
           {isEdit ? (
             <Input
-              type="password"
-              name="rePassword"
-              value={updateData.rePassword}
+              type="text"
+              name="nickname"
+              value={updateData.nickname}
               onChange={updateDataChangeHandler}
-              placeholder="영문, 숫자, 특수문자를 포함하여 10자리 이상 입력해주세요"
+              placeholder="공백과 특수문자없이 8자리 이하로 입력해주세요"
             />
           ) : (
-            <Input type="password" name="rePassword" disabled />
+            <Input type="text" name="nickname" value={userProfile.nickname} disabled />
           )}
         </FormControl>
-      )}
-      {loggedInUser.userId === userProfile.userId && (
-        <>
+        <FormControl>
+          <Label>
+            자기소개 - <LabelDesc>커뮤니티에서 나는 어떤사람인지 소개해보세요</LabelDesc>
+          </Label>
           {isEdit ? (
-            <Buttons>
-              <UpdateButton type="submit" onClick={isSubmitHandler}>
-                저장하기
-              </UpdateButton>
-              <UpdateButton type="button" onClick={editHandler}>
-                취소하기
-              </UpdateButton>
-            </Buttons>
+            <Input
+              type="text"
+              name="introduce"
+              value={updateData.introduce}
+              onChange={updateDataChangeHandler}
+              placeholder="자기소개는 최대 30자까지 입력이 가능합니다"
+            />
           ) : (
-            <Buttons>
-              <UpdateButton type="button" onClick={editHandler}>
-                수정하기
-              </UpdateButton>
-              <ExitUserButton type="button">회원탈퇴</ExitUserButton>
-            </Buttons>
+            <Input type="text" name="introduce" value={userProfile.introduce} disabled />
           )}
-        </>
-      )}
+        </FormControl>
+        {loggedInUser.userId === userProfile.userId && (
+          <FormControl>
+            <Label>
+              현재 비밀번호 - <LabelDesc>비밀번호 변경을 희망하는 경우 입력해주세요</LabelDesc>
+            </Label>
+            {isEdit ? (
+              <Input type="password" name="password" value={updateData.password} onChange={updateDataChangeHandler} />
+            ) : (
+              <Input type="password" name="password" disabled />
+            )}
+          </FormControl>
+        )}
+        {loggedInUser.userId === userProfile.userId && (
+          <FormControl>
+            <Label>
+              변경할 비밀번호 - <LabelDesc>변경하고 싶은 비밀번호를 입력해주세요</LabelDesc>
+            </Label>
+            {isEdit ? (
+              <Input
+                type="password"
+                name="rePassword"
+                value={updateData.rePassword}
+                onChange={updateDataChangeHandler}
+                placeholder="영문, 숫자, 특수문자를 포함하여 10자리 이상 입력해주세요"
+              />
+            ) : (
+              <Input type="password" name="rePassword" disabled />
+            )}
+          </FormControl>
+        )}
+        {loggedInUser.userId === userProfile.userId && (
+          <>
+            {isEdit ? (
+              <Buttons>
+                <UpdateButton type="submit" onClick={isSubmitHandler}>
+                  저장하기
+                </UpdateButton>
+                <UpdateButton type="button" onClick={editHandler}>
+                  취소하기
+                </UpdateButton>
+              </Buttons>
+            ) : (
+              <Buttons>
+                <UpdateButton type="button" onClick={editHandler}>
+                  수정하기
+                </UpdateButton>
+                <ExitUserButton type="button">회원탈퇴</ExitUserButton>
+              </Buttons>
+            )}
+          </>
+        )}
+      </Form>
     </StyledProfileInfo>
   );
 };

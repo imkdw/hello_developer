@@ -63,11 +63,8 @@ export class PostService {
       const res = await axios.get(`${POST_LIST_URL}?category1=${category1}&category2=${category2}`);
       return { status: res.status, posts: res.data.posts };
     } catch (err: any) {
-      throw Object.assign(new Error(), {
-        status: err.response.status,
-        code: err.response.data.code,
-        message: err.response.data.me,
-      });
+      errorHandler(err);
+      throw err;
     }
   };
 
@@ -84,11 +81,8 @@ export class PostService {
       const res = await axios.get(`${POST_DETAIL_URL}/${postId}`);
       return { status: res.status, post: res.data };
     } catch (err: any) {
-      throw Object.assign(new Error(), {
-        status: err.response.status,
-        code: err.response.data.code,
-        message: err.response.data.me,
-      });
+      errorHandler(err);
+      throw err;
     }
   };
 
@@ -106,11 +100,8 @@ export class PostService {
 
       return res.status;
     } catch (err: any) {
-      throw Object.assign(new Error(), {
-        status: err.response.status,
-        code: err.response.data.code,
-        message: err.response.data.me,
-      });
+      errorHandler(err);
+      throw err;
     }
   };
 
@@ -128,11 +119,8 @@ export class PostService {
 
       return res.status;
     } catch (err: any) {
-      throw Object.assign(new Error(), {
-        status: err.response.status,
-        code: err.response.data.code,
-        message: err.response.data.me,
-      });
+      errorHandler(err);
+      throw err;
     }
   };
 
@@ -146,11 +134,8 @@ export class PostService {
 
       return res.status;
     } catch (err: any) {
-      throw Object.assign(new Error(), {
-        status: err.response.status,
-        code: err.response.data.code,
-        message: err.response.data.me,
-      });
+      errorHandler(err);
+      throw err;
     }
   };
 
@@ -168,11 +153,8 @@ export class PostService {
 
       return res.status;
     } catch (err: any) {
-      throw Object.assign(new Error(), {
-        status: err.response.status,
-        code: err.response.data.code,
-        message: err.response.data.me,
-      });
+      errorHandler(err);
+      throw err;
     }
   };
 
@@ -186,11 +168,8 @@ export class PostService {
 
       return res.status;
     } catch (err: any) {
-      throw Object.assign(new Error(), {
-        status: err.response.status,
-        code: err.response.data.code,
-        message: err.response.data.me,
-      });
+      errorHandler(err);
+      throw err;
     }
   };
 
@@ -204,19 +183,16 @@ export class PostService {
 
       return res.status;
     } catch (err: any) {
-      throw Object.assign(new Error(), {
-        status: err.response.status,
-        code: err.response.data.code,
-        message: err.response.data.me,
-      });
+      errorHandler(err);
+      throw err;
     }
   };
 
-  static updateComment = async (commetId: number, content: string, accessToken: string) => {
+  static updateComment = async (commetId: number, comment: string, accessToken: string) => {
     try {
       const res = await axios.put(
         `${UPDATE_COMMENT_URL}/${commetId}`,
-        { commentText: content },
+        { comment },
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -226,12 +202,8 @@ export class PostService {
 
       return res.status;
     } catch (err: any) {
-      console.error(err);
-      throw Object.assign(new Error(), {
-        status: err.response.status,
-        code: err.response.data.code,
-        message: err.response.data.me,
-      });
+      errorHandler(err);
+      throw err;
     }
   };
 
@@ -239,7 +211,7 @@ export class PostService {
     try {
       const res = await axios.put(
         `${UPDATE_RE_COMMENT_URL}/${commetId}`,
-        { reCommentText: content },
+        { reComment: content },
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -249,12 +221,8 @@ export class PostService {
 
       return res.status;
     } catch (err: any) {
-      console.error(err);
-      throw Object.assign(new Error(), {
-        status: err.response.status,
-        code: err.response.data.code,
-        message: err.response.data.me,
-      });
+      errorHandler(err);
+      throw err;
     }
   };
 }

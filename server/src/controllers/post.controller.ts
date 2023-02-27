@@ -125,11 +125,11 @@ class PostController {
   };
 
   static updateComment = async (req: Request, res: Response, next: NextFunction) => {
-    const { commentText } = req.body;
+    const { comment } = req.body;
     const { commentId } = req.params;
 
     try {
-      await PostService.updateComment(commentId, commentText);
+      await PostService.updateComment(commentId, comment);
       res.status(200).json();
     } catch (err: any) {
       next(err);
@@ -137,11 +137,11 @@ class PostController {
   };
 
   static updateReComment = async (req: Request, res: Response, next: NextFunction) => {
-    const { reCommentText } = req.body;
+    const { reComment } = req.body;
     const { reCommentId } = req.params;
 
     try {
-      await PostService.updateReComment(reCommentId, reCommentText);
+      await PostService.updateReComment(reCommentId, reComment);
       res.status(200).json();
     } catch (err: any) {
       next(err);

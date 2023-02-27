@@ -235,10 +235,19 @@ describe("게시글 상세보기 API, [GET] /v1/api/post/:postId", () => {
     expect(res.status).toBe(200);
   });
 
-  test("[게시글 아이디 없음] HTTP 404, CODE : 'post-005', MESSAGE: 'not_found_post'", async () => {
+  test("[게시글 없음] HTTP 404", async () => {
     const res = await request(app).get(`${POST_DETAIL_API}/test`);
     expect(res.status).toBe(404);
-    expect(res.body).toEqual({ code: "post-005", message: "post_not_found" });
+    expect(res.body).toEqual({
+      status: 404,
+      message: "Not Found",
+      description: "Post not found",
+      data: {
+        action: "post",
+        parameter: "test",
+        message: "post_not_found",
+      },
+    });
   });
 });
 
@@ -426,7 +435,16 @@ describe("댓글 작성 API, [POST] /v1/api/post/comment/add", () => {
       .set({ Authorization });
 
     expect(res.status).toBe(400);
-    expect(res.body).toEqual({ code: "post-003", message: "invalid_comment" });
+    expect(res.body).toEqual({
+      status: 400,
+      message: "Bad Request",
+      description: "You can enter 1 to 200 digits of the comment phrase.",
+      data: {
+        action: "post",
+        parameter: "",
+        message: "invalid_comment",
+      },
+    });
   });
 });
 
@@ -471,7 +489,7 @@ describe("댓글 수정 API, [PUT] /v1/api/post/comment/:commentId", () => {
   test("[댓글 수정] HTTP 200", async () => {
     const res = await request(app)
       .put(`${UPDATE_COMMENT_API}/${commentId}`)
-      .send({ commentText: UPDATED_COMMENT_TEXT })
+      .send({ comment: UPDATED_COMMENT_TEXT })
       .set({ Authorization });
     expect(res.status).toBe(200);
 
@@ -481,14 +499,23 @@ describe("댓글 수정 API, [PUT] /v1/api/post/comment/:commentId", () => {
     expect(postRes.body.comments[0].content).toBe(UPDATED_COMMENT_TEXT);
   });
 
-  test("[댓글 내용이 없을경우] HTTP 400, CODE: 'post-006', MESSAGE: 'invalid_updated_comment'", async () => {
+  test("[댓글 미입력] HTTP 400", async () => {
     const res = await request(app)
       .put(`${UPDATE_COMMENT_API}/${commentId}`)
-      .send({ commentText: "" })
+      .send({ comment: "" })
       .set({ Authorization });
 
     expect(res.status).toBe(400);
-    expect(res.body).toEqual({ code: "post-006", message: "invalid_updated_comment" });
+    expect(res.body).toEqual({
+      status: 400,
+      message: "Bad Request",
+      description: "You can enter 1 to 200 digits of the comment phrase.",
+      data: {
+        action: "post",
+        parameter: "",
+        message: "invalid_comment",
+      },
+    });
   });
 });
 
@@ -515,14 +542,23 @@ describe("대댓글 작성 API, [POST] /v1/api/post/re-comment/add", () => {
     expect(res.status).toBe(201);
   });
 
-  test("[대댓글 미입력] HTTP 400, CODE: 'post-004', MESSAGE: 'invalid_re_comment'", async () => {
+  test("[대댓글 미입력] HTTP 400", async () => {
     const res = await request(app)
       .post(`${ADD_RE_COMMENT_API}`)
       .send({ commentId, reComment: "" })
       .set({ Authorization });
 
     expect(res.status).toBe(400);
-    expect(res.body).toEqual({ code: "post-004", message: "invalid_re_comment" });
+    expect(res.body).toEqual({
+      status: 400,
+      message: "Bad Request",
+      description: "You can enter 1 to 200 digits of the reComment phrase.",
+      data: {
+        action: "post",
+        parameter: "",
+        message: "invalid_re_comment",
+      },
+    });
   });
 });
 
@@ -566,7 +602,7 @@ describe("대댓글 수정 API, [PUT] /v1/api/post/re-comment/:reCommentId", () 
   test("[대댓글 수정] HTTP 200", async () => {
     const res = await request(app)
       .put(`${UPDATE_RE_COMMENT_API}/${reCommentId}`)
-      .send({ reCommentText: UPDATED_RE_COMMENT_TEXT })
+      .send({ reComment: UPDATED_RE_COMMENT_TEXT })
       .set({ Authorization });
 
     expect(res.status).toBe(200);
@@ -577,14 +613,23 @@ describe("대댓글 수정 API, [PUT] /v1/api/post/re-comment/:reCommentId", () 
     expect(postRes.body.comments[0].reComment[0].content).toBe(UPDATED_RE_COMMENT_TEXT);
   });
 
-  test("[대댓글 내용이 없을경우] HTTP 400, CODE: 'post-007', MESSAGE: 'invalid_updated_re_comment'", async () => {
+  test("[대댓글 내용이 없을경우] HTTP 400", async () => {
     const res = await request(app)
       .put(`${UPDATE_RE_COMMENT_API}/${reCommentId}`)
-      .send({ reCommentText: "" })
+      .send({ reComment: "" })
       .set({ Authorization });
 
     expect(res.status).toBe(400);
-    expect(res.body).toEqual({ code: "post-007", message: "invalid_updated_re_comment" });
+    expect(res.body).toEqual({
+      status: 400,
+      message: "Bad Request",
+      description: "You can enter 1 to 200 digits of the reComment phrase.",
+      data: {
+        action: "post",
+        parameter: "",
+        message: "invalid_re_comment",
+      },
+    });
   });
 });
 

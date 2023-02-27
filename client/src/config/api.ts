@@ -8,9 +8,6 @@ export const LOGIN_URL = `${BASE_URL}/auth/login`; // 로그인
 export const TOKEN_URL = `${BASE_URL}/auth/token`; // refresh token으로 access token 재발급
 export const LOGOUT_URL = `${BASE_URL}/auth/logout`; // 로그아웃
 
-/** 유저 관련 */
-export const PROFILE_URL = `${BASE_URL}/user`; // 유저 프로필
-
 /** 게시글 관련 */
 export const ADD_POST_URL = `${BASE_URL}/post/add`; // 글 작성
 export const POST_LIST_URL = `${BASE_URL}/post/list`; // 글 목록
@@ -29,3 +26,4 @@ export const UPDATE_RE_COMMENT_URL = `${BASE_URL}/post/re-comment`; // 대댓글
 /** 프로필 관련 */
 export const USER_PROFILE_URL = `${BASE_URL}/user`; // 유저 프로필 조회
 export const USER_PROFILE_UPDATE_URL = `${BASE_URL}/user`; // 유저 프로필 수정
+export const USER_PROFILE_IMAGE_UPDATE = `${BASE_URL}/user/image`; // 유저 프로필 이미지 수정

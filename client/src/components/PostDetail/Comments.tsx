@@ -219,8 +219,6 @@ const Comments = () => {
         [commentIdentifier]: newData,
       };
     });
-
-    console.log(isEditComment);
   };
 
   /** 댓글 삭제 */

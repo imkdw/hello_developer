@@ -3,6 +3,7 @@ import { PostModel } from "../models/post.model";
 import { UserModel } from "../models/user.model";
 import { HistoryPosts } from "../types/post";
 import { AllComments, UpdateProfileUserDTO } from "../types/user";
+import { imageUploader } from "../utils/imageUploader";
 import Secure from "../utils/secure";
 
 export class UserService {
@@ -180,7 +181,7 @@ export class UserService {
     /** 파라미터로 전달받은 유저의 아이디와 로그인한 유저의 아이디가 다를때 */
     if (userId !== tokenUserId) {
       throw Object.assign(new Error(), {
-        status: 404,
+        status: 400,
         message: "Bad Reqeust",
         description: "The user who requested the update does not match",
         data: {
@@ -265,6 +266,34 @@ export class UserService {
       }
 
       await UserModel.exit(userId);
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  static image = async (userId: string, files: { [fieldname: string]: Express.Multer.File[] } | undefined) => {
+    if (!files) {
+      throw Object.assign(new Error(), {
+        status: 404,
+        message: "Not Found",
+        description: "Image not found",
+        data: {
+          action: "user",
+          parameter: "",
+          message: "image_not_found",
+        },
+      });
+    }
+
+    const ext = files["image"][0].originalname.split(".");
+    const fileName = userId + "." + ext[ext.length - 1];
+
+    try {
+      /** AWS S3에 이미지 업로드 후 URL 가져옴 */
+      const imageUrl = await imageUploader(fileName, files["image"][0].buffer);
+
+      /** 이미지를 업로드한 S3 URL로 유저 프로필정보 수정 */
+      await UserModel.image(userId, imageUrl);
     } catch (err: any) {
       throw err;
     }

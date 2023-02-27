@@ -12,9 +12,7 @@ export class UserModel {
     const query = "SELECT * FROM user WHERE user_id = ?";
     try {
       const connection = await pool.getConnection();
-      const [rows, fields]: [FindUserByUserIdReturn[], FieldPacket[]] = await connection.execute(query, [
-        userId,
-      ]);
+      const [rows, fields]: [FindUserByUserIdReturn[], FieldPacket[]] = await connection.execute(query, [userId]);
       connection.release();
       return rows[0];
     } catch (err: any) {
@@ -63,10 +61,9 @@ export class UserModel {
     const query = "SELECT post_id FROM bookmark WHERE user_id = ?";
     try {
       const connection = await pool.getConnection();
-      const [rows, fields]: [FindBookmarkPostByUserIdReturn[], FieldPacket[]] = await connection.execute(
-        query,
-        [userId]
-      );
+      const [rows, fields]: [FindBookmarkPostByUserIdReturn[], FieldPacket[]] = await connection.execute(query, [
+        userId,
+      ]);
       connection.release();
       return rows;
     } catch (err: any) {
@@ -99,6 +96,17 @@ export class UserModel {
         status: 500,
         message: err.message,
       };
+    }
+  };
+
+  static image = async (userId: string, imageUrl: string) => {
+    try {
+      const query = "UPDATE user SET profile_img = ? WHERE user_id = ?";
+      const connection = await pool.getConnection();
+      await connection.execute(query, [imageUrl, userId]);
+      connection.release();
+    } catch (err: any) {
+      throw err;
     }
   };
 }

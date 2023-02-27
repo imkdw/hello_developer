@@ -148,11 +148,16 @@ export class PostService {
       const post = await PostModel.findPostByPostId(postId);
 
       if (!post) {
-        throw {
+        throw Object.assign(new Error(), {
           status: 404,
-          code: "post-005",
-          message: "post_not_found",
-        };
+          message: "Not Found",
+          description: "Post not found",
+          data: {
+            action: "post",
+            parameter: postId,
+            message: "post_not_found",
+          },
+        });
       }
 
       /** 유저 정보 */
@@ -248,15 +253,6 @@ export class PostService {
 
   static addComment = async (userId: string, postId: string, comment: string) => {
     try {
-      /** 댓글이 비어있을 경우 */
-      if (comment.length === 0) {
-        throw {
-          status: 400,
-          code: "post-003",
-          message: "invalid_comment",
-        };
-      }
-
       const commentId = await PostModel.addComment(userId, postId, comment);
       return commentId;
     } catch (err: any) {
@@ -266,15 +262,6 @@ export class PostService {
 
   static addRecomment = async (userId: string, commentId: string, reComment: string) => {
     try {
-      /** 댓글이 비어있을 경우 */
-      if (reComment.length === 0) {
-        throw {
-          status: 400,
-          code: "post-004",
-          message: "invalid_re_comment",
-        };
-      }
-
       const reCommentId = await PostModel.addReComment(userId, commentId, reComment);
       return reCommentId;
     } catch (err: any) {
@@ -329,32 +316,17 @@ export class PostService {
     }
   };
 
-  static updateComment = async (commentId: string, commentText: string) => {
+  static updateComment = async (commentId: string, comment: string) => {
     try {
-      if (commentText.length === 0) {
-        throw {
-          status: 400,
-          code: "post-006",
-          message: "invalid_updated_comment",
-        };
-      }
-
-      await PostModel.updateComment(commentId, commentText);
+      await PostModel.updateComment(commentId, comment);
     } catch (err: any) {
       throw err;
     }
   };
 
-  static updateReComment = async (reCommentId: string, reCommentText: string) => {
+  static updateReComment = async (reCommentId: string, reComment: string) => {
     try {
-      if (reCommentText.length === 0) {
-        throw {
-          status: 400,
-          code: "post-007",
-          message: "invalid_updated_re_comment",
-        };
-      }
-      await PostModel.updateReComment(reCommentId, reCommentText);
+      await PostModel.updateReComment(reCommentId, reComment);
     } catch (err: any) {
       throw err;
     }

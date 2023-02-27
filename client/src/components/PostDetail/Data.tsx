@@ -70,30 +70,19 @@ const RecommendIcon = () => {
   );
 };
 
-const NonRecommendIcon = () => {
-  return (
-    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M1.01953 15.876V3.6099C1.01953 3.12644 1.41064 2.73404 1.89352 2.73404H9.75744V16.7521H1.89352C1.41064 16.752 1.01953 16.3595 1.01953 15.876Z"
-        fill="#1872D9"
-      />
-      <path
-        d="M25.4856 18.5045H18.4951V23.7616C18.4951 25.6939 16.9279 27.2661 15.0004 27.2661H12.3784C11.8967 27.2661 11.5051 26.8735 11.5051 26.3897V22.2422L8.12514 16.3106C8.0482 16.1778 8.00977 16.0286 8.00977 15.8761V3.6099C8.00977 3.12644 8.40141 2.73404 8.88375 2.73404H22.9078C24.2887 2.73404 25.5433 3.55224 26.1009 4.81535L28.9035 11.1394C28.9547 11.2518 28.981 11.3729 28.981 11.4953V15C28.9811 16.9324 27.4133 18.5045 25.4856 18.5045Z"
-        fill="#BCDFFD"
-      />
-    </svg>
-  );
-};
-
 const Data = () => {
   const postDetailData = useRecoilValue(postDetailDataState);
 
   return (
     <StyledData>
       <Tags>
-        {postDetailData.tags.map((tag) => (
-          <TagText key={tag.name}># {tag.name}</TagText>
-        ))}
+        {postDetailData.tags.map((tag) => {
+          if (tag.name.length !== 0) {
+            return <TagText key={tag.name}># {tag.name}</TagText>;
+          }
+
+          return null;
+        })}
       </Tags>
       <RecommendData>
         <RecommendCount>

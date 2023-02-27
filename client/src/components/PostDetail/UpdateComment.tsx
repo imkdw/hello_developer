@@ -90,6 +90,7 @@ const UpdateComment = ({ commentId, content, editingHandler, commentIdentifier }
 
     try {
       const status = await PostService.updateComment(commentId, comment, loggedInUser.accessToken);
+      console.log(commentId, comment, loggedInUser.accessToken);
 
       if (status === 200) {
         alert("수정이 완료되었습니다.");
