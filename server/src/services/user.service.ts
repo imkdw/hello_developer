@@ -236,15 +236,19 @@ export class UserService {
     try {
       const user = await UserModel.findUserByUserId(userId);
 
-      const isCorrectPassword = await Secure.compareHash(password, user.password);
-
       // 가입된 유저와 비밀번호가 일치하지 않은경우
+      const isCorrectPassword = await Secure.compareHash(password, user.password);
       if (!isCorrectPassword) {
-        throw {
+        throw Object.assign(new Error(), {
           status: 400,
-          code: "user-006",
-          message: "password-mismatch",
-        };
+          message: "Bad Reqeust",
+          description: "The password doesn't match.",
+          data: {
+            action: "user",
+            parameter: "",
+            message: "password_not_match",
+          },
+        });
       }
 
       await UserModel.exit(userId);

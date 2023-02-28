@@ -2,6 +2,8 @@ import axios from "axios";
 import {
   ADD_BOOKMARK_URL,
   DELETE_BOOKMARK_URL,
+  EXIT_USER_URL,
+  HISTORY_URL,
   USER_PROFILE_IMAGE_UPDATE,
   USER_PROFILE_UPDATE_URL,
   USER_PROFILE_URL,
@@ -119,6 +121,40 @@ export class UserService {
       });
 
       return res;
+    } catch (err: any) {
+      errorHandler(err);
+      throw err;
+    }
+  };
+
+  static history = async (userId: string, item: string) => {
+    try {
+      const res = await axios.get(`${HISTORY_URL}/history/${userId}?item=${item}`);
+      return res;
+    } catch (err: any) {
+      errorHandler(err);
+      throw err;
+    }
+  };
+
+  static exit = async (password: string, accessToken: string) => {
+    try {
+      await axios.patch(
+        EXIT_USER_URL,
+        { password },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      /** 로그인된 유저 정보를 삭제 */
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("userId");
+      localStorage.removeItem("profileImg");
+      localStorage.removeItem("nickname");
     } catch (err: any) {
       errorHandler(err);
       throw err;

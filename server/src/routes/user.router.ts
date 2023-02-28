@@ -12,7 +12,7 @@ userRouter.get("/:userId", UserController.profile);
 userRouter.put("/:userId", isAuth, UserValidator.profile, UserController.updateProfile);
 
 /** 히스토리 가져오기 */
-userRouter.get("/:userId/history", UserController.history);
+userRouter.get("/history/:userId", UserController.history);
 
 /** 게시글 북마크 추가하기 */
 userRouter.patch("/bookmark/:postId", isAuth, UserController.addBookmark);
@@ -21,7 +21,7 @@ userRouter.patch("/bookmark/:postId", isAuth, UserController.addBookmark);
 userRouter.delete("/bookmark/:postId", isAuth, UserController.deleteBookmark);
 
 /** 회원탈퇴 */
-userRouter.post("/exit", isAuth, UserController.exit);
+userRouter.patch("/exit", isAuth, UserController.exit);
 
 /** 프로필 이미지 변경 */
 userRouter.post("/image", isAuth, UserController.image);

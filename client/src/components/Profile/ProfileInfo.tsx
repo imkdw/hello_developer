@@ -77,7 +77,7 @@ const ExitUserButton = styled.button`
 
 const ProfileInfo = () => {
   const [userProfile, setUserProfile] = useRecoilState(userProfileState);
-  const loggedInUser = useRecoilValue(loggedInUserState);
+  const [loggedInUser, setLoggedInuser] = useRecoilState(loggedInUserState);
 
   const [isEdit, setIsEdit] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
@@ -199,6 +199,29 @@ const ProfileInfo = () => {
     }
   };
 
+  const exitHandler = async () => {
+    // TODO: prompt -> 모달창으로 변경필요
+    const password = window.prompt("비밀번호를 입력해주세요");
+    if (!password) {
+      alert("올바른 비밀번호를 입력해주세요");
+      return;
+    }
+
+    const isExit = window.confirm("회원탈퇴시 다시 복구가 불가능합니다. 정말 탈퇴하실껀가요?");
+    if (isExit) {
+      try {
+        await UserService.exit(password, loggedInUser.accessToken);
+
+        setLoggedInuser((prevState) => {
+          return { ...prevState, accessToken: "", userId: "", profileImg: "", nickname: "" };
+        });
+      } catch (err: any) {
+        alert("에러발생");
+        console.error(err);
+      }
+    }
+  };
+
   return (
     <StyledProfileInfo>
       <ProfileImage />
@@ -281,7 +304,9 @@ const ProfileInfo = () => {
                 <UpdateButton type="button" onClick={editHandler}>
                   수정하기
                 </UpdateButton>
-                <ExitUserButton type="button">회원탈퇴</ExitUserButton>
+                <ExitUserButton type="button" onClick={exitHandler}>
+                  회원탈퇴
+                </ExitUserButton>
               </Buttons>
             )}
           </>

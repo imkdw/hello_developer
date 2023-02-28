@@ -68,15 +68,7 @@ class UserController {
 
   static exit = async (req: Request, res: Response, next: NextFunction) => {
     const userId = res.locals.userId;
-    const { password, rePassword } = req.body;
-
-    if (password !== rePassword) {
-      throw {
-        status: 400,
-        code: "user-006",
-        message: "password-mismatch",
-      };
-    }
+    const { password } = req.body;
 
     try {
       await UserService.exit(userId, password);
