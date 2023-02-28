@@ -39,10 +39,16 @@ postRouter.delete("/re-comment/:reCommentId", isAuth, PostController.deleteReCom
 /** 대댓글 수정 */
 postRouter.put("/re-comment/:reCommentId", isAuth, PostValidator.reComment, PostController.updateReComment);
 
-/** 게시글 추천 추가/삭제*/
-postRouter.post("/:postId/recommend", isAuth, PostController.recommedation);
+/** 게시글 추천 추가*/
+postRouter.patch("/:postId/recommend", isAuth, PostController.addRecommend);
+
+/** 게시글 추천 삭제*/
+postRouter.delete("/:postId/recommend", isAuth, PostController.deleteRecommend);
 
 /** 게시글 추천수 증가 */
 postRouter.patch("/:postId/views", PostController.views);
+
+/** 게시글에 대한 유저의 활동내역(북마크, 추천) 가져오기 */
+postRouter.get("/:postId/user", isAuth, PostController.postUserActivity);
 
 export default postRouter;

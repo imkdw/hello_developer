@@ -245,6 +245,7 @@ export class PostService {
         comments: allComments,
         recommendCnt: post.recommend_cnt,
         viewCount: viewCntNumber,
+        postId: post.post_id,
       };
     } catch (err: any) {
       throw err;
@@ -293,16 +294,17 @@ export class PostService {
     }
   };
 
-  static recommedation = async (userId: string, postId: string) => {
+  static addRecommend = async (userId: string, postId: string) => {
     try {
-      let type: "add" | "delete" = "add";
-      const recommendation = await PostModel.findRecommedationByUserAndPostId(userId, postId);
+      await PostModel.addRecommend(userId, postId);
+    } catch (err: any) {
+      throw err;
+    }
+  };
 
-      if (recommendation) {
-        type = "delete";
-      }
-
-      await PostModel.recommendation(userId, postId, type);
+  static deleteRecommend = async (userId: string, postId: string) => {
+    try {
+      await PostModel.deleteRecommend(userId, postId);
     } catch (err: any) {
       throw err;
     }
@@ -334,7 +336,7 @@ export class PostService {
 
   // TODO: 게시글 업데이트로직 재구성 필요
   static updatePost = async (userId: string, postId: string, userDTO: UpdatePostUserDTO) => {
-    const { title, content, category, tags } = userDTO;
+    const { category } = userDTO;
     try {
       const categoryIds = await Promise.all(
         category.split("-").map(async (category) => {
@@ -349,6 +351,27 @@ export class PostService {
       );
 
       await PostModel.updatePost(userId, postId, userDTO, categoryIds);
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  static postUserActivity = async (postId: string, userId: string) => {
+    try {
+      let isRecommend = false;
+      let isBookmark = false;
+
+      const recommendation = await PostModel.findRecommendationByPostAndUserId(postId, userId);
+      if (recommendation) {
+        isRecommend = true;
+      }
+
+      const bookmark = await PostModel.findBookmarkByPostAndUserId(postId, userId);
+      if (bookmark) {
+        isBookmark = true;
+      }
+
+      return { isRecommend, isBookmark };
     } catch (err: any) {
       throw err;
     }

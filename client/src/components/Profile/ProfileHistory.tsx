@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styled from "styled-components";
 
 const StyledProfileHistory = styled.div`
@@ -63,12 +64,12 @@ const HistoryItem = styled.li`
 `;
 
 const HistoryCategory = styled.div`
-  font-size: 22px;
+  font-size: 20px;
   width: 100%;
 `;
 
 const CategoryText = styled.span`
-  font-size: 24px;
+  font-size: 22px;
   color: #0090f9;
 `;
 
@@ -79,21 +80,25 @@ const HistoryData = styled.div`
 `;
 
 const PostTitle = styled.div`
-  font-size: 24px;
+  font-size: 20px;
 `;
 
 const PostCreatedAt = styled.div`
-  font-size: 22px;
+  font-size: 20px;
   color: #7d7d7d;
 `;
 
 const ProfileHistory = () => {
+  const [posts, setPosts] = useState();
+
+  const historyHandler = (item: string) => {};
+
   return (
     <StyledProfileHistory>
       <HistoryTab>
-        <TabItem>작성한 글</TabItem>
-        <TabItem>작성한 댓글</TabItem>
-        <TabItem>저장한 글</TabItem>
+        <TabItem onClick={() => historyHandler("post")}>작성한 글</TabItem>
+        <TabItem onClick={() => historyHandler("comment")}>작성한 댓글</TabItem>
+        <TabItem onClick={() => historyHandler("bookmark")}>저장한 글</TabItem>
       </HistoryTab>
       <History>
         {[1, 2, 3, 4, 5].map((number) => (

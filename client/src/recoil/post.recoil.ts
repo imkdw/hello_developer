@@ -16,10 +16,19 @@ export const postDetailDataState = atom<PostDetailData>({
     title: "",
     viewCount: 0,
     category: "",
+    postId: "",
   },
 });
 
 export const currentPostIdState = atom({
   key: "currentPostIdState",
   default: "",
+});
+
+export const postOfUserActivityState = atom({
+  key: "postOfUserActivityState",
+  default: {
+    isRecommend: false,
+    isBookmark: false,
+  },
 });

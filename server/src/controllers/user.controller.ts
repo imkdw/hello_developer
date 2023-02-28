@@ -18,19 +18,19 @@ class UserController {
   };
 
   static addBookmark = async (req: Request, res: Response, next: NextFunction) => {
-    const { postId } = req.body;
+    const postId = req.params.postId;
     const userId = res.locals.userId;
 
     try {
       await UserService.addBookmark(postId, userId);
-      res.status(201).json();
+      res.status(200).json();
     } catch (err: any) {
       next(err);
     }
   };
 
   static deleteBookmark = async (req: Request, res: Response, next: NextFunction) => {
-    const { postId } = req.params;
+    const postId = req.params.postId;
     const userId = res.locals.userId;
 
     try {
@@ -43,7 +43,7 @@ class UserController {
 
   static history = async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.params;
-    const item = req.query.item as string;
+    const item = req.query.item as "post" | "comment" | "bookmark";
 
     try {
       const history = await UserService.history(userId, item);
@@ -91,11 +91,11 @@ class UserController {
     const image = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
 
     try {
-      await UserService.image(userId, image);
+      const imageUrl = await UserService.image(userId, image);
+      res.status(200).json({ profileImg: imageUrl });
     } catch (err: any) {
       next(err);
     }
-    res.status(200).json();
   };
 }
 

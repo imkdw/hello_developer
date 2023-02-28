@@ -101,12 +101,24 @@ class PostController {
     }
   };
 
-  static recommedation = async (req: Request, res: Response, next: NextFunction) => {
+  static addRecommend = async (req: Request, res: Response, next: NextFunction) => {
     const { postId } = req.params;
     const userId = res.locals.userId;
 
     try {
-      await PostService.recommedation(userId, postId);
+      await PostService.addRecommend(userId, postId);
+      res.status(200).json();
+    } catch (err: any) {
+      next(err);
+    }
+  };
+
+  static deleteRecommend = async (req: Request, res: Response, next: NextFunction) => {
+    const { postId } = req.params;
+    const userId = res.locals.userId;
+
+    try {
+      await PostService.deleteRecommend(userId, postId);
       res.status(200).json();
     } catch (err: any) {
       next(err);
@@ -156,6 +168,21 @@ class PostController {
     try {
       await PostService.updatePost(userId, postId, userDTO);
       res.status(200).json();
+    } catch (err: any) {
+      next(err);
+    }
+  };
+
+  /**
+   * 게시글에 대한 유저의 활동내역(북마크, 추천) 가져오기
+   */
+  static postUserActivity = async (req: Request, res: Response, next: NextFunction) => {
+    const postId = req.params.postId;
+    const userId = res.locals.userId;
+
+    try {
+      const { isRecommend, isBookmark } = await PostService.postUserActivity(postId, userId);
+      res.status(200).json({ isRecommend, isBookmark });
     } catch (err: any) {
       next(err);
     }

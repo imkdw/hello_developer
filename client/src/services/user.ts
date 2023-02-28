@@ -1,5 +1,11 @@
 import axios from "axios";
-import { USER_PROFILE_IMAGE_UPDATE, USER_PROFILE_UPDATE_URL, USER_PROFILE_URL } from "../config/api";
+import {
+  ADD_BOOKMARK_URL,
+  DELETE_BOOKMARK_URL,
+  USER_PROFILE_IMAGE_UPDATE,
+  USER_PROFILE_UPDATE_URL,
+  USER_PROFILE_URL,
+} from "../config/api";
 import { UserProfile, UserProfileUpdateData } from "../types/user";
 import * as Sentry from "@sentry/react";
 
@@ -75,6 +81,44 @@ export class UserService {
           Authorization: `Bearer ${accessToken}`,
         },
       });
+
+      localStorage.setItem("profileImg", res.data.profileImg);
+
+      return { status: res.status, profileImg: res.data.profileImg };
+    } catch (err: any) {
+      errorHandler(err);
+      throw err;
+    }
+  };
+
+  static addBookmark = async (postId: string, accessToken: string) => {
+    try {
+      const res = await axios.patch(
+        `http://localhost:5000/v1/api/user/bookmark/${postId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      return res;
+    } catch (err: any) {
+      errorHandler(err);
+      throw err;
+    }
+  };
+
+  static deleteBookmark = async (postId: string, accessToken: string) => {
+    try {
+      const res = await axios.delete(`${DELETE_BOOKMARK_URL}/${postId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      return res;
     } catch (err: any) {
       errorHandler(err);
       throw err;

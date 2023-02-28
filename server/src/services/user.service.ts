@@ -54,18 +54,7 @@ export class UserService {
     try {
       await UserModel.addBookmark(postId, userId);
     } catch (err: any) {
-      if (err.code === "ER_NO_REFERENCED_ROW_2") {
-        throw {
-          status: 404,
-          code: "user-002",
-          message: "bookmark_post_not_found",
-        };
-      }
-
-      throw {
-        status: 500,
-        message: err.message,
-      };
+      throw err;
     }
   };
 
@@ -77,7 +66,7 @@ export class UserService {
     }
   };
 
-  static history = async (userId: string, item: string) => {
+  static history = async (userId: string, item: "post" | "comment" | "bookmark") => {
     try {
       let historyPosts: HistoryPosts[] = [];
 
@@ -148,13 +137,6 @@ export class UserService {
             })
           );
           break;
-
-        default:
-          throw {
-            status: 404,
-            code: "user-003",
-            message: "history_item_not_found",
-          };
       }
 
       return historyPosts;
@@ -294,6 +276,8 @@ export class UserService {
 
       /** 이미지를 업로드한 S3 URL로 유저 프로필정보 수정 */
       await UserModel.image(userId, imageUrl);
+
+      return imageUrl;
     } catch (err: any) {
       throw err;
     }

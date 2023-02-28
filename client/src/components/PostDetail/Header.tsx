@@ -1,12 +1,13 @@
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { currentPostIdState, postDetailDataState } from "../../recoil/post.recoil";
+import { currentPostIdState, postDetailDataState, postOfUserActivityState } from "../../recoil/post.recoil";
 import { useState } from "react";
 import { PostService } from "../../services/post";
 import { loggedInUserState } from "../../recoil/auth.recoil";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { dateFormat } from "../../utils/dateFormat";
+import { UserService } from "../../services/user";
 
 const StyledHeader = styled.div`
   width: 100%;
@@ -97,12 +98,26 @@ const ShareIcon = () => {
   );
 };
 
-const BookmarkIcon = () => {
+const EnableBookmarkIcon = () => {
+  return (
+    <svg width="15" height="21" viewBox="0 0 15 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M12.5 0H2.08333C0.932292 0 0.0104169 1.00687 0.0104169 2.25L0 20.25L7.29167 16.875L14.5833 20.25V2.25C14.5833 1.00687 13.651 0 12.5 0Z"
+        fill="#767E8C"
+      />
+    </svg>
+  );
+};
+
+const DisableBookmarkIcon = () => {
   return (
     <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
-        d="M6.40632 1C6.16803 1.04492 5.99616 1.25586 6.00007 1.5V23.5C5.99811 23.6797 6.09382 23.8457 6.24811 23.9355C6.40241 24.0273 6.59382 24.0273 6.75007 23.9375L12.5001 20.5781L18.2501 23.9375C18.4063 24.0273 18.5977 24.0273 18.752 23.9355C18.9063 23.8457 19.002 23.6797 19.0001 23.5V1.5C19.0001 1.22461 18.7755 1 18.5001 1H6.50007C6.48444 1 6.46882 1 6.45319 1C6.43757 1 6.42194 1 6.40632 1ZM7.00007 2H18.0001V22.625L12.7501 19.5625C12.5958 19.4727 12.4044 19.4727 12.2501 19.5625L7.00007 22.625V2Z"
-        fill="#767E8C"
+        d="M19.7916 21.875L12.4999 16.6667L5.20825 21.875V5.20833C5.20825 4.6558 5.42775 4.12589 5.81845 3.73519C6.20915 3.34449 6.73905 3.125 7.29159 3.125H17.7083C18.2608 3.125 18.7907 3.34449 19.1814 3.73519C19.5721 4.12589 19.7916 4.6558 19.7916 5.20833V21.875Z"
+        stroke="#767E8C"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -132,6 +147,7 @@ const Header = () => {
   const { user } = postDetailData;
   const currentPostId = useRecoilValue(currentPostIdState);
   const loggedInUser = useRecoilValue(loggedInUserState);
+  const [postOfUserActivity, setPostOfUserActivity] = useRecoilState(postOfUserActivityState);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -171,6 +187,32 @@ const Header = () => {
     }
   };
 
+  const bookmarkHandler = async () => {
+    try {
+      if (postOfUserActivity.isBookmark) {
+        // 기존에 북마크가 되있는 포스트는 북마크 삭제
+        const res = await UserService.deleteBookmark(postDetailData.postId, loggedInUser.accessToken);
+
+        setPostOfUserActivity((prevState) => {
+          return { ...prevState, isBookmark: false };
+        });
+
+        alert("북마크가 취소되었습니다.");
+      } else {
+        // 기존에 북마크가 되어있지 않는 포스트는 북마크 추가
+        const res = await UserService.addBookmark(postDetailData.postId, loggedInUser.accessToken);
+
+        setPostOfUserActivity((prevState) => {
+          return { ...prevState, isBookmark: true };
+        });
+
+        alert("북마크가 추가되었습니다.");
+      }
+    } catch (err: any) {
+      alert("에러 발생");
+    }
+  };
+
   const copyUrlHandler = () => {
     navigator.clipboard.writeText("http://localhost:3000" + location.pathname);
     alert("주소 복사가 완료되었습니다.");
@@ -197,8 +239,8 @@ const Header = () => {
             </ButtonMenu>
           )}
         </Button>
-        <Button>
-          <BookmarkIcon />
+        <Button onClick={bookmarkHandler}>
+          {postOfUserActivity.isBookmark ? <EnableBookmarkIcon /> : <DisableBookmarkIcon />}
         </Button>
         <Button onClick={() => enableMenuHandler("menu")}>
           <MenuIcon />

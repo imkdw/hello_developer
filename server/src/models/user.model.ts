@@ -41,10 +41,7 @@ export class UserModel {
       await connection.execute(query, [postId, userId]);
       connection.release();
     } catch (err: any) {
-      throw {
-        status: 500,
-        message: err.message,
-      };
+      throw err;
     }
   };
 

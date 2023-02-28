@@ -18,6 +18,8 @@ import {
   FindTagNameByIdReturn,
   FindViewCntByPostIdReturn,
   UpdatePostUserDTO,
+  FindBookmarkByPostAndUserId,
+  FindRecommendationByPostAndUserId,
 } from "../types/post";
 import { Time } from "../utils/time";
 
@@ -390,36 +392,53 @@ export class PostModel {
     }
   };
 
-  static recommendation = async (userId: string, postId: string, type: "add" | "delete") => {
+  static addRecommend = async (userId: string, postId: string) => {
     const connection = await pool.getConnection();
 
     try {
       await connection.beginTransaction();
 
       /** POST 테이블 추천수 업데이트 */
-      let postQuery = `UPDATE post SET recommend_cnt = recommend_cnt ${type === "add" ? "+" : "-"} 1 WHERE post_id = ?`;
+      let postQuery = `UPDATE post SET recommend_cnt = recommend_cnt + 1 WHERE post_id = ?`;
       await connection.execute(postQuery, [postId]);
 
       /** recommedation 테이블 row 추가,삭제 */
-      let recommedationQuery =
-        type === "add"
-          ? "INSERT INTO post_recommendation(user_id, post_id) VALUES(?, ?)"
-          : "DELETE FROM post_recommendation WHERE user_id = ? AND post_id = ?";
+      let recommedationQuery = "INSERT INTO post_recommendation(user_id, post_id) VALUES(?, ?)";
       await connection.execute(recommedationQuery, [userId, postId]);
 
       await connection.commit();
     } catch (err: any) {
       await connection.rollback();
-      throw {
-        status: 500,
-        message: err.message,
-      };
+      throw err;
     } finally {
       connection.release();
     }
   };
 
-  static findRecommedationByUserAndPostId = async (userId: string, postId: string) => {
+  static deleteRecommend = async (userId: string, postId: string) => {
+    const connection = await pool.getConnection();
+
+    try {
+      await connection.beginTransaction();
+
+      /** POST 테이블 추천수 업데이트 */
+      let postQuery = `UPDATE post SET recommend_cnt = recommend_cnt - 1 WHERE post_id = ?`;
+      await connection.execute(postQuery, [postId]);
+
+      /** recommedation 테이블 row 추가,삭제 */
+      let recommedationQuery = "DELETE FROM post_recommendation WHERE user_id = ? AND post_id = ?";
+      await connection.execute(recommedationQuery, [userId, postId]);
+
+      await connection.commit();
+    } catch (err: any) {
+      await connection.rollback();
+      throw err;
+    } finally {
+      connection.release();
+    }
+  };
+
+  static findRecommendationByUserAndPostId = async (userId: string, postId: string) => {
     const query = "SELECT recommendation_id FROM post_recommendation WHERE user_id = ? AND post_id = ?";
     try {
       const connection = await pool.getConnection();
@@ -596,10 +615,37 @@ export class PostModel {
       connection.release();
       return rows[0];
     } catch (err: any) {
-      throw {
-        status: 500,
-        message: err.message,
-      };
+      throw err;
+    }
+  };
+
+  static findRecommendationByPostAndUserId = async (postId: string, userId: string) => {
+    const query = "SELECT recommendation_id FROM post_recommendation WHERE post_id = ? AND user_id = ?";
+    try {
+      const connection = await pool.getConnection();
+      const [rows, fields]: [FindRecommendationByPostAndUserId[], FieldPacket[]] = await connection.execute(query, [
+        postId,
+        userId,
+      ]);
+      connection.release();
+      return rows[0];
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  static findBookmarkByPostAndUserId = async (postId: string, userId: string) => {
+    const query = "SELECT recommendation_id FROM post_recommendation WHERE post_id = ? AND user_id = ?";
+    try {
+      const connection = await pool.getConnection();
+      const [rows, fields]: [FindBookmarkByPostAndUserId[], FieldPacket[]] = await connection.execute(query, [
+        postId,
+        userId,
+      ]);
+      connection.release();
+      return rows[0];
+    } catch (err: any) {
+      throw err;
     }
   };
 }

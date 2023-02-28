@@ -6,6 +6,8 @@ export const isAuth = (req: Request, res: Response, next: NextFunction): void =>
 
   /** 헤더에 토큰이 존재하지 않을 경우 */
   if (!authorization || authorization.length === 1) {
+    console.log(req.headers);
+
     const err = Object.assign(new Error(), {
       status: 404,
       message: "Not Found",

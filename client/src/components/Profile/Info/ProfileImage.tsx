@@ -46,7 +46,7 @@ const ImageChangeButton = styled.button`
 
 const ProfileImage = () => {
   const [userProfile, setUserProfile] = useRecoilState(userProfileState);
-  const loggedInUser = useRecoilValue(loggedInUserState);
+  const [loggedInUser, setLoggedInuser] = useRecoilState(loggedInUserState);
   const fileUploadRef = useRef<HTMLInputElement | null>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
 
@@ -83,7 +83,11 @@ const ProfileImage = () => {
     formData.append("image", image);
 
     try {
-      const res = await UserService.uploadImage(formData, loggedInUser.accessToken);
+      const { profileImg } = await UserService.uploadImage(formData, loggedInUser.accessToken);
+
+      setLoggedInuser((prevState) => {
+        return { ...prevState, profileImg: profileImg };
+      });
     } catch (err: any) {
       alert("에러발생");
       console.error(err);

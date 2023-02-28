@@ -1,6 +1,8 @@
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { postDetailDataState } from "../../recoil/post.recoil";
+import { loggedInUserState } from "../../recoil/auth.recoil";
+import { postDetailDataState, postOfUserActivityState } from "../../recoil/post.recoil";
+import { PostService } from "../../services/post";
 
 const StyledData = styled.div`
   width: 100%;
@@ -30,16 +32,7 @@ const TagText = styled.p`
   }
 `;
 
-const RecommendData = styled.div`
-  display: flex;
-  gap: 20px;
-
-  @media screen and (max-width: 767px) {
-    gap: 10px;
-  }
-`;
-
-const RecommendCount = styled.button`
+const RecommendCount = styled.button<{ backgroundColor?: string }>`
   width: auto;
   padding: 5px 15px 5px 15px;
   display: flex;
@@ -49,9 +42,14 @@ const RecommendCount = styled.button`
   justify-content: center;
   gap: 10px;
   font-size: 16px;
+  background-color: ${(props) => props.backgroundColor};
 
   @media screen and (max-width: 767px) {
     padding: 5px 10px 5px 10px;
+  }
+
+  &:hover {
+    background-color: #dfdfdf;
   }
 `;
 
@@ -71,7 +69,44 @@ const RecommendIcon = () => {
 };
 
 const Data = () => {
-  const postDetailData = useRecoilValue(postDetailDataState);
+  const [postDetailData, setPostDetailData] = useRecoilState(postDetailDataState);
+  const loggedInUser = useRecoilValue(loggedInUserState);
+  const [postOfUserActivity, setPostOfUserActivity] = useRecoilState(postOfUserActivityState);
+
+  const recommendationHandler = async () => {
+    console.log(postOfUserActivity);
+    try {
+      if (postOfUserActivity.isRecommend) {
+        // 기존에 추천이 되있는 게시글이면 추천 삭제
+        const res = await PostService.deleteRecommend(postDetailData.postId, loggedInUser.accessToken);
+
+        setPostOfUserActivity((prevState) => {
+          return { ...prevState, isRecommend: false };
+        });
+
+        setPostDetailData((prevState) => {
+          return { ...prevState, recommendCnt: prevState.recommendCnt - 1 };
+        });
+        alert("추천이 취소되었습니다.");
+      } else {
+        // 기존에 추천이 되어있지 않은 게시글이면 추천 추가
+        const res = await PostService.addRecommend(postDetailData.postId, loggedInUser.accessToken);
+
+        setPostOfUserActivity((prevState) => {
+          return { ...prevState, isRecommend: true };
+        });
+
+        setPostDetailData((prevState) => {
+          return { ...prevState, recommendCnt: prevState.recommendCnt + 1 };
+        });
+
+        alert("추천이 완료되었습니다.");
+      }
+    } catch (err: any) {
+      alert("에러 발생");
+      console.error(err);
+    }
+  };
 
   return (
     <StyledData>
@@ -84,12 +119,17 @@ const Data = () => {
           return null;
         })}
       </Tags>
-      <RecommendData>
-        <RecommendCount>
+      {postOfUserActivity.isRecommend ? (
+        <RecommendCount onClick={recommendationHandler} backgroundColor="#dfdfdf">
           <RecommendIcon />
           {postDetailData.recommendCnt}
         </RecommendCount>
-      </RecommendData>
+      ) : (
+        <RecommendCount onClick={recommendationHandler}>
+          <RecommendIcon />
+          {postDetailData.recommendCnt}
+        </RecommendCount>
+      )}
     </StyledData>
   );
 };

@@ -161,3 +161,11 @@ export interface FindTagsByPostIdReturn {
 export interface FindCategoryNameByIdReturn extends RowDataPacket {
   name: string;
 }
+
+export interface FindRecommendationByPostAndUserId extends RowDataPacket {
+  recommendation_id: number;
+}
+
+export interface FindBookmarkByPostAndUserId extends RowDataPacket {
+  bookmark_id: number;
+}

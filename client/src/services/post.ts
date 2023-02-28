@@ -8,6 +8,9 @@ import {
   DELETE_RE_COMMENT_URL,
   POST_DETAIL_URL,
   POST_LIST_URL,
+  POST_RECOMMENDATION_URL,
+  POST_USER_ACTIVITY_URL,
+  POST_VIEW_COUNT_URL,
   UPDATE_COMMENT_URL,
   UPDATE_POST_URL,
   UPDATE_RE_COMMENT_URL,
@@ -139,6 +142,13 @@ export class PostService {
     }
   };
 
+  /**
+   * 게시글 업데이트 로직
+   * @param updateData - 업데이트를 요청할 게시글 데이터
+   * @param postId  - 업데이트할 게시글의 아이디
+   * @param accessToken - 엑세스 토큰
+   * @returns {status} - API 응답 상태코드
+   */
   static update = async (updateData: AddPostData, postId: string, accessToken: string) => {
     try {
       const res = await axios.put(
@@ -158,6 +168,12 @@ export class PostService {
     }
   };
 
+  /**
+   * 댓글 삭제 로직
+   * @param commentId - 삭제할 댓글 아이디
+   * @param accessToken - 엑세스 토큰
+   * @returns {status} - API 응답 상태코드
+   */
   static deleteComment = async (commentId: number, accessToken: string) => {
     try {
       const res = await axios.delete(`${DELETE_COMMENT_URL}/${commentId}`, {
@@ -188,6 +204,13 @@ export class PostService {
     }
   };
 
+  /**
+   * 댓글 업데이트 로직
+   * @param commetId - 업데이트할 댓글 아이디
+   * @param comment - 댓글 내용
+   * @param accessToken - 엑세스 토큰
+   * @returns {status} - API 응답 상태코드
+   */
   static updateComment = async (commetId: number, comment: string, accessToken: string) => {
     try {
       const res = await axios.put(
@@ -207,6 +230,13 @@ export class PostService {
     }
   };
 
+  /**
+   * 답글 업데이트 로직
+   * @param commetId - 업데이트할 답글 아이디
+   * @param content - 답글 내용
+   * @param accessToken - 엑세스 토큰
+   * @returns {status} - API 응답 상태코드
+   */
   static updateReComment = async (commetId: number, content: string, accessToken: string) => {
     try {
       const res = await axios.put(
@@ -220,6 +250,90 @@ export class PostService {
       );
 
       return res.status;
+    } catch (err: any) {
+      errorHandler(err);
+      throw err;
+    }
+  };
+
+  /**
+   * 게시글 조회수 추가 로직
+   * @param {string} postId - 조회수를 추가하고자 하는 게시글 아이디
+   * @param {string} accessToken - 엑세스토큰
+   */
+  static addViewCount = async (postId: string, accessToken: string) => {
+    try {
+      await axios.patch(
+        `${POST_VIEW_COUNT_URL}/${postId}/views`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+    } catch (err: any) {
+      errorHandler(err);
+      throw err;
+    }
+  };
+
+  /**
+   * 게시글 추천 추가 로직
+   * @param postId - 추천을 하고자하는 게시글 아이디
+   * @param accessToken - 엑세스 토큰
+   */
+  static addRecommend = async (postId: string, accessToken: string) => {
+    try {
+      const res = await axios.patch(
+        `${POST_RECOMMENDATION_URL}/${postId}/recommend`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return res;
+    } catch (err: any) {
+      errorHandler(err);
+      throw err;
+    }
+  };
+
+  /**
+   * 게시글 추천 삭제 로직
+   * @param postId - 추천을 하고자하는 게시글 아이디
+   * @param accessToken - 엑세스 토큰
+   */
+  static deleteRecommend = async (postId: string, accessToken: string) => {
+    try {
+      const res = await axios.delete(`${POST_RECOMMENDATION_URL}/${postId}/recommend`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      return res;
+    } catch (err: any) {
+      errorHandler(err);
+      throw err;
+    }
+  };
+
+  /**
+   * 게시글에 대한 유저 활동내역(추천, 북마크) 가져오기
+   * @param postId - 활동내역을 가져올 게시글 아이디
+   * @param accessToken - 엑세스 토큰
+   */
+  static getUserActivity = async (postId: string, accessToken: string) => {
+    try {
+      const res = await axios.get(`${POST_USER_ACTIVITY_URL}/${postId}/user`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      return res;
     } catch (err: any) {
       errorHandler(err);
       throw err;

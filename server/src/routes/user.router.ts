@@ -15,7 +15,7 @@ userRouter.put("/:userId", isAuth, UserValidator.profile, UserController.updateP
 userRouter.get("/:userId/history", UserController.history);
 
 /** 게시글 북마크 추가하기 */
-userRouter.post("/bookmark", isAuth, UserController.addBookmark);
+userRouter.patch("/bookmark/:postId", isAuth, UserController.addBookmark);
 
 /** 게시글 북마크 삭제하기 */
 userRouter.delete("/bookmark/:postId", isAuth, UserController.deleteBookmark);

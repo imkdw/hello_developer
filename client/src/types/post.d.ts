@@ -64,6 +64,7 @@ export interface PostDetailData {
   recommendCnt: number;
   title: string;
   viewCount: number;
+  postId: string;
 }
 
 export interface PostDetailDataComments {
