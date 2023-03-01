@@ -40,10 +40,10 @@ postRouter.delete("/re-comment/:reCommentId", isAuth, PostController.deleteReCom
 postRouter.put("/re-comment/:reCommentId", isAuth, PostValidator.reComment, PostController.updateReComment);
 
 /** 게시글 추천 추가*/
-postRouter.patch("/:postId/recommend", isAuth, PostController.addRecommend);
+postRouter.patch("/recommend/:postId", isAuth, PostController.addRecommend);
 
 /** 게시글 추천 삭제*/
-postRouter.delete("/:postId/recommend", isAuth, PostController.deleteRecommend);
+postRouter.delete("/recommend/:postId", isAuth, PostController.deleteRecommend);
 
 /** 게시글 추천수 증가 */
 postRouter.patch("/:postId/views", PostController.views);

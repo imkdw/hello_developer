@@ -282,9 +282,9 @@ describe("북마크 추가 API [POST] /v1/api/user/bookmark", () => {
   });
 
   test("[정상 북마크 추가], HTTP 201", async () => {
-    const res = await request(app).post(ADD_BOOKMARK_API).send({ postId }).set({ Authorization });
+    const res = await request(app).patch(`${ADD_BOOKMARK_API}/${postId}`).set({ Authorization });
 
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
   });
 });
 
@@ -330,18 +330,18 @@ describe("히스토리 가져오기 API, [GET], /v1/api/user/:userId/history?ite
   });
 
   test("[게시글 작성 히스토리 조회], HTTP 200", async () => {
-    const res = await request(app).get(`/v1/api/user/${userId}/history?item=post`);
+    const res = await request(app).get(`/v1/api/user/history/${userId}?item=post`);
 
     expect(res.status).toBe(200);
   });
 
   test("[댓글 작성 히스토리 조회], HTTP 200", async () => {
-    const res = await request(app).get(`/v1/api/user/${userId}/history?item=comment`);
+    const res = await request(app).get(`/v1/api/user/history/${userId}?item=comment`);
     expect(res.status).toBe(200);
   });
 
   test("[북마크한 게시글 조회], HTTP 200", async () => {
-    const res = await request(app).get(`/v1/api/user/${userId}/history?item=bookmark`);
+    const res = await request(app).get(`/v1/api/user/history/${userId}?item=bookmark`);
 
     expect(res.status).toBe(200);
   });

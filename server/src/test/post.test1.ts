@@ -648,7 +648,7 @@ describe("게시글 추천 API, [POST] /v1/api/post/:postId/recommend", () => {
   });
 
   test("[추천 추가] HTTP 200", async () => {
-    const res = await request(app).post(`/v1/api/post/${postId}/recommend`).set({ Authorization });
+    const res = await request(app).patch(`/v1/api/post/recommend/${postId}`).set({ Authorization });
     expect(res.status).toBe(200);
 
     const postRes = await request(app).get(`${POST_DETAIL_API}/${postId}`);
@@ -657,7 +657,7 @@ describe("게시글 추천 API, [POST] /v1/api/post/:postId/recommend", () => {
   });
 
   test("[추천 삭제] HTTP 200", async () => {
-    const res = await request(app).post(`/v1/api/post/${postId}/recommend`).set({ Authorization });
+    const res = await request(app).delete(`/v1/api/post/recommend/${postId}`).set({ Authorization });
     expect(res.status).toBe(200);
 
     const postRes = await request(app).get(`${POST_DETAIL_API}/${postId}`);

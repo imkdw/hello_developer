@@ -286,7 +286,7 @@ export class PostService {
   static addRecommend = async (postId: string, accessToken: string) => {
     try {
       const res = await axios.patch(
-        `${POST_RECOMMENDATION_URL}/${postId}/recommend`,
+        `${POST_RECOMMENDATION_URL}/recommend/${postId}`,
         {},
         {
           headers: {
@@ -308,7 +308,7 @@ export class PostService {
    */
   static deleteRecommend = async (postId: string, accessToken: string) => {
     try {
-      const res = await axios.delete(`${POST_RECOMMENDATION_URL}/${postId}/recommend`, {
+      const res = await axios.delete(`${POST_RECOMMENDATION_URL}/recommend/${postId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
