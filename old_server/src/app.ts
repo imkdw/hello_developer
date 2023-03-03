@@ -30,7 +30,7 @@ const storage = multer.memoryStorage();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(morgan("dev"));
+// app.use(morgan("dev"));
 app.use(multer({ storage }).fields([{ name: "image", maxCount: 1 }]));
 
 /** CORS */
