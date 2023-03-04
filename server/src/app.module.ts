@@ -6,6 +6,7 @@ import { UserEntity } from './entities/user.entity';
 import { PasswordService } from './password/password.service';
 import { PasswordModule } from './password/password.module';
 import { EmailModule } from './email/email.module';
+import { BoardsEntity } from './entities/boards.entity';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { EmailModule } from './email/email.module';
       username: 'root',
       password: '1234',
       database: 'hello_developer_migration',
-      entities: [UserEntity],
+      entities: [UserEntity, BoardsEntity],
       synchronize: true,
       dropSchema: true,
     }),

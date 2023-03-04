@@ -4,7 +4,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Entity,
+  OneToMany,
 } from 'typeorm';
+import { BoardsEntity } from './boards.entity';
 
 @Entity('User')
 export class UserEntity {
@@ -57,4 +59,7 @@ export class UserEntity {
 
   @Column('varchar', { length: 255, nullable: false, name: 'verify_token' })
   verifyToken: string;
+
+  @OneToMany(() => BoardsEntity, (boards) => boards.boardId)
+  board: BoardsEntity;
 }

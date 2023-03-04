@@ -14,8 +14,9 @@ export class BoardsController {
   constructor(private boardsService: BoardsService) {}
 
   /**
-   * /boards - 게시글 생성
-   * @param */
+   * [POST] /boards - 게시글 생성 API
+   * @param createBoardDto - 게시글 생성시 사용되는 데이터
+   */
   @Post()
   async createBoard(@Body() createBoardDto: CreateBoardDto) {
     await this.boardsService.createBoard(createBoardDto);

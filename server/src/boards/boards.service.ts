@@ -1,23 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { BoardsRepository } from 'src/repositories/boards.repository';
 import { CreateBoardDto } from './dto/create-board.dto';
 
 @Injectable()
 export class BoardsService {
   private boards = [];
 
+  constructor(private readonly boardsRepository: BoardsRepository) {}
+
   /**
    * 게시글 생성
    * @param createdBoardDto - 게시글 생성에 필요한 데이터
    */
   async createBoard(createdBoardDto: CreateBoardDto) {
-    const { title, content, tags, category } = createdBoardDto;
-    this.boards.push({
-      id: this.boards.length + 1,
-      title,
-      content,
-      tags: tags.map((tag) => tag),
-      category,
-    });
+    await this.boardsRepository.createBoard(createdBoardDto);
   }
 
   /**
