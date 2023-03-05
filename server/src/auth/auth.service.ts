@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from 'src/entities/user.entity';
+import { UsersEntity } from 'src/entities/users.entity';
 import { Repository } from 'typeorm';
 import { RegisterDto } from './dto/register.dto';
 import { v4 } from 'uuid';
@@ -31,32 +31,20 @@ export class AuthService {
     const userByEmail = await this.usersRepository.findUserByEmail(email);
 
     if (userByEmail) {
-      throw new CustomException(
-        HttpStatus.BAD_REQUEST,
-        'Email is already in use',
-        email,
-        'exist_email',
-      );
+      throw new CustomException(HttpStatus.BAD_REQUEST, 'Email is already in use', email, 'exist_email');
     }
 
     /** 닉네임으로 유저 검색해서 존재하는 닉네임이면 에러 반환*/
-    const userByNickname = await this.usersRepository.findUserByNickname(
-      nickname,
-    );
+    const userByNickname = await this.usersRepository.findUserByNickname(nickname);
 
     if (userByNickname) {
-      throw new CustomException(
-        HttpStatus.BAD_REQUEST,
-        'Nickname is already in use',
-        nickname,
-        'exist_nickname',
-      );
+      throw new CustomException(HttpStatus.BAD_REQUEST, 'Nickname is already in use', nickname, 'exist_nickname');
     }
 
     /** 이메일 인증용 토큰 생성 */
     const verifyToken = v4();
 
-    const user = new UserEntity();
+    const user = new UsersEntity();
     user.email = email;
     user.password = await this.passwordService.encryptPassword(password);
     user.nickname = nickname;
@@ -78,24 +66,12 @@ export class AuthService {
 
     /** 유저가 없는 경우 */
     if (!user) {
-      throw new CustomException(
-        HttpStatus.BAD_REQUEST,
-        'Email is do not exist or Password is invalid',
-        '',
-        'invalid_email_or_password',
-      );
+      throw new CustomException(HttpStatus.BAD_REQUEST, 'Email is do not exist or Password is invalid', '', 'invalid_email_or_password');
     }
 
     /** 비밀번호가 일치하지 않는 경우 */
-    if (
-      !(await this.passwordService.comparePassword(password, user.password))
-    ) {
-      throw new CustomException(
-        HttpStatus.BAD_REQUEST,
-        'Email is do not exist or Password is invalid',
-        '',
-        'invalid_email_or_password',
-      );
+    if (!(await this.passwordService.comparePassword(password, user.password))) {
+      throw new CustomException(HttpStatus.BAD_REQUEST, 'Email is do not exist or Password is invalid', '', 'invalid_email_or_password');
     }
 
     const { userId, profileImg, nickname } = user;

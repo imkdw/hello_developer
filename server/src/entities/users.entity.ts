@@ -1,15 +1,8 @@
-import {
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  Entity,
-  OneToMany,
-} from 'typeorm';
+import { Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, Entity, OneToMany } from 'typeorm';
 import { BoardsEntity } from './boards.entity';
 
 @Entity('User')
-export class UserEntity {
+export class UsersEntity {
   @PrimaryGeneratedColumn('uuid', { name: 'user_id' })
   userId: string;
 
@@ -30,36 +23,23 @@ export class UserEntity {
   @Column('varchar', {
     length: 255,
     nullable: true,
-    default:
-      'https://item.kakaocdn.net/do/60186e0074ad046dc11b946556106b479f17e489affba0627eb1eb39695f93dd',
+    default: 'https://item.kakaocdn.net/do/60186e0074ad046dc11b946556106b479f17e489affba0627eb1eb39695f93dd',
     name: 'profile_img',
   })
   profileImg: string;
 
-  @CreateDateColumn({
-    type: 'datetime',
-    nullable: true,
-    name: 'created_at_date',
-  })
+  @CreateDateColumn({ type: 'datetime', nullable: true, name: 'created_at_date' })
   createdAt: Date;
 
-  @UpdateDateColumn({
-    type: 'datetime',
-    nullable: true,
-    name: 'update_at_date',
-  })
+  @UpdateDateColumn({ type: 'datetime', nullable: true, name: 'update_at_date' })
   updatedAt: Date;
 
-  @Column('boolean', {
-    nullable: true,
-    default: false,
-    name: 'is_verified_flag',
-  })
+  @Column('boolean', { nullable: true, default: false, name: 'is_verified_flag' })
   isVerified: boolean;
 
   @Column('varchar', { length: 255, nullable: false, name: 'verify_token' })
   verifyToken: string;
 
-  @OneToMany(() => BoardsEntity, (boards) => boards.boardId)
-  board: BoardsEntity;
+  @OneToMany(() => BoardsEntity, (boards) => boards.boardId, { onDelete: 'CASCADE' })
+  board: BoardsEntity[];
 }

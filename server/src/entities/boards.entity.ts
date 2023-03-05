@@ -6,13 +6,20 @@ import {
   Entity,
   ManyToOne,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
-import { UserEntity } from './user.entity';
+import { BoardsCategoryEntity } from './boards-category.entity';
+import { TagsEntity } from './tags.entity';
+import { UsersEntity } from './users.entity';
 
 @Entity('Board')
 export class BoardsEntity {
   @PrimaryGeneratedColumn('uuid', { name: 'board_id' })
   boardId: string;
+
+  @Column({ type: 'varchar', length: 36, name: 'user_id' })
+  userId: string;
 
   @Column({ type: 'varchar', length: 50, nullable: false })
   title: string;
@@ -20,32 +27,42 @@ export class BoardsEntity {
   @Column({ type: 'text', nullable: false })
   content: string;
 
-  @CreateDateColumn({
-    type: 'datetime',
-    nullable: true,
-    name: 'created_at_date',
-  })
+  @Column({ type: 'int', name: 'category_id1' })
+  categoryId1: number;
+
+  @Column({ type: 'int', name: 'category_id2' })
+  categoryId2: number | null;
+
+  @CreateDateColumn({ type: 'datetime', nullable: true, name: 'created_at_date' })
   createdAt: Date;
 
-  @UpdateDateColumn({
-    type: 'datetime',
-    nullable: true,
-    name: 'update_at_date',
-  })
+  @UpdateDateColumn({ type: 'datetime', nullable: true, name: 'update_at_date' })
   updatedAt: Date;
 
-  @ManyToOne(() => UserEntity, (user) => user.userId)
-  @JoinColumn({ name: 'user_id' })
-  user: UserEntity;
-}
+  @Column({ type: 'int', default: 0, nullable: true, name: 'recommend_cnt' })
+  recommendCnt: number;
 
-// CREATE TABLE `post` (
-//   `category_id1` int DEFAULT NULL,
-//   `category_id2` int DEFAULT NULL,
-//   `recommend_cnt` int DEFAULT '0',
-//   PRIMARY KEY (`post_id`),
-//   KEY `category_id1` (`category_id1`),
-//   KEY `category_id2` (`category_id2`),
-//   CONSTRAINT `post_ibfk_2` FOREIGN KEY (`category_id1`) REFERENCES `post_category` (`category_id`),
-//   CONSTRAINT `post_ibfk_3` FOREIGN KEY (`category_id2`) REFERENCES `post_category` (`category_id`)
-// ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  @ManyToOne(() => UsersEntity, (user) => user.userId)
+  @JoinColumn({ name: 'user_id' })
+  user: UsersEntity;
+
+  @ManyToOne(() => BoardsCategoryEntity, (boardCategory) => boardCategory.categoryId)
+  @JoinColumn({ name: 'category_id1' })
+  category1: BoardsCategoryEntity;
+
+  @ManyToOne(() => BoardsCategoryEntity, (boardCategory) => boardCategory.categoryId)
+  @JoinColumn({ name: 'category_id2' })
+  category2: BoardsCategoryEntity;
+
+  @ManyToMany(() => TagsEntity, (tags) => tags.tagId)
+  @JoinTable({
+    name: 'board_tags',
+    joinColumn: {
+      name: 'board_id',
+    },
+    inverseJoinColumn: {
+      name: 'tag_id',
+    },
+  })
+  tags: TagsEntity[];
+}

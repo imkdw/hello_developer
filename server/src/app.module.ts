@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 import { BoardsModule } from './boards/boards.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from './entities/user.entity';
-import { PasswordService } from './password/password.service';
-import { PasswordModule } from './password/password.module';
+import { UsersEntity } from './entities/users.entity';
 import { EmailModule } from './email/email.module';
 import { BoardsEntity } from './entities/boards.entity';
+import { BoardsCategoryEntity } from './entities/boards-category.entity';
+import { BoardsRepository } from './repositories/boards.repository';
+import { BoardTagsEntity, TagsEntity } from './entities/tags.entity';
 
 @Module({
   imports: [
@@ -19,12 +20,16 @@ import { BoardsEntity } from './entities/boards.entity';
       username: 'root',
       password: '1234',
       database: 'hello_developer_migration',
-      entities: [UserEntity, BoardsEntity],
+      entities: [UsersEntity, BoardsEntity, BoardsCategoryEntity, TagsEntity, BoardTagsEntity],
       synchronize: true,
       dropSchema: true,
     }),
     EmailModule,
   ],
-  providers: [PasswordService],
+  providers: [BoardsRepository],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private boardsRepository: BoardsRepository) {
+    this.boardsRepository.createDefaultCategorys();
+  }
+}
