@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { UserEntity } from '../../entities/user/user.entity';
+import { UserEntity } from '../../users/user/user.entity';
 import { BoardEntity } from '../board/board.entity';
 
 @Entity('BoardRecommend', { name: 'board_recommend' })

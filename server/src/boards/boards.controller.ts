@@ -1,11 +1,5 @@
-import {
-  Body,
-  Controller,
-  Post,
-  Get,
-  Param,
-  ParseIntPipe,
-} from '@nestjs/common';
+import { Body, Controller, Post, Get, Param, ParseIntPipe, UseGuards, Req } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 
@@ -17,9 +11,11 @@ export class BoardsController {
    * [POST] /boards - 게시글 생성 API
    * @param createBoardDto - 게시글 생성시 사용되는 데이터
    */
+  @UseGuards(JwtAuthGuard)
   @Post()
-  async createBoard(@Body() createBoardDto: CreateBoardDto) {
-    await this.boardsService.createBoard(createBoardDto);
+  async createBoard(@Req() req, @Body() createBoardDto: CreateBoardDto) {
+    const userId = req.user.userId;
+    await this.boardsService.createBoard(userId, createBoardDto);
   }
 
   /**

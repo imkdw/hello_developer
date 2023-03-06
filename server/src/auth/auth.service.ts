@@ -8,8 +8,9 @@ import { EmailService } from 'src/email/email.service';
 import { CustomException } from 'src/exceptions/custom.exception';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
-import { UsersRepository } from 'src/repositories/users.repository';
-import { UserEntity } from 'src/entities/user/user.entity';
+import { UsersRepository } from 'src/users/user/users.repository';
+import { UserEntity } from 'src/users/user/user.entity';
+import { jwtConstants } from './jwt-constants';
 
 @Injectable()
 export class AuthService {
@@ -60,37 +61,28 @@ export class AuthService {
    * @param loginDto - 로그인 데이터
    */
   async login(loginDto: LoginDto) {
-    const { email, password } = loginDto;
-
-    const user = await this.usersRepository.findUserByEmail(email);
-
-    /** 유저가 없는 경우 */
-    if (!user) {
-      throw new CustomException(HttpStatus.BAD_REQUEST, 'Email is do not exist or Password is invalid', '', 'invalid_email_or_password');
-    }
-
-    /** 비밀번호가 일치하지 않는 경우 */
-    if (!(await this.passwordService.comparePassword(password, user.password))) {
-      throw new CustomException(HttpStatus.BAD_REQUEST, 'Email is do not exist or Password is invalid', '', 'invalid_email_or_password');
-    }
-
+    const user = await this.usersRepository.findUserByEmail(loginDto.email);
     const { userId, profileImg, nickname } = user;
-    const accessToken = this.jwtService.sign(
-      { userId, profileImg, nickname },
-      {
-        secret: 'asf18h9asdjsa',
-        expiresIn: '15m',
-      },
-    );
 
-    const refreshToken = this.jwtService.sign(
-      { userId },
-      {
-        secret: 'asf18h9asdjsa',
-        expiresIn: '15m',
-      },
-    );
+    return {
+      accessToken: this.jwtService.sign({ userId }),
+      profileImg,
+      nickname,
+    };
+  }
 
-    return { userId, profileImg, nickname, accessToken, refreshToken };
+  /**
+   * 로그인 시 유저 검증 로직
+   * @param loginDto - 로그인할때 전달받은 데이터
+   * @returns {Promise<false | UserEntity>} - 검증불가 또는 유저정보 반환
+   */
+  async validateUser(username: string, password: string): Promise<any> {
+    const user = await this.usersRepository.findUserByEmail(username);
+    if (user && this.passwordService.comparePassword(password, user.password)) {
+      const { password, ...result } = user;
+      return result;
+    }
+
+    return null;
   }
 }

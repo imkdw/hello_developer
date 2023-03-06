@@ -1,14 +1,14 @@
+import { UserEntity } from 'src/users/user/user.entity';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { BoardEntity } from '../../boards/board/board.entity';
-import { UserEntity } from '../user/user.entity';
+import { CommentEntity } from './comment.entity';
 
-@Entity('Comment')
-export class CommentEntity {
-  @PrimaryGeneratedColumn({ name: 'comment_id' })
+@Entity('reply')
+export class ReplyEntity {
+  @PrimaryGeneratedColumn({ name: 'reply_id' })
+  replyId: number;
+
+  @Column({ type: 'int', name: 'comment_id' })
   commentId: number;
-
-  @Column({ type: 'varchar', length: 36, name: 'post_id' })
-  postId: string;
 
   @Column({ type: 'varchar', length: 36, name: 'user_id' })
   userId: string;
@@ -26,7 +26,7 @@ export class CommentEntity {
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 
-  @ManyToOne(() => BoardEntity, (board) => board.boardId)
-  @JoinColumn({ name: 'board_id' })
-  board: BoardEntity;
+  @ManyToOne(() => CommentEntity, (comment) => comment.commentId)
+  @JoinColumn({ name: 'commend_id' })
+  comment: CommentEntity;
 }

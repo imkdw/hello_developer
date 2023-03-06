@@ -16,8 +16,6 @@ export class BoardTagRepository {
    * @param tagIds - 태그 아이디 목록
    */
   async saveBoardTags(boardId: string, tagIds: number[]) {
-    console.log(boardId, tagIds);
-
     for (const tagId of tagIds) {
       const newBoardTag = new BoardTagEntity();
       newBoardTag.boardId = boardId;

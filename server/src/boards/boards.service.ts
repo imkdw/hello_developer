@@ -14,8 +14,8 @@ export class BoardsService {
    * 게시글 생성
    * @param createdBoardDto - 게시글 생성에 필요한 데이터
    */
-  async createBoard(createdBoardDto: CreateBoardDto) {
-    await this.boardsRepository.createBoard(createdBoardDto);
+  async createBoard(userId: string, createdBoardDto: CreateBoardDto) {
+    await this.boardsRepository.createBoard(userId, createdBoardDto);
   }
 
   /**

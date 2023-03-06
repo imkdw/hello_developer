@@ -5,13 +5,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { EmailModule } from './email/email.module';
 import { BoardCategoryEntity } from './boards/board_category/board-category.entity';
 import { BoardRepository } from './boards/board/board.repository';
-import { UserEntity } from './entities/user/user.entity';
+import { UserEntity } from './users/user/user.entity';
 import { BoardEntity } from './boards/board/board.entity';
 import { TagEntity } from './boards/board_tag/tag.entity';
 import { BoardTagEntity } from './boards/board_tag/board-tag.entity';
 import { BoardViewEntity } from './boards/board_view/board-view.entity';
 import { BoardRecommendEntity } from './boards/board_recommend/board-recommend.entity';
 import { BoardCategoryRepository } from './boards/board_category/board-category.repository';
+import { CommentsModule } from './comments/comments.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { BoardCategoryRepository } from './boards/board_category/board-category.
       synchronize: true,
       dropSchema: true,
     }),
+    CommentsModule,
+    UsersModule,
   ],
   providers: [BoardCategoryRepository],
 })

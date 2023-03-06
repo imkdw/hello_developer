@@ -10,7 +10,7 @@ import {
   JoinTable,
 } from 'typeorm';
 import { BoardCategoryEntity } from '../board_category/board-category.entity';
-import { UserEntity } from '../../entities/user/user.entity';
+import { UserEntity } from '../../users/user/user.entity';
 import { TagEntity } from '../board_tag/tag.entity';
 
 @Entity('Board')
