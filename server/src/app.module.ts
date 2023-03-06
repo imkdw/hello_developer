@@ -2,12 +2,16 @@ import { Module } from '@nestjs/common';
 import { BoardsModule } from './boards/boards.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersEntity } from './entities/users.entity';
 import { EmailModule } from './email/email.module';
-import { BoardsEntity } from './entities/boards.entity';
-import { BoardsCategoryEntity } from './entities/boards-category.entity';
-import { BoardsRepository } from './repositories/boards.repository';
-import { BoardTagsEntity, TagsEntity } from './entities/tags.entity';
+import { BoardCategoryEntity } from './boards/board_category/board-category.entity';
+import { BoardRepository } from './boards/board/board.repository';
+import { UserEntity } from './entities/user/user.entity';
+import { BoardEntity } from './boards/board/board.entity';
+import { TagEntity } from './boards/board_tag/tag.entity';
+import { BoardTagEntity } from './boards/board_tag/board-tag.entity';
+import { BoardViewEntity } from './boards/board_view/board-view.entity';
+import { BoardRecommendEntity } from './boards/board_recommend/board-recommend.entity';
+import { BoardCategoryRepository } from './boards/board_category/board-category.repository';
 
 @Module({
   imports: [
@@ -20,16 +24,15 @@ import { BoardTagsEntity, TagsEntity } from './entities/tags.entity';
       username: 'root',
       password: '1234',
       database: 'hello_developer_migration',
-      entities: [UsersEntity, BoardsEntity, BoardsCategoryEntity, TagsEntity, BoardTagsEntity],
+      entities: [UserEntity, BoardEntity, BoardCategoryEntity, TagEntity, BoardTagEntity, BoardViewEntity, BoardRecommendEntity],
       synchronize: true,
       dropSchema: true,
     }),
-    EmailModule,
   ],
-  providers: [BoardsRepository],
+  providers: [BoardCategoryRepository],
 })
 export class AppModule {
-  constructor(private boardsRepository: BoardsRepository) {
-    this.boardsRepository.createDefaultCategorys();
+  constructor(private boardCategoryRepository: BoardCategoryRepository) {
+    this.boardCategoryRepository.createDefaultCategorys();
   }
 }

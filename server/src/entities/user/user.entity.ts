@@ -1,8 +1,8 @@
 import { Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, Entity, OneToMany } from 'typeorm';
-import { BoardsEntity } from './boards.entity';
+import { BoardEntity } from '../../boards/board/board.entity';
 
 @Entity('User')
-export class UsersEntity {
+export class UserEntity {
   @PrimaryGeneratedColumn('uuid', { name: 'user_id' })
   userId: string;
 
@@ -40,6 +40,6 @@ export class UsersEntity {
   @Column('varchar', { length: 255, nullable: false, name: 'verify_token' })
   verifyToken: string;
 
-  @OneToMany(() => BoardsEntity, (boards) => boards.boardId, { onDelete: 'CASCADE' })
-  board: BoardsEntity[];
+  @OneToMany(() => BoardEntity, (boards) => boards.boardId, { onDelete: 'CASCADE' })
+  board: BoardEntity[];
 }

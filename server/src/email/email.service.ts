@@ -8,21 +8,7 @@ export class EmailService {
 
   constructor() {
     // TODO: 하드코딩된 OAuth 토큰 변경필요
-    this.transporter = nodemailer.createTransport({
-      service: 'gmail',
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: true,
-      auth: {
-        type: 'OAuth2',
-        user: 'hdev.manager@gmail.com',
-        clientId:
-          '410471175654-3kjjvt31rhp1brj58m3io8mjbahe2414.apps.googleusercontent.com',
-        clientSecret: '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',
-        refreshToken:
-          '1//04xyTxO9h39B1CgYIARAAGAQSNwF-L9Ir19z1ygBO7RhPsr4KKtryaCjd2Mk7it1WTUfr9dFLh8n47PIn6y1UDf1ohYfbwsDBNtc',
-      },
-    });
+    this.transporter = nodemailer.createTransport({});
   }
 
   async sendVerifyUserEmail(email: string, verifyToken: string) {

@@ -1,16 +1,25 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BoardsCategoryEntity } from 'src/entities/boards-category.entity';
-import { BoardsEntity } from 'src/entities/boards.entity';
-import { BoardTagsEntity, TagsEntity } from 'src/entities/tags.entity';
-import { BoardsRepository } from 'src/repositories/boards.repository';
+import { BoardCategoryEntity } from 'src/boards/board_category/board-category.entity';
+import { BoardTagEntity } from 'src/boards/board_tag/board-tag.entity';
+import { BoardEntity } from 'src/boards/board/board.entity';
+import { TagEntity } from 'src/boards/board_tag/tag.entity';
+import { BoardRepository } from 'src/boards/board/board.repository';
 import { BoardsController } from './boards.controller';
 import { BoardsService } from './boards.service';
+import { BoardTagRepository } from './board_tag/board-tag.repository';
+import { BoardCategoryRepository } from './board_category/board-category.repository';
+import { TagRepository } from './board_tag/tag.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BoardsEntity, BoardsCategoryEntity, TagsEntity, BoardTagsEntity])],
+  imports: [TypeOrmModule.forFeature([BoardEntity, BoardCategoryEntity, TagEntity, BoardTagEntity])],
   controllers: [BoardsController],
-  providers: [BoardsService, BoardsRepository, BoardsCategoryEntity, TagsEntity, BoardTagsEntity],
+  providers: [BoardsService, BoardRepository, BoardCategoryRepository, BoardTagRepository, TagRepository],
   exports: [TypeOrmModule],
 })
 export class BoardsModule {}
+
+// private readonly boardRepository: Repository<BoardEntity>,
+// private readonly tagRepository: TagRepository,
+// private readonly boardTagsRepository: BoardTagRepository,
+// private readonly boardCategoryRepository: BoardCategoryRepository,

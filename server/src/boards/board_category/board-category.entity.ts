@@ -1,22 +1,22 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { BoardsEntity } from './boards.entity';
+import { BoardEntity } from '../board/board.entity';
 
 @Entity({ name: 'board_category' })
-export class BoardsCategoryEntity {
+export class BoardCategoryEntity {
   @PrimaryGeneratedColumn({ name: 'category_id' })
   categoryId: number;
 
   @Column({ type: 'varchar', name: 'name', length: 255 })
   name: string | null;
 
-  @OneToMany(() => BoardsEntity, (board) => board.category1)
-  boards1: BoardsEntity;
+  @OneToMany(() => BoardEntity, (board) => board.category1)
+  boards1: BoardEntity;
 
-  @OneToMany(() => BoardsEntity, (board) => board.category2)
-  boards2: BoardsEntity;
+  @OneToMany(() => BoardEntity, (board) => board.category2)
+  boards2: BoardEntity;
 }
 
-export const defaultCategorys: Partial<BoardsCategoryEntity>[] = [
+export const defaultCategorys: Partial<BoardCategoryEntity>[] = [
   { categoryId: 1, name: 'notice' },
   { categoryId: 2, name: 'suggestion' },
   { categoryId: 3, name: 'free' },

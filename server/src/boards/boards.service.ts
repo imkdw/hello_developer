@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { BoardsCategoryEntity } from 'src/entities/boards-category.entity';
-import { BoardsRepository } from 'src/repositories/boards.repository';
+import { BoardCategoryEntity } from 'src/boards/board_category/board-category.entity';
+import { BoardRepository } from 'src/boards/board/board.repository';
 import { v4 } from 'uuid';
 import { CreateBoardDto } from './dto/create-board.dto';
 
@@ -8,7 +8,7 @@ import { CreateBoardDto } from './dto/create-board.dto';
 export class BoardsService {
   private boards = [];
 
-  constructor(private readonly boardsRepository: BoardsRepository, private readonly boardsCategoryRepository: BoardsCategoryEntity) {}
+  constructor(private readonly boardsRepository: BoardRepository) {}
 
   /**
    * 게시글 생성

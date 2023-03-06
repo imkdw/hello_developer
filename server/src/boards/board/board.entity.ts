@@ -9,12 +9,12 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { BoardsCategoryEntity } from './boards-category.entity';
-import { TagsEntity } from './tags.entity';
-import { UsersEntity } from './users.entity';
+import { BoardCategoryEntity } from '../board_category/board-category.entity';
+import { UserEntity } from '../../entities/user/user.entity';
+import { TagEntity } from '../board_tag/tag.entity';
 
 @Entity('Board')
-export class BoardsEntity {
+export class BoardEntity {
   @PrimaryGeneratedColumn('uuid', { name: 'board_id' })
   boardId: string;
 
@@ -42,19 +42,19 @@ export class BoardsEntity {
   @Column({ type: 'int', default: 0, nullable: true, name: 'recommend_cnt' })
   recommendCnt: number;
 
-  @ManyToOne(() => UsersEntity, (user) => user.userId)
+  @ManyToOne(() => UserEntity, (user) => user.userId)
   @JoinColumn({ name: 'user_id' })
-  user: UsersEntity;
+  user: UserEntity;
 
-  @ManyToOne(() => BoardsCategoryEntity, (boardCategory) => boardCategory.categoryId)
+  @ManyToOne(() => BoardCategoryEntity, (boardCategory) => boardCategory.categoryId)
   @JoinColumn({ name: 'category_id1' })
-  category1: BoardsCategoryEntity;
+  category1: BoardCategoryEntity;
 
-  @ManyToOne(() => BoardsCategoryEntity, (boardCategory) => boardCategory.categoryId)
+  @ManyToOne(() => BoardCategoryEntity, (boardCategory) => boardCategory.categoryId)
   @JoinColumn({ name: 'category_id2' })
-  category2: BoardsCategoryEntity;
+  category2: BoardCategoryEntity;
 
-  @ManyToMany(() => TagsEntity, (tags) => tags.tagId)
+  @ManyToMany(() => TagEntity, (tags) => tags.tagId)
   @JoinTable({
     name: 'board_tags',
     joinColumn: {
@@ -64,5 +64,5 @@ export class BoardsEntity {
       name: 'tag_id',
     },
   })
-  tags: TagsEntity[];
+  tags: TagEntity[];
 }

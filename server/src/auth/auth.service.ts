@@ -1,6 +1,5 @@
 import { Injectable, BadRequestException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsersEntity } from 'src/entities/users.entity';
 import { Repository } from 'typeorm';
 import { RegisterDto } from './dto/register.dto';
 import { v4 } from 'uuid';
@@ -10,6 +9,7 @@ import { CustomException } from 'src/exceptions/custom.exception';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from 'src/repositories/users.repository';
+import { UserEntity } from 'src/entities/user/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -44,7 +44,7 @@ export class AuthService {
     /** 이메일 인증용 토큰 생성 */
     const verifyToken = v4();
 
-    const user = new UsersEntity();
+    const user = new UserEntity();
     user.email = email;
     user.password = await this.passwordService.encryptPassword(password);
     user.nickname = nickname;
