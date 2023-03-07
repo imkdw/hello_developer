@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from 'src/users/user/user.entity';
-import { PasswordModule } from 'src/password/password.module';
-import { EmailModule } from 'src/email/email.module';
-import { JwtModule } from '@nestjs/jwt';
-import { UsersRepository } from 'src/users/user/users.repository';
-import { PassportModule } from '@nestjs/passport';
+import { UserEntity } from '../users/user/user.entity';
+import { PasswordModule } from '../password/password.module';
+import { EmailModule } from '../email/email.module';
+import { UserRepository } from '../users/user/user.repository';
 import { LocalStrategy } from './local.strategy';
 import { jwtConstants } from './jwt-constants';
 import { JwtStrategy } from './jwt.strategy';
@@ -24,7 +25,7 @@ import { JwtStrategy } from './jwt.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UsersRepository, LocalStrategy, JwtStrategy],
+  providers: [AuthService, UserRepository, LocalStrategy, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}
