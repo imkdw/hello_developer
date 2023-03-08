@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { Board } from '../board.entity';
 
-@Entity('Recommend', { name: 'board_recommend' })
+@Entity({ name: 'board_recommend' })
 export class Recommend {
   @PrimaryGeneratedColumn({ name: 'recommend_id' })
   recommendId: number;

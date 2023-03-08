@@ -16,15 +16,6 @@ export class Tag {
   @Column({ type: 'varchar', length: 30 })
   name: string;
 
-  @ManyToMany(() => Board, (board) => board.boardId)
-  @JoinTable({
-    name: 'board_tags',
-    joinColumn: {
-      name: 'tag_id',
-    },
-    inverseJoinColumn: {
-      name: 'board_id',
-    },
-  })
+  @ManyToMany((type) => Board, (board) => board.tags)
   boards: Board[];
 }

@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { Board } from '../board.entity';
 
-@Entity('View')
+@Entity({ name: 'board_view' })
 export class View {
   @PrimaryGeneratedColumn({ name: 'view_id' })
   viewId: number;

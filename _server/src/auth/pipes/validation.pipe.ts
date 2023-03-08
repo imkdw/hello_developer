@@ -13,10 +13,8 @@ export class AuthValidationPipe implements PipeTransform<any> {
   async transform(value: any, metadata: ArgumentMetadata) {
     const object = plainToClass(metadata.metatype, value);
     const errors = await validate(object);
-
     if (errors.length) {
       const error = errors[0];
-
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
         message: 'invalid_' + error.property,

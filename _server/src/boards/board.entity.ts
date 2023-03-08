@@ -62,15 +62,11 @@ export class Board {
   @JoinColumn({ name: 'category_id2' })
   category2: Category;
 
-  @ManyToMany(() => Tag, (tags) => tags.tagId)
+  @ManyToMany(() => Tag, (tag) => tag.boards, { cascade: true })
   @JoinTable({
-    name: 'board_tags',
-    joinColumn: {
-      name: 'board_id',
-    },
-    inverseJoinColumn: {
-      name: 'tag_id',
-    },
+    name: 'board_tag',
+    joinColumn: { name: 'board_id' },
+    inverseJoinColumn: { name: 'tag_id' },
   })
   tags: Tag[];
 }

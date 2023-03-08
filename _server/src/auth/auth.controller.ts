@@ -1,8 +1,9 @@
-import { Post, Controller, Body, UsePipes } from '@nestjs/common';
+import { Post, Controller, Body, UsePipes, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { AuthValidationPipe } from './pipes/auth-validation.pipe';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { AuthValidationPipe } from './pipes/validation.pipe';
 
 @Controller('auth')
 export class AuthController {
@@ -16,7 +17,7 @@ export class AuthController {
   @UsePipes(AuthValidationPipe)
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
-    return registerDto;
+    await this.authService.register(registerDto);
   }
 
   /**
@@ -25,8 +26,9 @@ export class AuthController {
    * @returns
    */
   @UsePipes(AuthValidationPipe)
+  @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
-    return loginDto;
+    return this.authService.login(loginDto);
   }
 }
