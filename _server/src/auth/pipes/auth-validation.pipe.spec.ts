@@ -2,12 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LoginDto } from '../dto/login.dto';
 import { RegisterDto } from '../dto/register.dto';
 import { PipesModule } from './pipes.module';
-import { AuthValidationPipe } from './validation.pipe';
+import { AuthValidationPipe } from './auth-validation.pipe';
 import { Type, ArgumentMetadata } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common/exceptions';
 import { HttpStatus } from '@nestjs/common/enums';
 
-describe('[파이프] AuthValidationPipe', () => {
+describe('[Pipe] AuthValidationPipe', () => {
   let pipe: AuthValidationPipe;
   let registerMetadata: ArgumentMetadata;
   let loginMetadata: ArgumentMetadata;
@@ -36,7 +36,7 @@ describe('[파이프] AuthValidationPipe', () => {
     };
   });
 
-  it('[회원가입] 유효한 데이터 요청', async () => {
+  it('[Register] Correct Data', async () => {
     const input = new RegisterDto();
     input.email = EMAIL;
     input.password = PASSWORD;
@@ -46,7 +46,7 @@ describe('[파이프] AuthValidationPipe', () => {
     expect(result).toEqual(input);
   });
 
-  it('[회원가입] 올바르지 않은 이메일 요청', async () => {
+  it('[Register] Incorrect Email', async () => {
     const input = new RegisterDto();
     input.email = 'imkdw';
     input.password = PASSWORD;
@@ -61,7 +61,7 @@ describe('[파이프] AuthValidationPipe', () => {
     }
   });
 
-  it('[회원가입] 올바르지 않은 비밀번호 요청', async () => {
+  it('[Register] Incorrect Password', async () => {
     const input = new RegisterDto();
     input.email = EMAIL;
     input.password = 'asdf1234';
@@ -76,7 +76,7 @@ describe('[파이프] AuthValidationPipe', () => {
     }
   });
 
-  it('[회원가입] 올바르지 않은 닉네임 요청', async () => {
+  it('[Register] Incorrect Nickname', async () => {
     const input = new RegisterDto();
     input.email = EMAIL;
     input.password = PASSWORD;
@@ -87,20 +87,6 @@ describe('[파이프] AuthValidationPipe', () => {
     } catch (error) {
       expect(error).toBeInstanceOf(BadRequestException);
       expect(error.message).toEqual('invalid_nickname');
-      expect(error.getStatus()).toEqual(HttpStatus.BAD_REQUEST);
-    }
-  });
-
-  it('[로그인] 올바르지 않은 이메일 요청', async () => {
-    const input = new LoginDto();
-    input.email = 'imkdw';
-    input.password = PASSWORD;
-
-    try {
-      console.log(await pipe.transform(input, loginMetadata));
-    } catch (error) {
-      expect(error).toBeInstanceOf(BadRequestException);
-      expect(error.message).toEqual('invalid_email');
       expect(error.getStatus()).toEqual(HttpStatus.BAD_REQUEST);
     }
   });

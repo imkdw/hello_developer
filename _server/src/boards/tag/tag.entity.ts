@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  ManyToMany,
-  PrimaryColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { JoinTable } from 'typeorm/decorator/relations/JoinTable';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Board } from '../board.entity';
 
 @Entity('Tag')

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthValidationPipe } from './validation.pipe';
+import { AuthValidationPipe } from './auth-validation.pipe';
 
 @Module({
   providers: [AuthValidationPipe],

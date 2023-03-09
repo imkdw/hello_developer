@@ -16,8 +16,9 @@ export class AuthValidationPipe implements PipeTransform<any> {
     if (errors.length) {
       const error = errors[0];
       throw new BadRequestException({
-        status: HttpStatus.BAD_REQUEST,
+        statusCode: HttpStatus.BAD_REQUEST,
         message: 'invalid_' + error.property,
+        error: 'Bad Request',
       });
     }
 

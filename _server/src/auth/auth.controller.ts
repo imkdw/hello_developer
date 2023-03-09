@@ -1,13 +1,21 @@
-import { Post, Controller, Body, UsePipes, UseGuards } from '@nestjs/common';
+import {
+  Post,
+  Controller,
+  Body,
+  UsePipes,
+  UseGuards,
+  HttpCode,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { AuthValidationPipe } from './pipes/validation.pipe';
+import { AuthValidationPipe } from './pipes/auth-validation.pipe';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private authService: AuthService) {}
 
   /**
    * [POST] /auth/register - 회원가입
@@ -17,7 +25,7 @@ export class AuthController {
   @UsePipes(AuthValidationPipe)
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
-    await this.authService.register(registerDto);
+    return await this.authService.register(registerDto);
   }
 
   /**
@@ -25,10 +33,10 @@ export class AuthController {
    * @param loginDto - 로그인시 사용되는 유저의
    * @returns
    */
-  @UsePipes(AuthValidationPipe)
+  @HttpCode(200)
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+    return await this.authService.login(loginDto);
   }
 }

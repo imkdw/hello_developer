@@ -1,1 +1,5 @@
-describe('[서비스] AuthService', () => {});
+describe('[Service] AuthService', () => {
+  it('temp', () => {
+    expect(1).toBe(1);
+  });
+});

@@ -1,14 +1,6 @@
-import { Board } from 'src/boards/board.entity';
-import { User } from 'src/users/user.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Board } from '../boards/board.entity';
+import { User } from '../users/user.entity';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('Comment')
 export class Comment {
