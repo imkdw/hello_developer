@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+import { AppModule } from '../src/app.module';
+import { Connection } from 'typeorm';
 
 const email = 'test@test.com';
 const password = 'asdf1234!@';
@@ -17,7 +18,7 @@ async function register(app: INestApplication) {
 describe('Auth Module (e2e)', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -26,8 +27,13 @@ describe('Auth Module (e2e)', () => {
     await app.init();
   });
 
-  describe('[POST] /auth/register', () => {
-    it('should return 400, invalid email', async () => {
+  afterEach(async () => {
+    const connection = app.get(Connection);
+    await connection.synchronize(true);
+  });
+
+  describe('/auth/register', () => {
+    it('[POST] 유효하지 않은 이메일, 400, invalid_email', async () => {
       return request(app.getHttpServer())
         .post('/auth/register')
         .send({ email: 'testtest.com', password, nickname })
@@ -39,7 +45,7 @@ describe('Auth Module (e2e)', () => {
         });
     });
 
-    it('should return 400, invalid password', async () => {
+    it('[POST] 유효하지 않은 비밀번호, 400, invalid_password', async () => {
       return request(app.getHttpServer())
         .post('/auth/register')
         .send({ email, password: 'asd', nickname })
@@ -51,7 +57,7 @@ describe('Auth Module (e2e)', () => {
         });
     });
 
-    it('should return 400, invalid nickname', async () => {
+    it('[POST] 유효하지 않은 닉네임, 400, invalid_nickname', async () => {
       return request(app.getHttpServer())
         .post('/auth/register')
         .send({ email, password, nickname: 'test!' })
@@ -63,7 +69,7 @@ describe('Auth Module (e2e)', () => {
         });
     });
 
-    it('should return 400, exist email', async () => {
+    it('[POST] 중복된 이메일, 400, invalid_email', async () => {
       await register(app);
       return request(app.getHttpServer())
         .post('/auth/register')
@@ -76,7 +82,7 @@ describe('Auth Module (e2e)', () => {
         });
     });
 
-    it('should return 400, exist nickname', async () => {
+    it('[POST] 중복된 닉네임, 400, invalid_nickname', async () => {
       await register(app);
       return request(app.getHttpServer())
         .post('/auth/register')
@@ -89,7 +95,7 @@ describe('Auth Module (e2e)', () => {
         });
     });
 
-    it('should return 201', async () => {
+    it('[POST] 유효한 회원가입, 200', async () => {
       return request(app.getHttpServer())
         .post('/auth/register')
         .send({ email, password, nickname })
@@ -97,7 +103,7 @@ describe('Auth Module (e2e)', () => {
     });
   });
 
-  describe('[POST] /auth/login', () => {
+  describe('/auth/login', () => {
     it('should return 400, invalid email', () => {
       return request(app.getHttpServer())
         .post('/auth/login')
@@ -110,7 +116,7 @@ describe('Auth Module (e2e)', () => {
         });
     });
 
-    it('should return 400, incorrect email', async () => {
+    it('[로그인] 없는 이메일, 400, invalid_email_or_password', async () => {
       await register(app);
       return request(app.getHttpServer())
         .post('/auth/login')
@@ -123,7 +129,7 @@ describe('Auth Module (e2e)', () => {
         });
     });
 
-    it('should return 400, incorrect password', async () => {
+    it('[로그인] 비밀번호 불일치, 400, invalid_email_or_password', async () => {
       await register(app);
       return request(app.getHttpServer())
         .post('/auth/login')
@@ -136,7 +142,7 @@ describe('Auth Module (e2e)', () => {
         });
     });
 
-    it('should return 200 and have accessToken, userId, profileImg, nickname', async () => {
+    it('[로그인] 정상 로그인, 200, accessToken, userId, profileImg, nickname 반환', async () => {
       await register(app);
       return request(app.getHttpServer()).post('/auth/login').send({ email, password }).expect(200);
     });

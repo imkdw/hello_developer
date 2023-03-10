@@ -36,17 +36,7 @@ describe('[Pipe] AuthValidationPipe', () => {
     };
   });
 
-  it('[Register] Correct Data', async () => {
-    const input = new RegisterDto();
-    input.email = email;
-    input.password = password;
-    input.nickname = nickname;
-
-    const result = await pipe.transform(input, registerMetadata);
-    expect(result).toEqual(input);
-  });
-
-  it('[Register] Incorrect email', async () => {
+  it('[회원가입] 유효하지 않은 이메일', async () => {
     const input = new RegisterDto();
     input.email = 'imkdw';
     input.password = password;
@@ -61,7 +51,7 @@ describe('[Pipe] AuthValidationPipe', () => {
     }
   });
 
-  it('[Register] Incorrect password', async () => {
+  it('[회원가입] 유효하지 않은 비밀번호', async () => {
     const input = new RegisterDto();
     input.email = email;
     input.password = 'asdf1234';
@@ -76,7 +66,7 @@ describe('[Pipe] AuthValidationPipe', () => {
     }
   });
 
-  it('[Register] Incorrect nickname', async () => {
+  it('[회원가입] 유효하지 않은 닉네임', async () => {
     const input = new RegisterDto();
     input.email = email;
     input.password = password;
@@ -89,5 +79,15 @@ describe('[Pipe] AuthValidationPipe', () => {
       expect(error.message).toEqual('invalid_nickname');
       expect(error.getStatus()).toEqual(HttpStatus.BAD_REQUEST);
     }
+  });
+
+  it('[회원가입] 올바른 데이터', async () => {
+    const input = new RegisterDto();
+    input.email = email;
+    input.password = password;
+    input.nickname = nickname;
+
+    const result = await pipe.transform(input, registerMetadata);
+    expect(result).toEqual(input);
   });
 });

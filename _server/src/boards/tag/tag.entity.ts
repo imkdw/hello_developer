@@ -9,6 +9,6 @@ export class Tag {
   @Column({ type: 'varchar', length: 30 })
   name: string;
 
-  @ManyToMany((type) => Board, (board) => board.tags)
+  @ManyToMany(() => Board, (board) => board.tags)
   boards: Board[];
 }

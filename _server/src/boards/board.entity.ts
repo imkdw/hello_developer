@@ -30,7 +30,7 @@ export class Board {
   @Column({ type: 'int', name: 'category_id1' })
   categoryId1: number;
 
-  @Column({ type: 'int', name: 'category_id2' })
+  @Column({ type: 'int', name: 'category_id2', nullable: true })
   categoryId2: number | null;
 
   @CreateDateColumn({

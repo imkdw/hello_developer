@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { BoardsModule } from './boards/boards.module';
 import { CommentsModule } from './comments/comments.module';
@@ -14,6 +14,7 @@ import { Category } from './boards/category/category.entity';
 import { Tag } from './boards/tag/tag.entity';
 import { View } from 'typeorm/schema-builder/view/View';
 import { Recommend } from './boards/recommend/recommend.entity';
+import { BoardsService } from './boards/boards.service';
 
 @Module({
   imports: [
@@ -49,7 +50,15 @@ import { Recommend } from './boards/recommend/recommend.entity';
       synchronize: true,
       dropSchema: true,
     }),
+    TypeOrmModule.forFeature([Board, Category, Tag]),
   ],
   controllers: [],
+  providers: [BoardsService],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  constructor(private boardsService: BoardsService) {}
+
+  async onModuleInit() {
+    await this.boardsService.createDefaultCategorys();
+  }
+}

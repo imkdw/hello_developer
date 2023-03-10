@@ -1,9 +1,20 @@
-import { Controller, Post, Get, Param, Delete, Put, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Param,
+  Delete,
+  Put,
+  UseGuards,
+  Req,
+  UsePipes,
+} from '@nestjs/common';
 import { Body } from '@nestjs/common/decorators';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { BoardValidationPipe } from './pipes/board-validation.pipe';
 
 @Controller('boards')
 export class BoardsController {
@@ -13,10 +24,11 @@ export class BoardsController {
    * 게시글 작성
    * @param createBoardDto - 게시글 작성 데이터
    */
+  @UsePipes(BoardValidationPipe)
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createBoardDto: CreateBoardDto) {
-    return 'create board api';
+  async create(@Req() req, @Body() createBoardDto: CreateBoardDto): Promise<void> {
+    await this.boardsService.create(req.user.userId, createBoardDto);
   }
 
   /**
