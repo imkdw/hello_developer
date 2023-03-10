@@ -31,17 +31,17 @@ export class UsersService {
     user.verifyToken = verifyToken;
 
     try {
-      this.userRepository.save(user);
+      await this.userRepository.save(user);
     } catch (error) {
       throw new InternalServerErrorException();
     }
   }
 
-  async findUserByEmail(email: string) {
-    return await this.userRepository.findOneBy({ email });
+  async findUserByEmail(email: string): Promise<User> {
+    return await this.userRepository.findOne({ where: { email } });
   }
 
-  async findUserByNickname(nickname: string) {
-    return await this.userRepository.findOneBy({ nickname });
+  async findUserByNickname(nickname: string): Promise<User> {
+    return await this.userRepository.findOne({ where: { nickname } });
   }
 }

@@ -12,9 +12,9 @@ describe('[Pipe] AuthValidationPipe', () => {
   let registerMetadata: ArgumentMetadata;
   let loginMetadata: ArgumentMetadata;
 
-  const EMAIL = 'test@test.com';
-  const PASSWORD = 'asdf1234!@';
-  const NICKNAME = 'testuser';
+  const email = 'test@test.com';
+  const password = 'asdf1234!@';
+  const nickname = 'testuser';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -38,19 +38,19 @@ describe('[Pipe] AuthValidationPipe', () => {
 
   it('[Register] Correct Data', async () => {
     const input = new RegisterDto();
-    input.email = EMAIL;
-    input.password = PASSWORD;
-    input.nickname = NICKNAME;
+    input.email = email;
+    input.password = password;
+    input.nickname = nickname;
 
     const result = await pipe.transform(input, registerMetadata);
     expect(result).toEqual(input);
   });
 
-  it('[Register] Incorrect Email', async () => {
+  it('[Register] Incorrect email', async () => {
     const input = new RegisterDto();
     input.email = 'imkdw';
-    input.password = PASSWORD;
-    input.nickname = NICKNAME;
+    input.password = password;
+    input.nickname = nickname;
 
     try {
       await pipe.transform(input, registerMetadata);
@@ -61,11 +61,11 @@ describe('[Pipe] AuthValidationPipe', () => {
     }
   });
 
-  it('[Register] Incorrect Password', async () => {
+  it('[Register] Incorrect password', async () => {
     const input = new RegisterDto();
-    input.email = EMAIL;
+    input.email = email;
     input.password = 'asdf1234';
-    input.nickname = NICKNAME;
+    input.nickname = nickname;
 
     try {
       await pipe.transform(input, registerMetadata);
@@ -76,10 +76,10 @@ describe('[Pipe] AuthValidationPipe', () => {
     }
   });
 
-  it('[Register] Incorrect Nickname', async () => {
+  it('[Register] Incorrect nickname', async () => {
     const input = new RegisterDto();
-    input.email = EMAIL;
-    input.password = PASSWORD;
+    input.email = email;
+    input.password = password;
     input.nickname = 'testuse!';
 
     try {

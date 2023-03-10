@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 
 const email = 'test@test.com';
-const password = 'asdf1234!@!@';
+const password = 'asdf1234!@';
 const nickname = 'testuser';
 
 async function register(app: INestApplication) {

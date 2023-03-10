@@ -1,5 +1,12 @@
 import { Board } from '../boards/board.entity';
-import { Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, Entity, OneToMany } from 'typeorm';
+import {
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Entity,
+  OneToMany,
+} from 'typeorm';
 
 @Entity('User')
 export class User {
@@ -23,7 +30,8 @@ export class User {
   @Column('varchar', {
     length: 255,
     nullable: true,
-    default: 'https://item.kakaocdn.net/do/60186e0074ad046dc11b946556106b479f17e489affba0627eb1eb39695f93dd',
+    default:
+      'https://item.kakaocdn.net/do/60186e0074ad046dc11b946556106b479f17e489affba0627eb1eb39695f93dd',
     name: 'profile_img',
   })
   profileImg: string;
