@@ -60,6 +60,6 @@ export class User {
   @Column('varchar', { length: 255, nullable: false, name: 'verify_token' })
   verifyToken: string;
 
-  @OneToMany(() => Board, (boards) => boards.boardId, { onDelete: 'CASCADE' })
+  @OneToMany(() => Board, (boards) => boards.user, { onDelete: 'CASCADE' })
   board: Board[];
 }

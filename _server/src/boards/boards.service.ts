@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { Board } from './board.entity';
 import { Category, defaultCategorys } from './category/category.entity';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { Tag } from './tag/tag.entity';
+import { View } from './view/view.entity';
 
 @Injectable()
 export class BoardsService {
@@ -12,6 +13,7 @@ export class BoardsService {
     @InjectRepository(Board) private boardRepository: Repository<Board>,
     @InjectRepository(Category) private categoryRepository: Repository<Category>,
     @InjectRepository(Tag) private tagRepository: Repository<Tag>,
+    @InjectRepository(View) private viewRepository: Repository<View>,
     private dataSource: DataSource,
   ) {}
 
@@ -29,6 +31,7 @@ export class BoardsService {
       const tagsArr = [];
       for (const tag of tags) {
         const existingTag = await this.tagRepository.findOne({ where: { name: tag.name } });
+
         if (existingTag) {
           tagsArr.push(existingTag);
         } else {
@@ -38,7 +41,7 @@ export class BoardsService {
         }
       }
 
-      await this.boardRepository.save({
+      const createdBoard = await this.boardRepository.save({
         userId,
         title,
         content,
@@ -46,9 +49,68 @@ export class BoardsService {
         categoryId2: categoryIds[1] || null,
         tags: tagsArr,
       });
+
+      const boardId = createdBoard.boardId;
+
+      await this.viewRepository.save({
+        boardId,
+      });
+
+      return boardId;
     } catch (err: any) {
-      console.error(err);
+      console.log(err.message);
+      throw new InternalServerErrorException(err);
     }
+  }
+
+  /**
+   * 특정 카테고리의 모든 게시글 가져오기
+   * @param category1 - 첫번째 카테고리
+   * @param category2 - 두번째 카테고리
+   * @returns
+   */
+  async findAll(category1: string, category2: string) {
+    const categoryIds = await this.findCategoryIdByName(category1 + '-' + category2);
+
+    // TODO: 게시글 목록 및 관련데이터 모두 불러오는 기능 구현필요
+    try {
+      return [];
+    } catch (err: any) {
+      console.log(err.message);
+      throw new InternalServerErrorException(err);
+    }
+  }
+
+  /**
+   * 특정 게시글 가져오기
+   * @param boardid - 특정 게시글 아이디
+   */
+  async findOne(boardId: string) {
+    const board = this.boardRepository
+      .createQueryBuilder('board')
+      .leftJoinAndSelect('board.user', 'user')
+      .leftJoinAndSelect('board.comments', 'comments')
+      .leftJoinAndSelect('board.view', 'view')
+      .leftJoinAndSelect('board.tags', 'tag')
+      .select([
+        'board.boardId',
+        'board.title',
+        'board.content',
+        'board.createdAt',
+        'board.recommendCnt',
+        'user.userId',
+        'user.nickname',
+        'user.profileImg',
+        'comments.commentId',
+        'comments.createdAt',
+        'comments.content',
+        'view.viewCnt',
+        'tag.name',
+      ])
+      .where('board.boardId = :boardId', { boardId })
+      .getMany();
+
+    return board;
   }
 
   /**
@@ -59,18 +121,23 @@ export class BoardsService {
   async findCategoryIdByName(category: string): Promise<number[]> {
     const categoryArr = category.split('-');
 
-    const categoryIds = await Promise.all(
-      categoryArr.map(async (category) => {
-        const row = await this.categoryRepository.findOneBy({ name: category });
-        if (row) {
-          return row.categoryId;
-        }
+    try {
+      const categoryIds = await Promise.all(
+        categoryArr.map(async (category) => {
+          const row = await this.categoryRepository.findOneBy({ name: category });
+          if (row) {
+            return row.categoryId;
+          }
 
-        return null;
-      }),
-    );
+          return null;
+        }),
+      );
 
-    return categoryIds;
+      return categoryIds;
+    } catch (err: any) {
+      console.log(err.message);
+      throw new InternalServerErrorException(err);
+    }
   }
 
   /**

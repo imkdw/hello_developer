@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Board } from '../board.entity';
 
 @Entity({ name: 'board_view' })
@@ -18,7 +12,7 @@ export class View {
   @Column({ type: 'varchar', length: 36, name: 'board_id' })
   boardId: string;
 
-  @OneToOne(() => Board, (board) => board.boardId)
+  @OneToOne(() => Board, (board) => board.view, { cascade: true })
   @JoinColumn({ name: 'board_id' })
   board: Board;
 }

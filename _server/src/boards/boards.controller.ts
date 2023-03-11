@@ -9,7 +9,7 @@ import {
   Req,
   UsePipes,
 } from '@nestjs/common';
-import { Body } from '@nestjs/common/decorators';
+import { Body, Query } from '@nestjs/common/decorators';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
@@ -27,22 +27,32 @@ export class BoardsController {
   @UsePipes(BoardValidationPipe)
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Req() req, @Body() createBoardDto: CreateBoardDto): Promise<void> {
-    await this.boardsService.create(req.user.userId, createBoardDto);
+  async create(@Req() req, @Body() createBoardDto: CreateBoardDto) {
+    const boardId = await this.boardsService.create(req.user.userId, createBoardDto);
+    return { boardId };
   }
 
   /**
-   * 게시글 목록 가져오기
+   * 특정 카테고리 게시글 목록 가져오기
+   * @param category1 - 첫번쨰 카테고리
+   * @param category2 - 두번째 카테고리
+   * @returns
    */
   @Get()
-  findAll() {}
+  async findAll(@Query('category1') category1: string, @Query('category2') category2: string) {
+    const boards = await this.boardsService.findAll(category1, category2);
+    return boards;
+  }
 
   /**
    * 게시글 상세보기
    * @param boardId - 게시글 아이디
    */
   @Get('/:id')
-  findOne(@Param('id') boardId: string) {}
+  async findOne(@Param('id') boardId: string) {
+    const board = await this.boardsService.findOne(boardId);
+    return board;
+  }
 
   /**
    * 게시글 삭제

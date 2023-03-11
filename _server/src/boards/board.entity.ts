@@ -9,9 +9,18 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   JoinColumn,
+  OneToMany,
+  OneToOne,
+  AfterInsert,
+  EntityManager,
+  Repository,
+  DataSource,
 } from 'typeorm';
 import { Category } from './category/category.entity';
 import { Tag } from './tag/tag.entity';
+import { View } from './view/view.entity';
+import { Comment } from '../comments/comment.entity';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 
 @Entity('Board')
 export class Board {
@@ -50,17 +59,23 @@ export class Board {
   @Column({ type: 'int', default: 0, nullable: true, name: 'recommend_cnt' })
   recommendCnt: number;
 
-  @ManyToOne(() => User, (user) => user.userId)
+  @ManyToOne(() => User, (user) => user.board)
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Category, (boardCategory) => boardCategory.categoryId)
+  @ManyToOne(() => Category, (category) => category.boards1)
   @JoinColumn({ name: 'category_id1' })
   category1: Category;
 
-  @ManyToOne(() => Category, (boardCategory) => boardCategory.categoryId)
+  @ManyToOne(() => Category, (category) => category.boards2)
   @JoinColumn({ name: 'category_id2' })
   category2: Category;
+
+  @OneToMany(() => Comment, (comment) => comment.board)
+  comments: Comment[];
+
+  @OneToOne(() => View, (view) => view.board)
+  view: View;
 
   @ManyToMany(() => Tag, (tag) => tag.boards, { cascade: true })
   @JoinTable({

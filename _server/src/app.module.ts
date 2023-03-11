@@ -12,9 +12,10 @@ import { User } from './users/user.entity';
 import { Board } from './boards/board.entity';
 import { Category } from './boards/category/category.entity';
 import { Tag } from './boards/tag/tag.entity';
-import { View } from 'typeorm/schema-builder/view/View';
+import { View } from './boards/view/view.entity';
 import { Recommend } from './boards/recommend/recommend.entity';
 import { BoardsService } from './boards/boards.service';
+import { Comment } from './comments/comment.entity';
 
 @Module({
   imports: [
@@ -46,7 +47,7 @@ import { BoardsService } from './boards/boards.service';
       username: 'root',
       password: '1234',
       database: 'hello_developer_migration',
-      entities: [User, Board, Category, Tag, View, Recommend],
+      entities: [User, Board, Category, Tag, Recommend, Comment, View],
       synchronize: true,
       dropSchema: true,
     }),
