@@ -11,16 +11,11 @@ import {
   JoinColumn,
   OneToMany,
   OneToOne,
-  AfterInsert,
-  EntityManager,
-  Repository,
-  DataSource,
 } from 'typeorm';
 import { Category } from './category/category.entity';
 import { Tag } from './tag/tag.entity';
 import { View } from './view/view.entity';
 import { Comment } from '../comments/comment.entity';
-import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 
 @Entity('Board')
 export class Board {

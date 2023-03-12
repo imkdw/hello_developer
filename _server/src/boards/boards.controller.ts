@@ -8,6 +8,8 @@ import {
   UseGuards,
   Req,
   UsePipes,
+  HttpCode,
+  Patch,
 } from '@nestjs/common';
 import { Body, Query } from '@nestjs/common/decorators';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -48,21 +50,35 @@ export class BoardsController {
    * 게시글 상세보기
    * @param boardId - 게시글 아이디
    */
-  @Get('/:id')
-  async findOne(@Param('id') boardId: string) {
+  @Get('/:boardId')
+  async findOne(@Param('boardId') boardId: string) {
     const board = await this.boardsService.findOne(boardId);
     return board;
   }
 
   /**
    * 게시글 삭제
+   * @param boardId - 삭제 요청한 게시글 아이디
    */
-  @Delete('/:id')
-  remove(@Param('id') boardId: string) {}
+  @HttpCode(204)
+  @UseGuards(JwtAuthGuard)
+  @Delete('/:boardId')
+  async remove(@Req() req, @Param('boardId') boardId: string) {
+    await this.boardsService.remove(req.user.userId, boardId);
+  }
 
   /**
    * 게시글 수정
+   * @param updateBoardDto - 게시글을 수정한 데이터
+   * @param boardId - 수정요청한 게시글 아이디
    */
-  @Put('/:id')
-  update(@Body() updateBoardDto: UpdateBoardDto, @Param('id') boardId: string) {}
+  @UseGuards(JwtAuthGuard)
+  @Patch('/:boardId')
+  async update(
+    @Req() req,
+    @Param('boardId') boardId: string,
+    @Body(BoardValidationPipe) updateBoardDto: UpdateBoardDto,
+  ) {
+    await this.boardsService.update(req.user.userId, updateBoardDto, boardId);
+  }
 }

@@ -1,4 +1,5 @@
 import { Module, OnModuleInit } from '@nestjs/common';
+import { APP_FILTER } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { BoardsModule } from './boards/boards.module';
 import { CommentsModule } from './comments/comments.module';
@@ -16,6 +17,7 @@ import { View } from './boards/view/view.entity';
 import { Recommend } from './boards/recommend/recommend.entity';
 import { BoardsService } from './boards/boards.service';
 import { Comment } from './comments/comment.entity';
+import { HttpExceptionFilter } from './http-exception.filter';
 
 @Module({
   imports: [
@@ -54,7 +56,13 @@ import { Comment } from './comments/comment.entity';
     TypeOrmModule.forFeature([Board, Category, Tag]),
   ],
   controllers: [],
-  providers: [BoardsService],
+  providers: [
+    BoardsService,
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
 })
 export class AppModule implements OnModuleInit {
   constructor(private boardsService: BoardsService) {}

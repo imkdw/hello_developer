@@ -3,37 +3,28 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { Connection } from 'typeorm';
-
-const email = 'test@test.com';
-const password = 'asdf1234!@';
-const nickname = 'testuser';
-
-async function register(app: INestApplication) {
-  await request(app.getHttpServer())
-    .post('/auth/register')
-    .send({ email, password, nickname })
-    .expect(201);
-}
+import { account, register } from './common';
 
 describe('Auth Module (e2e)', () => {
   let app: INestApplication;
+  const { email, password, nickname } = account;
 
-  beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+  describe('[POST] /auth/register - 회원가입', () => {
+    beforeAll(async () => {
+      const moduleFixture: TestingModule = await Test.createTestingModule({
+        imports: [AppModule],
+      }).compile();
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
-  });
+      app = moduleFixture.createNestApplication();
+      await app.init();
+    });
 
-  afterEach(async () => {
-    const connection = app.get(Connection);
-    await connection.synchronize(true);
-  });
+    afterAll(async () => {
+      const connection = app.get(Connection);
+      await connection.synchronize(true);
+    });
 
-  describe('/auth/register', () => {
-    it('[POST] 유효하지 않은 이메일, 400, invalid_email', async () => {
+    it('유효하지 않은 이메일, 400, invalid_email', async () => {
       return request(app.getHttpServer())
         .post('/auth/register')
         .send({ email: 'testtest.com', password, nickname })
@@ -41,11 +32,10 @@ describe('Auth Module (e2e)', () => {
         .expect({
           statusCode: 400,
           message: 'invalid_email',
-          error: 'Bad Request',
         });
     });
 
-    it('[POST] 유효하지 않은 비밀번호, 400, invalid_password', async () => {
+    it('유효하지 않은 비밀번호, 400, invalid_password', async () => {
       return request(app.getHttpServer())
         .post('/auth/register')
         .send({ email, password: 'asd', nickname })
@@ -53,11 +43,10 @@ describe('Auth Module (e2e)', () => {
         .expect({
           statusCode: 400,
           message: 'invalid_password',
-          error: 'Bad Request',
         });
     });
 
-    it('[POST] 유효하지 않은 닉네임, 400, invalid_nickname', async () => {
+    it('유효하지 않은 닉네임, 400, invalid_nickname', async () => {
       return request(app.getHttpServer())
         .post('/auth/register')
         .send({ email, password, nickname: 'test!' })
@@ -65,11 +54,10 @@ describe('Auth Module (e2e)', () => {
         .expect({
           statusCode: 400,
           message: 'invalid_nickname',
-          error: 'Bad Request',
         });
     });
 
-    it('[POST] 중복된 이메일, 400, invalid_email', async () => {
+    it('중복된 이메일, 400, invalid_email', async () => {
       await register(app);
       return request(app.getHttpServer())
         .post('/auth/register')
@@ -78,11 +66,10 @@ describe('Auth Module (e2e)', () => {
         .expect({
           statusCode: 400,
           message: 'exist_email',
-          error: 'Bad Request',
         });
     });
 
-    it('[POST] 중복된 닉네임, 400, invalid_nickname', async () => {
+    it('중복된 닉네임, 400, invalid_nickname', async () => {
       await register(app);
       return request(app.getHttpServer())
         .post('/auth/register')
@@ -91,11 +78,10 @@ describe('Auth Module (e2e)', () => {
         .expect({
           statusCode: 400,
           message: 'exist_nickname',
-          error: 'Bad Request',
         });
     });
 
-    it('[POST] 유효한 회원가입, 200', async () => {
+    it('유효한 회원가입, 200', async () => {
       return request(app.getHttpServer())
         .post('/auth/register')
         .send({ email, password, nickname })
@@ -103,21 +89,22 @@ describe('Auth Module (e2e)', () => {
     });
   });
 
-  describe('/auth/login', () => {
-    it('should return 400, invalid email', () => {
-      return request(app.getHttpServer())
-        .post('/auth/login')
-        .send({ email: 'testtest.com', password })
-        .expect(400)
-        .expect({
-          statusCode: 400,
-          message: 'invalid_email_or_password',
-          error: 'Bad Request',
-        });
+  describe('[POST] /auth/login - 로그인', () => {
+    beforeAll(async () => {
+      const moduleFixture: TestingModule = await Test.createTestingModule({
+        imports: [AppModule],
+      }).compile();
+
+      app = moduleFixture.createNestApplication();
+      await app.init();
     });
 
-    it('[로그인] 없는 이메일, 400, invalid_email_or_password', async () => {
-      await register(app);
+    afterAll(async () => {
+      const connection = app.get(Connection);
+      await connection.synchronize(true);
+    });
+
+    it('존재하지 않는 이메일, 400, invalid_email_or_password', async () => {
       return request(app.getHttpServer())
         .post('/auth/login')
         .send({ email: 'test1@test.com', password })
@@ -125,11 +112,10 @@ describe('Auth Module (e2e)', () => {
         .expect({
           statusCode: 400,
           message: 'invalid_email_or_password',
-          error: 'Bad Request',
         });
     });
 
-    it('[로그인] 비밀번호 불일치, 400, invalid_email_or_password', async () => {
+    it('비밀번호 불일치, 400, invalid_email_or_password', async () => {
       await register(app);
       return request(app.getHttpServer())
         .post('/auth/login')
@@ -138,13 +124,23 @@ describe('Auth Module (e2e)', () => {
         .expect({
           statusCode: 400,
           message: 'invalid_email_or_password',
-          error: 'Bad Request',
         });
     });
 
-    it('[로그인] 정상 로그인, 200, accessToken, userId, profileImg, nickname 반환', async () => {
+    it('정상 로그인, 200, accessToken, userId, profileImg, nickname 반환', async () => {
       await register(app);
-      return request(app.getHttpServer()).post('/auth/login').send({ email, password }).expect(200);
+      const response = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({ email, password })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('accessToken');
+      expect(response.body).toHaveProperty('refreshToken');
+      expect(response.body).toHaveProperty('userId');
+      expect(response.body).toHaveProperty('profileImg');
+      expect(response.body).toHaveProperty('nickname');
+
+      return response;
     });
   });
 });

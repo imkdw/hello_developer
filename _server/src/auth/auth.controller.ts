@@ -30,8 +30,8 @@ export class AuthController {
 
   /**
    * [POST] /auth/login - 로그인
-   * @param loginDto - 로그인시 사용되는 유저의
-   * @returns
+   * @param loginDto - 로그인시 사용되는 유저의 데이터
+   * @returns 토큰 반환
    */
   @HttpCode(200)
   @UseGuards(LocalAuthGuard)
