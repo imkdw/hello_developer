@@ -30,18 +30,14 @@ export class UsersService {
     user.nickname = nickname;
     user.verifyToken = verifyToken;
 
-    try {
-      await this.userRepository.save(user);
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+    await this.userRepository.save(user);
   }
 
-  async findUserByEmail(email: string): Promise<User> {
+  async findUserByEmail(email: string): Promise<User | null> {
     return await this.userRepository.findOne({ where: { email } });
   }
 
-  async findUserByNickname(nickname: string): Promise<User> {
+  async findUserByNickname(nickname: string): Promise<User | null> {
     return await this.userRepository.findOne({ where: { nickname } });
   }
 }

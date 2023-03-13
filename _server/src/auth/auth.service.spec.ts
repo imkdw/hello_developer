@@ -19,104 +19,208 @@ describe('[Service] AuthService', () => {
   const password = 'asdf1234!@';
   const nickname = 'testuser';
 
-  beforeAll(async () => {
-    const mockRepository = {
-      findOne: jest.fn(),
-    };
+  describe('[회원가입] AuthService.register()', () => {
+    beforeEach(async () => {
+      const module = await Test.createTestingModule({
+        providers: [
+          AuthService,
+          PasswordService,
+          JwtService,
+          UsersService,
+          {
+            provide: getRepositoryToken(User),
+            useValue: {},
+          },
+        ],
+      }).compile();
 
-    const module = await Test.createTestingModule({
-      providers: [
-        AuthService,
-        PasswordService,
-        JwtService,
-        UsersService,
-        {
-          provide: getRepositoryToken(User),
-          useValue: mockRepository,
-        },
-      ],
-    }).compile();
+      authService = module.get<AuthService>(AuthService);
+      passwordService = module.get<PasswordService>(PasswordService);
+      jwtService = module.get<JwtService>(JwtService);
+      usersService = module.get<UsersService>(UsersService);
+    });
 
-    authService = module.get<AuthService>(AuthService);
-    passwordService = module.get<PasswordService>(PasswordService);
-    jwtService = module.get<JwtService>(JwtService);
-    usersService = module.get<UsersService>(UsersService);
-  });
+    it('입력값으로 usersService.register(registerDto) 호출검증', async () => {
+      // given
+      const registerDto: RegisterDto = { email, password, nickname };
+      const encryptPassword = 'encryptPassword';
 
-  it('should register user', async () => {
-    // given
-    const registerDto: RegisterDto = { email, password, nickname };
-    const encryptPassword = 'encryptPassword';
+      // when
+      jest.spyOn(passwordService, 'encrypt').mockResolvedValue(encryptPassword);
+      const registerSpy = jest.spyOn(usersService, 'register').mockResolvedValue(undefined);
+      await authService.register(registerDto);
 
-    // when
-    jest.spyOn(passwordService, 'encrypt').mockResolvedValue(encryptPassword);
-    const registerSpy = jest.spyOn(usersService, 'register').mockResolvedValue(undefined);
-    await authService.register(registerDto);
-
-    // then
-    expect(registerSpy).toHaveBeenCalledWith({
-      email: registerDto.email,
-      password: encryptPassword,
-      nickname: registerDto.nickname,
+      // then
+      expect(registerSpy).toHaveBeenCalledWith({
+        email: registerDto.email,
+        password: encryptPassword,
+        nickname: registerDto.nickname,
+      });
     });
   });
 
-  it('should login user and return with access, refresh token', async () => {
-    // given
-    const loginDto: LoginDto = { email, password };
+  describe('[로그인] AuthService.login()', () => {
+    beforeEach(async () => {
+      const module = await Test.createTestingModule({
+        providers: [
+          AuthService,
+          PasswordService,
+          JwtService,
+          UsersService,
+          {
+            provide: getRepositoryToken(User),
+            useValue: {},
+          },
+        ],
+      }).compile();
 
-    const user = new User();
-    user.userId = '1';
-    user.email = 'test@example.com';
-    user.password = 'password';
-    user.nickname = 'testuser';
-    user.introduce = 'test user';
-    user.profileImg = 'https://testuser.img';
-    user.createdAt = new Date();
-    user.updatedAt = new Date();
-    user.isVerified = true;
-    user.verifyToken = 'token';
-    const accessToken = 'accessToken';
-    const refreshToken = 'refreshToken';
+      authService = module.get<AuthService>(AuthService);
+      passwordService = module.get<PasswordService>(PasswordService);
+      jwtService = module.get<JwtService>(JwtService);
+      usersService = module.get<UsersService>(UsersService);
+    });
 
-    // when
-    jest.spyOn(usersService, 'findUserByEmail').mockResolvedValue(user);
-    jest
-      .spyOn(jwtService, 'sign')
-      .mockReturnValueOnce(accessToken)
-      .mockReturnValueOnce(refreshToken);
-    const result = await authService.login(loginDto);
+    // TODO: 테스트 환경으로 비활성화처리, 추후 활성필요
+    // it('인증되지 않은 사용자, UnauthorizedException', async () => {
+    //   // given
+    //   const loginDto: LoginDto = { email, password };
 
-    // then
-    expect(result).toEqual({
-      userId: user.userId,
-      profileImg: user.profileImg,
-      nickname: user.nickname,
-      accessToken,
-      refreshToken,
+    //   const user = new User();
+    //   user.userId = '1';
+    //   user.email = 'test@example.com';
+    //   user.password = 'password';
+    //   user.nickname = 'testuser';
+    //   user.introduce = 'test user';
+    //   user.profileImg = 'https://testuser.img';
+    //   user.createdAt = new Date();
+    //   user.updatedAt = new Date();
+    //   user.isVerified = false;
+    //   user.verifyToken = 'token';
+
+    //   // when
+    //   jest.spyOn(usersService, 'findUserByEmail').mockResolvedValue(user);
+
+    //   try {
+    //     await authService.login(loginDto);
+    //   } catch (err: any) {
+    //     // then
+    //     expect(err).toBeInstanceOf(UnauthorizedException);
+    //   }
+    // });
+
+    it('정상 로그인', async () => {
+      // given
+      const loginDto: LoginDto = { email, password };
+
+      const user = new User();
+      user.userId = '1';
+      user.email = 'test@example.com';
+      user.password = 'password';
+      user.nickname = 'testuser';
+      user.introduce = 'test user';
+      user.profileImg = 'https://testuser.img';
+      user.createdAt = new Date();
+      user.updatedAt = new Date();
+      user.isVerified = true;
+      user.verifyToken = 'token';
+      const accessToken = 'accessToken';
+      const refreshToken = 'refreshToken';
+
+      // when
+      jest.spyOn(usersService, 'findUserByEmail').mockResolvedValue(user);
+      jest
+        .spyOn(jwtService, 'sign')
+        .mockReturnValueOnce(accessToken)
+        .mockReturnValueOnce(refreshToken);
+      const result = await authService.login(loginDto);
+
+      // then
+      expect(result).toEqual({
+        userId: user.userId,
+        profileImg: user.profileImg,
+        nickname: user.nickname,
+        accessToken,
+        refreshToken,
+      });
     });
   });
 
-  it('should validate user', async () => {
-    // given
-    const user = new User();
-    user.userId = '1';
-    user.email = 'test@example.com';
-    user.password = 'password';
-    user.nickname = 'testuser';
-    user.introduce = 'test user';
-    user.profileImg = 'https://testuser.img';
-    user.createdAt = new Date();
-    user.updatedAt = new Date();
-    user.isVerified = true;
-    user.verifyToken = 'token';
+  describe('[유저검증] AuthService.validateUser()', () => {
+    beforeEach(async () => {
+      const module = await Test.createTestingModule({
+        providers: [
+          AuthService,
+          PasswordService,
+          JwtService,
+          UsersService,
+          {
+            provide: getRepositoryToken(User),
+            useValue: {},
+          },
+        ],
+      }).compile();
 
-    // when
-    jest.spyOn(usersService, 'findUserByEmail').mockResolvedValue(user);
-    jest.spyOn(passwordService, 'compare').mockResolvedValue(true);
-    const result = await authService.validateUser(email, password);
+      authService = module.get<AuthService>(AuthService);
+      passwordService = module.get<PasswordService>(PasswordService);
+      jwtService = module.get<JwtService>(JwtService);
+      usersService = module.get<UsersService>(UsersService);
+    });
 
-    // then
-    expect(result).toBe(true);
+    it('존재하지 않는 유저, false', async () => {
+      // given
+
+      // when
+      jest.spyOn(usersService, 'findUserByEmail').mockResolvedValue(null);
+      const result = await authService.validateUser(email, password);
+
+      // then
+      expect(result).toBe(false);
+    });
+
+    it('비밀번호 불일치, false', async () => {
+      // given
+      const user = new User();
+      user.userId = '1';
+      user.email = 'test@example.com';
+      user.password = 'password';
+      user.nickname = 'testuser';
+      user.introduce = 'test user';
+      user.profileImg = 'https://testuser.img';
+      user.createdAt = new Date();
+      user.updatedAt = new Date();
+      user.isVerified = true;
+      user.verifyToken = 'token';
+
+      // when
+      jest.spyOn(usersService, 'findUserByEmail').mockResolvedValue(user);
+      jest.spyOn(passwordService, 'compare').mockResolvedValue(false);
+      const result = await authService.validateUser(email, password);
+
+      // then
+      expect(result).toBe(false);
+    });
+
+    it('유저 검증완료', async () => {
+      // given
+      const user = new User();
+      user.userId = '1';
+      user.email = 'test@example.com';
+      user.password = 'password';
+      user.nickname = 'testuser';
+      user.introduce = 'test user';
+      user.profileImg = 'https://testuser.img';
+      user.createdAt = new Date();
+      user.updatedAt = new Date();
+      user.isVerified = true;
+      user.verifyToken = 'token';
+
+      // when
+      jest.spyOn(usersService, 'findUserByEmail').mockResolvedValue(user);
+      jest.spyOn(passwordService, 'compare').mockResolvedValue(true);
+      const result = await authService.validateUser(email, password);
+
+      // then
+      expect(result).toBe(true);
+    });
   });
 });

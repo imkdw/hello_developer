@@ -19,7 +19,7 @@ describe('Auth Module (e2e)', () => {
       await app.init();
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
       const connection = app.get(Connection);
       await connection.synchronize(true);
     });
@@ -97,6 +97,7 @@ describe('Auth Module (e2e)', () => {
 
       app = moduleFixture.createNestApplication();
       await app.init();
+      await register(app);
     });
 
     afterAll(async () => {
@@ -116,7 +117,6 @@ describe('Auth Module (e2e)', () => {
     });
 
     it('비밀번호 불일치, 400, invalid_email_or_password', async () => {
-      await register(app);
       return request(app.getHttpServer())
         .post('/auth/login')
         .send({ email, password: password + 'a' })
@@ -128,7 +128,6 @@ describe('Auth Module (e2e)', () => {
     });
 
     it('정상 로그인, 200, accessToken, userId, profileImg, nickname 반환', async () => {
-      await register(app);
       const response = await request(app.getHttpServer())
         .post('/auth/login')
         .send({ email, password })

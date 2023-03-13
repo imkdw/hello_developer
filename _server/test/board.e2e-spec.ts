@@ -143,7 +143,6 @@ describe('Board Module (e2e)', () => {
 
     it('정상적인 글 상세보기, 200', async () => {
       const response = await request(app.getHttpServer()).get(`/boards/${boardId}`).expect(200);
-
       return response;
     });
 

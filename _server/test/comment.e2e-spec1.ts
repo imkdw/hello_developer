@@ -7,6 +7,8 @@ import { commentContent, createBoard, login, register } from './common';
 
 describe('Comment Module (e2e)', () => {
   let app: INestApplication;
+  let accessToken: string;
+  let boardId: string;
 
   describe('[POST] /comments', () => {
     beforeAll(async () => {
@@ -16,6 +18,9 @@ describe('Comment Module (e2e)', () => {
 
       app = moduleFixture.createNestApplication();
       await app.init();
+      await register(app);
+      accessToken = await login(app);
+      boardId = await createBoard(app, accessToken);
     });
 
     afterAll(async () => {
@@ -24,10 +29,6 @@ describe('Comment Module (e2e)', () => {
     });
 
     it('[댓글작성] 올바른 댓글 작성', async () => {
-      await register(app);
-      const accessToken = await login(app);
-      const boardId = await createBoard(app, accessToken);
-
       return request(app.getHttpServer())
         .post('/comments')
         .send({ content: commentContent, boardId })

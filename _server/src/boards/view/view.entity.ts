@@ -12,7 +12,7 @@ export class View {
   @Column({ type: 'varchar', length: 36, name: 'board_id' })
   boardId: string;
 
-  @OneToOne(() => Board, (board) => board.view, { cascade: true })
+  @OneToOne(() => Board, (board) => board.view)
   @JoinColumn({ name: 'board_id' })
   board: Board;
 }

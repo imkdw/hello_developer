@@ -7,7 +7,7 @@ import { PipesModule } from './pipes.module';
 import { CreateBoardDto } from '../dto/create-board.dto';
 import { UpdateBoardDto } from '../dto/update-board.dto';
 
-describe('[Pipe] AuthValidationPipe', () => {
+describe('[Pipe] BoardValidationPipe', () => {
   let pipe: BoardValidationPipe;
   let createBoardMetadata: ArgumentMetadata;
   let updateBoardMetadata: ArgumentMetadata;

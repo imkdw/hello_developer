@@ -1,12 +1,6 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  UnauthorizedException,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, QueryRunner, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Board } from './board.entity';
 import { Category, defaultCategorys } from './category/category.entity';
 import { CreateBoardDto } from './dto/create-board.dto';
@@ -40,7 +34,8 @@ export class BoardsService {
 
     const tagsArr = [];
     for (const tag of tags) {
-      const existTag = await this.tagRepository.findOne({ where: { name: tag.name } });
+      const existTag = await this.findTagByName(tag.name);
+      console.log(existTag);
 
       if (existTag) {
         tagsArr.push(existTag);
@@ -62,9 +57,7 @@ export class BoardsService {
 
     const boardId = createdBoard.boardId;
 
-    await this.viewRepository.save({
-      boardId,
-    });
+    await this.viewRepository.save({ boardId });
 
     return boardId;
   }
@@ -93,7 +86,17 @@ export class BoardsService {
    * 특정 게시글 가져오기
    * @param boardid - 특정 게시글 아이디
    */
-  async findOne(boardId: string): Promise<Board> {
+  async findOne(boardId: string) {
+    // 게시글 아이디만 따로 로딩 후 없다면 404 반환
+    const onlyBoard = await this.boardRepository.findOne({
+      where: { boardId },
+      select: ['boardId'],
+    });
+
+    if (!onlyBoard) {
+      throw new NotFoundException('board_not_found');
+    }
+
     const board = await this.boardRepository
       .createQueryBuilder('board')
       .leftJoinAndSelect('board.user', 'user')
@@ -117,10 +120,6 @@ export class BoardsService {
       ])
       .where('board.boardId = :boardId', { boardId })
       .getOne();
-
-    if (!board) {
-      throw new NotFoundException('board_not_found');
-    }
 
     return board;
   }
@@ -204,7 +203,7 @@ export class BoardsService {
 
     const categoryIds = await Promise.all(
       categoryArr.map(async (category) => {
-        const row = await this.categoryRepository.findOneBy({ name: category });
+        const row = await this.categoryRepository.findOne({ where: { name: category } });
         if (row) {
           return row.categoryId;
         }
@@ -214,6 +213,13 @@ export class BoardsService {
     );
 
     return categoryIds;
+  }
+
+  /**
+   *
+   */
+  async findTagByName(name: string): Promise<Tag | null> {
+    return await this.tagRepository.findOne({ where: { name } });
   }
 
   /**
