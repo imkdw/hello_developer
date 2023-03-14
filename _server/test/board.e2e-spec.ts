@@ -123,7 +123,7 @@ describe('Board Module (e2e)', () => {
     let accessToken: string;
     let boardId: string;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       const moduleFixture: TestingModule = await Test.createTestingModule({
         imports: [AppModule],
       }).compile();
@@ -136,7 +136,7 @@ describe('Board Module (e2e)', () => {
       boardId = await createBoard(app, accessToken);
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
       const connection = app.get(Connection);
       await connection.synchronize(true);
     });
@@ -176,6 +176,13 @@ describe('Board Module (e2e)', () => {
     afterAll(async () => {
       const connection = app.get(Connection);
       await connection.synchronize(true);
+    });
+
+    it('글이 없는경우', () => {
+      return request(app.getHttpServer())
+        .delete(`/boards/test`)
+        .set({ Authorization: `Bearer ${accessToken}` })
+        .expect(404);
     });
 
     it('글 삭제', () => {

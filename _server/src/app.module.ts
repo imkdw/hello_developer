@@ -4,7 +4,6 @@ import { AuthModule } from './auth/auth.module';
 import { BoardsModule } from './boards/boards.module';
 import { CommentsModule } from './comments/comments.module';
 import { EmailModule } from './email/email.module';
-import { PasswordModule } from './password/password.module';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -18,6 +17,8 @@ import { Recommend } from './boards/recommend/recommend.entity';
 import { BoardsService } from './boards/boards.service';
 import { Comment } from './comments/comment.entity';
 import { HttpExceptionFilter } from './http-exception.filter';
+import { UtilsModule } from './utils/utils.module';
+import { CategoryRepository } from './boards/category/category.repository';
 
 @Module({
   imports: [
@@ -40,7 +41,7 @@ import { HttpExceptionFilter } from './http-exception.filter';
     BoardsModule,
     CommentsModule,
     EmailModule,
-    PasswordModule,
+    UtilsModule,
     UsersModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -54,10 +55,11 @@ import { HttpExceptionFilter } from './http-exception.filter';
       dropSchema: true,
     }),
     TypeOrmModule.forFeature([Board, Category, Tag]),
+    UtilsModule,
   ],
   controllers: [],
   providers: [
-    BoardsService,
+    CategoryRepository,
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
@@ -65,9 +67,15 @@ import { HttpExceptionFilter } from './http-exception.filter';
   ],
 })
 export class AppModule implements OnModuleInit {
-  constructor(private boardsService: BoardsService) {}
+  constructor(private categoryRepository: CategoryRepository) {}
 
   async onModuleInit() {
-    await this.boardsService.createDefaultCategorys();
+    await this.categoryRepository.createDefaultCategorys();
   }
 }
+
+// for (let i = 1; i < 6; i++) {
+//   process.stdout.write(' '.repeat(5 - i));
+//   process.stdout.write('*'.repeat(i));
+//   console.log();
+// }

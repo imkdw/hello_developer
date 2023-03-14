@@ -9,4 +9,13 @@ export class TagRepository {
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
   ) {}
+
+  async findByName(name: string): Promise<Tag | null> {
+    return await this.tagRepository.findOne({ where: { name } });
+  }
+
+  async create(name: string): Promise<number> {
+    const createdTag = await this.tagRepository.save({ name });
+    return createdTag.tagId;
+  }
 }

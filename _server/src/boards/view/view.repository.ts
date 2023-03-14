@@ -9,4 +9,8 @@ export class ViewRepository {
     @InjectRepository(View)
     private readonly viewRepository: Repository<View>,
   ) {}
+
+  async create(boardId: string) {
+    await this.viewRepository.save({ boardId });
+  }
 }

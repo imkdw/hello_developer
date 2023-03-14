@@ -1,21 +1,21 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common/exceptions';
 import { Board } from './board.entity';
-import { Category, defaultCategorys } from './category/category.entity';
+import { BoardRepository } from './board.repository';
+import { CategoryRepository } from './category/category.repository';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { Tag } from './tag/tag.entity';
-import { View } from './view/view.entity';
+import { TagRepository } from './tag/tag.repository';
+import { ViewRepository } from './view/view.repository';
 
 @Injectable()
 export class BoardsService {
   constructor(
-    @InjectRepository(Board) private boardRepository: Repository<Board>,
-    @InjectRepository(Category) private categoryRepository: Repository<Category>,
-    @InjectRepository(Tag) private tagRepository: Repository<Tag>,
-    @InjectRepository(View) private viewRepository: Repository<View>,
-    private dataSource: DataSource,
+    private boardRepository: BoardRepository,
+    private categoryRepository: CategoryRepository,
+    private tagRepository: TagRepository,
+    private viewRepository: ViewRepository,
   ) {}
 
   /**
@@ -26,16 +26,14 @@ export class BoardsService {
   async create(userId: string, createBoardDto: CreateBoardDto) {
     const { title, content, category, tags } = createBoardDto;
 
-    const categoryIds = await this.findCategoryIdByName(category);
-
+    const categoryIds = await this.categoryRepository.findIdByName(category);
     if (!categoryIds[0]) {
       throw new BadRequestException('invalid_category');
     }
 
     const tagsArr = [];
     for (const tag of tags) {
-      const existTag = await this.findTagByName(tag.name);
-      console.log(existTag);
+      const existTag = await this.tagRepository.findByName(tag.name);
 
       if (existTag) {
         tagsArr.push(existTag);
@@ -46,18 +44,16 @@ export class BoardsService {
       }
     }
 
-    const createdBoard = await this.boardRepository.save({
-      userId,
-      title,
-      content,
-      categoryId1: categoryIds[0],
-      categoryId2: categoryIds[1] || null,
-      tags: tagsArr,
-    });
+    const newBoard = new Board();
+    newBoard.userId = userId;
+    newBoard.title = title;
+    newBoard.content = content;
+    newBoard.categoryId1 = categoryIds[0];
+    newBoard.categoryId2 = categoryIds[1] || null;
+    newBoard.tags = tagsArr;
+    const boardId = await this.boardRepository.create(newBoard);
 
-    const boardId = createdBoard.boardId;
-
-    await this.viewRepository.save({ boardId });
+    await this.viewRepository.create(boardId);
 
     return boardId;
   }
@@ -69,16 +65,14 @@ export class BoardsService {
    * @returns
    */
   async findAll(category1: string, category2: string) {
-    const categoryIds = await this.findCategoryIdByName(category1 + '-' + category2);
-
+    const categoryIds = await this.categoryRepository.findIdByName(category1 + '-' + category2);
     if (!categoryIds[0]) {
       throw new BadRequestException('invalid_category');
     }
 
     // TODO: 게시글 목록 및 관련데이터 모두 불러오는 기능 구현필요
-    const boards = this.boardRepository.find({
-      where: { categoryId1: categoryIds[0], categoryId2: categoryIds[1] || null },
-    });
+    const boards = await this.boardRepository.findAll(categoryIds);
+
     return boards;
   }
 
@@ -87,39 +81,11 @@ export class BoardsService {
    * @param boardid - 특정 게시글 아이디
    */
   async findOne(boardId: string) {
-    // 게시글 아이디만 따로 로딩 후 없다면 404 반환
-    const onlyBoard = await this.boardRepository.findOne({
-      where: { boardId },
-      select: ['boardId'],
-    });
+    const board = await this.boardRepository.findOne(boardId);
 
-    if (!onlyBoard) {
+    if (!board) {
       throw new NotFoundException('board_not_found');
     }
-
-    const board = await this.boardRepository
-      .createQueryBuilder('board')
-      .leftJoinAndSelect('board.user', 'user')
-      .leftJoinAndSelect('board.comments', 'comments')
-      .leftJoinAndSelect('board.view', 'view')
-      .leftJoinAndSelect('board.tags', 'tag')
-      .select([
-        'board.boardId',
-        'board.title',
-        'board.content',
-        'board.createdAt',
-        'board.recommendCnt',
-        'user.userId',
-        'user.nickname',
-        'user.profileImg',
-        'comments.commentId',
-        'comments.createdAt',
-        'comments.content',
-        'view.viewCnt',
-        'tag.name',
-      ])
-      .where('board.boardId = :boardId', { boardId })
-      .getOne();
 
     return board;
   }
@@ -130,11 +96,19 @@ export class BoardsService {
    * @param boardId - 게시글 ID
    */
   async remove(userId: string, boardId: string) {
-    const board = await this.findOne(boardId);
+    const board = await this.boardRepository.findOne(boardId);
+
+    if (!board) {
+      throw new NotFoundException('board_not_found');
+    }
+
+    console.log(board);
 
     /** 작성자와 삭제요청 유저가 일치할때만 글 삭제 */
-    if (board.userId === userId) {
-      await this.boardRepository.delete({ userId, boardId });
+    if (board.user.userId === userId) {
+      await this.boardRepository.remove(userId, boardId);
+    } else {
+      throw new UnauthorizedException('unauthorized_user');
     }
   }
 
@@ -145,90 +119,25 @@ export class BoardsService {
    * @param boardId - 게시글 수정을 요청한 아이디
    */
   async update(userId: string, updateBoardDto: UpdateBoardDto, boardId: string) {
-    const { title, content, tags, category } = updateBoardDto;
+    const { tags, category } = updateBoardDto;
 
-    const categoryIds = await this.findCategoryIdByName(category);
+    const categoryIds = await this.categoryRepository.findIdByName(category);
+    if (!categoryIds[0]) {
+      throw new BadRequestException('invalid_category');
+    }
+
     const updatedTags = [];
     for (const tag of tags) {
-      const existTag = await this.tagRepository.findOne({ where: { name: tag.name } });
+      const existTag = await this.tagRepository.findByName(tag.name);
 
       if (existTag) {
         updatedTags.push(existTag);
       } else {
-        const createdTag = await this.tagRepository.save({ name: tag.name });
-        updatedTags.push({ tagId: createdTag.tagId, name: createdTag.name });
+        const tagId = await this.tagRepository.create(tag.name);
+        updatedTags.push({ tagId, name: tag.name });
       }
     }
 
-    const queryBuilder = this.boardRepository.createQueryBuilder();
-    const board = await this.boardRepository.findOne({ where: { boardId }, relations: ['tags'] });
-    const currentTags = board.tags;
-
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-
-    /** 트랜잭션을 사용하여 테이블 내용 업데이트 */
-    try {
-      await queryRunner.startTransaction();
-
-      /** 태그를 제외한 게시글 내용 업데이트 */
-      await this.boardRepository.update(
-        { userId, boardId },
-        {
-          title,
-          content,
-          categoryId1: categoryIds[0],
-          categoryId2: categoryIds[1] || null,
-        },
-      );
-
-      /** 태그 내용 업데이트 */
-      await queryBuilder.relation(Board, 'tags').of(boardId).remove(currentTags);
-      await queryBuilder.relation(Board, 'tags').of(boardId).add(updatedTags);
-      await queryRunner.commitTransaction();
-    } catch (err: any) {
-      await queryRunner.rollbackTransaction();
-    } finally {
-      await queryRunner.release();
-    }
-  }
-
-  /**
-   * 카테고리 이름으로 아이디 찾기
-   * @param category - 카테고리 문자열 / ex. qna-tech, qna
-   * @returns 카테고리 아이디를 담은 숫자형 배열 반환
-   */
-  async findCategoryIdByName(category: string): Promise<number[]> {
-    const categoryArr = category.split('-');
-
-    const categoryIds = await Promise.all(
-      categoryArr.map(async (category) => {
-        const row = await this.categoryRepository.findOne({ where: { name: category } });
-        if (row) {
-          return row.categoryId;
-        }
-
-        return null;
-      }),
-    );
-
-    return categoryIds;
-  }
-
-  /**
-   *
-   */
-  async findTagByName(name: string): Promise<Tag | null> {
-    return await this.tagRepository.findOne({ where: { name } });
-  }
-
-  /**
-   * 초기 구성시 카테고리에 기본값 저장
-   */
-  async createDefaultCategorys() {
-    for (const defaultCategory of defaultCategorys) {
-      const category = this.categoryRepository.create(defaultCategory);
-      await this.categoryRepository.save(category);
-    }
+    await this.boardRepository.update(userId, boardId, updateBoardDto, categoryIds, updatedTags);
   }
 }

@@ -20,7 +20,7 @@ export class User {
   @Column('varchar', { length: 255, nullable: false })
   password: string;
 
-  @Column('char', { length: 8, nullable: false, unique: true })
+  @Column('varchar', { length: 20, nullable: false, unique: true })
   nickname: string;
 
   @Column('varchar', { length: 255, nullable: true, default: '' })

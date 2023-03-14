@@ -2,10 +2,10 @@ import { JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
-import { PasswordService } from 'src/password/password.service';
 import { User } from 'src/users/user.entity';
-import { UsersModule } from 'src/users/users.module';
+import { UserRepository } from 'src/users/user.repository';
 import { UsersService } from 'src/users/users.service';
+import { UtilsModule } from 'src/utils/utils.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -15,29 +15,29 @@ describe('[Controller] AuthController', () => {
   let authController: AuthController;
   let authService: AuthService;
 
-  describe('[회원가입] AuthController.register()', () => {
-    beforeEach(async () => {
-      const module = await Test.createTestingModule({
-        imports: [PassportModule],
-        controllers: [AuthController],
-        providers: [
-          AuthService,
-          UsersService,
-          PasswordService,
-          JwtService,
-          {
-            provide: getRepositoryToken(User),
-            useValue: {
-              findOne: jest.fn(),
-            },
+  beforeEach(async () => {
+    const module = await Test.createTestingModule({
+      imports: [PassportModule, UtilsModule],
+      controllers: [AuthController],
+      providers: [
+        AuthService,
+        JwtService,
+        UserRepository,
+        {
+          provide: getRepositoryToken(User),
+          useValue: {
+            findOne: jest.fn(),
+            save: jest.fn(),
           },
-        ],
-      }).compile();
+        },
+      ],
+    }).compile();
 
-      authController = module.get<AuthController>(AuthController);
-      authService = module.get<AuthService>(AuthService);
-    });
+    authController = module.get<AuthController>(AuthController);
+    authService = module.get<AuthService>(AuthService);
+  });
 
+  describe('[회원가입] AuthController.register()', () => {
     it('입력값 검증이후 authService.register가 호출되었는지 확인', async () => {
       // given
       const registerData = new RegisterDto();
@@ -55,28 +55,6 @@ describe('[Controller] AuthController', () => {
   });
 
   describe('[로그인] AuthController.login()', () => {
-    beforeEach(async () => {
-      const module = await Test.createTestingModule({
-        imports: [PassportModule],
-        controllers: [AuthController],
-        providers: [
-          AuthService,
-          UsersService,
-          PasswordService,
-          JwtService,
-          {
-            provide: getRepositoryToken(User),
-            useValue: {
-              findOne: jest.fn(),
-            },
-          },
-        ],
-      }).compile();
-
-      authController = module.get<AuthController>(AuthController);
-      authService = module.get<AuthService>(AuthService);
-    });
-
     it('입력값 검증이후 authService.login이 호출되고 토큰 등이 반환되었는지 확인', async () => {
       // given
       const loginData = new LoginDto();
@@ -91,7 +69,6 @@ describe('[Controller] AuthController', () => {
         accessToken: 'accessToken',
         refreshToken: 'refreshToken',
       });
-
       const result = await authController.login(loginData);
 
       // then

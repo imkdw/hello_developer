@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
 import { Connection } from 'typeorm';
 import { commentContent, createBoard, login, register } from './common';
+import { AppModule } from '../src/app.module';
 
 describe('Comment Module (e2e)', () => {
   let app: INestApplication;

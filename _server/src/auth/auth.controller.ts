@@ -1,12 +1,4 @@
-import {
-  Post,
-  Controller,
-  Body,
-  UsePipes,
-  UseGuards,
-  HttpCode,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Post, Controller, Body, UsePipes, UseGuards, HttpCode } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -20,7 +12,6 @@ export class AuthController {
   /**
    * [POST] /auth/register - 회원가입
    * @param registerDto - 회원가입시 사용되는 유저 입력값
-   * @returns
    */
   @UsePipes(AuthValidationPipe)
   @Post('register')
