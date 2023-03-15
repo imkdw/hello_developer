@@ -22,7 +22,7 @@ export class Comment {
   userId: string;
 
   @Column({ type: 'varchar', length: 200 })
-  content: string;
+  comment: string;
 
   @CreateDateColumn({
     type: 'datetime',

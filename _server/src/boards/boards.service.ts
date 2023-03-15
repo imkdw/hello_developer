@@ -102,8 +102,6 @@ export class BoardsService {
       throw new NotFoundException('board_not_found');
     }
 
-    console.log(board);
-
     /** 작성자와 삭제요청 유저가 일치할때만 글 삭제 */
     if (board.user.userId === userId) {
       await this.boardRepository.remove(userId, boardId);

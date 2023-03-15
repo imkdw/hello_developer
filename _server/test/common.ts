@@ -50,10 +50,10 @@ export async function createComment(
   app: INestApplication,
   boardId: string,
   accessToken: string,
-): Promise<{ commentId: number }> {
+): Promise<number> {
   const response = await request(app.getHttpServer())
     .post('/comments')
-    .send({ boardId, content: 'comment' })
+    .send({ boardId, comment: 'comment' })
     .set({ Authorization: `Bearer ${accessToken}` })
     .expect(201);
 

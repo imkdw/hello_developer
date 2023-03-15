@@ -168,8 +168,10 @@ describe('[Service] BoardsService', () => {
       // given
       const userId = 'user-id-1';
       const boardId = 'board-id-1';
+      const user = new User();
+      user.userId = 'user-id-2';
       const board = new Board();
-      board.userId = 'user-id-2';
+      board.user = user;
 
       // when
       jest.spyOn(boardRepository, 'findOne').mockResolvedValue(board);
@@ -185,14 +187,17 @@ describe('[Service] BoardsService', () => {
     it('정상적인 게시글 삭제', async () => {
       // given
       const userId = 'user-id-1';
+
       const boardId = 'board-id-1';
+      const user = new User();
+      user.userId = 'user-id-1';
       const board = new Board();
-      board.userId = 'user-id-1';
+      board.user = user;
 
       // when
       const boardRepoSpy = jest.spyOn(boardRepository, 'remove');
       jest.spyOn(boardRepository, 'findOne').mockResolvedValue(board);
-      const result = await boardsService.remove(userId, boardId);
+      await boardsService.remove(userId, boardId);
 
       // then
       expect(boardRepoSpy).toBeCalledWith(userId, boardId);

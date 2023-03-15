@@ -54,7 +54,7 @@ export class BoardRepository {
         'user.profileImg',
         'comments.commentId',
         'comments.createdAt',
-        'comments.content',
+        'comments.comment',
         'view.viewCnt',
         'tag.name',
       ])

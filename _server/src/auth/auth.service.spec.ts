@@ -98,7 +98,7 @@ describe('[Service] AuthService', () => {
       const repositorySpy = jest.spyOn(userRepository, 'register');
       jest.spyOn(userRepository, 'findUserByEmail').mockResolvedValue(null);
       jest.spyOn(userRepository, 'findUserByNickname').mockResolvedValue(null);
-      jest.spyOn(utilsService, 'getUUID').mockResolvedValue('verifyToken');
+      jest.spyOn(utilsService, 'getUUID').mockResolvedValue('verifyToken' as never);
       jest.spyOn(utilsService, 'encrypt').mockResolvedValue('encryptPassword');
       await authService.register(registerDto);
 

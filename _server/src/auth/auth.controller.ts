@@ -1,9 +1,9 @@
 import { Post, Controller, Body, UsePipes, UseGuards, HttpCode } from '@nestjs/common';
+import { ValidationPipe } from '../pipes/validation.pipe';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { AuthValidationPipe } from './pipes/auth-validation.pipe';
 
 @Controller('auth')
 export class AuthController {
@@ -13,7 +13,7 @@ export class AuthController {
    * [POST] /auth/register - 회원가입
    * @param registerDto - 회원가입시 사용되는 유저 입력값
    */
-  @UsePipes(AuthValidationPipe)
+  @UsePipes(ValidationPipe)
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
     return await this.authService.register(registerDto);

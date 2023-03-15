@@ -9,10 +9,11 @@ import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 
 @Injectable()
-export class BoardValidationPipe implements PipeTransform<any> {
+export class ValidationPipe implements PipeTransform<any> {
   async transform(value: any, metadata: ArgumentMetadata) {
     const object = plainToClass(metadata.metatype, value);
     const errors = await validate(object);
+
     if (errors.length) {
       const error = errors[0];
       throw new BadRequestException({

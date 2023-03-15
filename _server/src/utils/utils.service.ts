@@ -31,7 +31,7 @@ export class UtilsService {
    * UUID 생성 서비스
    * @returns UUID 텍스트
    */
-  async getUUID() {
+  getUUID(): string {
     return v4();
   }
 }

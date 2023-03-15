@@ -12,11 +12,11 @@ import {
   Patch,
 } from '@nestjs/common';
 import { Body, Query } from '@nestjs/common/decorators';
+import { ValidationPipe } from '../pipes/validation.pipe';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
-import { BoardValidationPipe } from './pipes/board-validation.pipe';
 
 @Controller('boards')
 export class BoardsController {
@@ -26,7 +26,7 @@ export class BoardsController {
    * 게시글 작성
    * @param createBoardDto - 게시글 작성 데이터
    */
-  @UsePipes(BoardValidationPipe)
+  @UsePipes(ValidationPipe)
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Req() req, @Body() createBoardDto: CreateBoardDto) {
@@ -77,7 +77,7 @@ export class BoardsController {
   async update(
     @Req() req,
     @Param('boardId') boardId: string,
-    @Body(BoardValidationPipe) updateBoardDto: UpdateBoardDto,
+    @Body(ValidationPipe) updateBoardDto: UpdateBoardDto,
   ) {
     await this.boardsService.update(req.user.userId, updateBoardDto, boardId);
   }
