@@ -10,5 +10,6 @@ import { CommentsService } from './comments.service';
   imports: [TypeOrmModule.forFeature([Comment])],
   controllers: [CommentsController],
   providers: [CommentsService, JwtStrategy, CommentRepository],
+  exports: [CommentRepository],
 })
 export class CommentsModule {}

@@ -42,4 +42,9 @@ export class CommentRepository {
   async findOne(commentId: number) {
     return await this.commentRepository.findOne({ where: { commentId } });
   }
+
+  async findByUserId(userId: string) {
+    const comments = await this.commentRepository.find({ where: { userId } });
+    return comments;
+  }
 }

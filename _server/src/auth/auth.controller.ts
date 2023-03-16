@@ -16,7 +16,8 @@ export class AuthController {
   @UsePipes(ValidationPipe)
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
-    return await this.authService.register(registerDto);
+    const userId = await this.authService.register(registerDto);
+    return { userId };
   }
 
   /**

@@ -111,4 +111,9 @@ export class BoardRepository {
       await queryRunner.release();
     }
   }
+
+  async findByUserId(userId: string) {
+    const boards = this.boardRepository.find({ where: { userId } });
+    return boards;
+  }
 }

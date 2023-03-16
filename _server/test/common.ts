@@ -5,6 +5,7 @@ export const account = {
   email: 'test@test.com',
   password: 'asdf1234!@',
   nickname: 'testuser',
+  introduce: 'test introduce',
 };
 
 const { email, password, nickname } = account;
@@ -20,11 +21,13 @@ const { title, category, content, tags } = boardData;
 
 export const commentContent = '댓글입니다';
 
-export async function register(app: INestApplication): Promise<void> {
-  await request(app.getHttpServer())
+export async function register(app: INestApplication): Promise<string> {
+  const response = await request(app.getHttpServer())
     .post('/auth/register')
     .send({ email, password, nickname })
     .expect(201);
+
+  return response.body.userId;
 }
 
 export async function login(app: INestApplication): Promise<string> {

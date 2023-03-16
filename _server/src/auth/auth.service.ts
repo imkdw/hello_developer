@@ -31,7 +31,8 @@ export class AuthService {
     user.nickname = nickname;
     user.verifyToken = await this.utilsService.getUUID();
 
-    await this.userRepository.register(user);
+    const createdUser = await this.userRepository.register(user);
+    return createdUser.userId;
 
     // TODO: 이메일 발송기능 구현필요
   }
