@@ -1,7 +1,8 @@
+import { ConfigModule } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { Test } from '@nestjs/testing';
-import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
 import { UserRepository } from 'src/users/user.repository';
 import { UsersService } from 'src/users/users.service';
@@ -17,7 +18,7 @@ describe('[Controller] AuthController', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      imports: [PassportModule, UtilsModule],
+      imports: [PassportModule, UtilsModule, ConfigModule],
       controllers: [AuthController],
       providers: [
         AuthService,

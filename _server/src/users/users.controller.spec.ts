@@ -1,5 +1,7 @@
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
+import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 import { Board } from 'src/boards/board.entity';
 import { BoardsModule } from 'src/boards/boards.module';
 import { Category } from 'src/boards/category/category.entity';
@@ -29,6 +31,7 @@ describe('[Controller] UsersController', () => {
           entities: [User, Board, Category, View, Tag, Comment],
           synchronize: true,
         }),
+        ConfigModule.forRoot(),
       ],
       controllers: [UsersController],
       providers: [

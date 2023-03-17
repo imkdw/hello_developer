@@ -1,5 +1,5 @@
 /** 모든 API의 베이스 URL */
-export const BASE_URL = "http://localhost:5000/v1/api";
+export const BASE_URL = "http://localhost:5000";
 
 /** 인증 관련 */
 export const VERIFY_URL = `${BASE_URL}/auth/verify`; // 사용자 인증

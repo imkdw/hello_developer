@@ -10,5 +10,8 @@ declare namespace NodeJS {
     // AWS
     AWS_ACCESS_KEY: string;
     AWS_SECRET_ACCESS_KEY: string;
+
+    // BCRYPT
+    BCRYPT_SALT: number;
   }
 }

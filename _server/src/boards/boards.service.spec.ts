@@ -1,9 +1,11 @@
 import { BadRequestException } from '@nestjs/common';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common/exceptions';
+import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Comment } from 'src/comments/comment.entity';
-import { User } from 'src/users/user.entity';
+import { JwtStrategy } from '../auth/strategies/jwt.strategy';
+import { Comment } from '../comments/comment.entity';
+import { User } from '../users/user.entity';
 import { Board } from './board.entity';
 import { BoardRepository } from './board.repository';
 import { BoardsModule } from './boards.module';
@@ -39,8 +41,9 @@ describe('[Service] BoardsService', () => {
           synchronize: true,
         }),
         BoardsModule,
+        ConfigModule.forRoot(),
       ],
-      providers: [BoardsService],
+      providers: [BoardsService, JwtStrategy],
     }).compile();
 
     boardsService = module.get<BoardsService>(BoardsService);

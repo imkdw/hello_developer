@@ -1,6 +1,8 @@
 import { NotFoundException, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
+import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 import { Board } from 'src/boards/board.entity';
 import { BoardRepository } from 'src/boards/board.repository';
 import { BoardsModule } from 'src/boards/boards.module';
@@ -13,11 +15,10 @@ import { CommentsModule } from 'src/comments/comments.module';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
-import { UsersController } from './users.controller';
 import { UsersModule } from './users.module';
 import { UsersService } from './users.service';
 
-describe('[Controller] UsersController', () => {
+describe('[Service] UsersService', () => {
   let usersService: UsersService;
   let userRepository: UserRepository;
   let boardRepository: BoardRepository;
@@ -35,9 +36,11 @@ describe('[Controller] UsersController', () => {
           entities: [User, Board, Category, View, Tag, Comment],
           synchronize: true,
         }),
+        ConfigModule.forRoot(),
       ],
       providers: [
         UsersService,
+        JwtStrategy,
         {
           provide: getRepositoryToken(User),
           useValue: {},

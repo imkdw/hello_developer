@@ -1,17 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { v4 } from 'uuid';
 
 @Injectable()
 export class UtilsService {
+  constructor(private configService: ConfigService) {}
   /**
    * 평문 단방향 암호화 서비스
    * @param plainText - 평문 텍스트
    * @returns 암호화된 텍스트 반환
    */
   async encrypt(plainText: string): Promise<string> {
-    // TODO: Salt 생성 Round 환경변수로 변경
-    const salt = await bcrypt.genSalt(10);
+    const saltRounds = this.configService.get<number>('bcrypt.salt');
+    const salt = await bcrypt.genSalt(Number(saltRounds));
     const hashedText = await bcrypt.hash(plainText, salt);
     return hashedText;
   }
@@ -31,7 +33,7 @@ export class UtilsService {
    * UUID 생성 서비스
    * @returns UUID 텍스트
    */
-  getUUID(): string {
+  getUUID() {
     return v4();
   }
 }

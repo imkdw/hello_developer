@@ -74,6 +74,7 @@ const DisableButton = styled.button`
   font-size: 18px;
   border-radius: 10px;
   margin-top: 10px;
+  cursor: default;
 
   @media screen and (max-width: 767px) {
     margin-top: 20px;
@@ -86,7 +87,6 @@ const ErrMessage = styled.p`
   margin-top: 5px;
 `;
 
-// TODO: 회원가입시 사용자 입력값 검증로직 추가필요
 const RegisterForm = () => {
   const [account, setAccount] = useState({
     email: "",
@@ -104,6 +104,7 @@ const RegisterForm = () => {
 
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     if (!(isValidAccount.email || isValidAccount.password || isValidAccount.nickname)) {
       alert("올바르지 않은 계정 형식입니다.");
       return;
@@ -111,14 +112,15 @@ const RegisterForm = () => {
 
     try {
       setIsLoading(true);
-      const status = await AuthService.register(account.email, account.password, account.nickname);
+      const res = await AuthService.register(account.email, account.password, account.nickname);
 
-      if (status === 201) {
+      if (res.status === 201) {
         alert("인증코드를 입력하신 이메일로 발송했습니다. 인증코드를 확인해주세요.");
       }
 
       setIsLoading(false);
     } catch (err: any) {
+      console.error(err);
       setIsLoading(false);
       if (err.status === 400) {
         let errMessage: string = "";

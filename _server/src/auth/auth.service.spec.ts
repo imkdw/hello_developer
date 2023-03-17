@@ -8,6 +8,8 @@ import { RegisterDto } from './dto/register.dto';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { UtilsService } from 'src/utils/utils.service';
 import { LoginDto } from './dto/login.dto';
+import { ConfigModule } from '@nestjs/config';
+import configuration from 'src/config/configuration';
 
 describe('[Service] AuthService', () => {
   let authService: AuthService;
@@ -21,6 +23,11 @@ describe('[Service] AuthService', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          load: [configuration],
+        }),
+      ],
       providers: [
         AuthService,
         JwtService,
@@ -31,6 +38,7 @@ describe('[Service] AuthService', () => {
           useValue: {
             findOne: jest.fn(),
             save: jest.fn(),
+            update: jest.fn(),
           },
         },
       ],
@@ -98,7 +106,7 @@ describe('[Service] AuthService', () => {
       const repositorySpy = jest.spyOn(userRepository, 'register');
       jest.spyOn(userRepository, 'findUserByEmail').mockResolvedValue(null);
       jest.spyOn(userRepository, 'findUserByNickname').mockResolvedValue(null);
-      jest.spyOn(utilsService, 'getUUID').mockResolvedValue('verifyToken' as never);
+      jest.spyOn(utilsService, 'getUUID').mockReturnValue('verifyToken');
       jest.spyOn(utilsService, 'encrypt').mockResolvedValue('encryptPassword');
       jest.spyOn(userRepository, 'register').mockResolvedValue(user);
       await authService.register(registerDto);

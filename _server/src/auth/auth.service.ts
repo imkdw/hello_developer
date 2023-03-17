@@ -1,10 +1,18 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt/dist';
 import { UserRepository } from '../users/user.repository';
 import { User } from '../users/user.entity';
 import { UtilsService } from '../utils/utils.service';
+import { ConfigService } from '@nestjs/config';
+import { JwtConfig } from './auth.interface';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +20,8 @@ export class AuthService {
     private jwtService: JwtService,
     private utilsService: UtilsService,
     private userRepository: UserRepository,
+    private configService: ConfigService,
+    private emailService: EmailService,
   ) {}
 
   /**
@@ -25,16 +35,19 @@ export class AuthService {
     if (await this.userRepository.findUserByNickname(nickname))
       throw new BadRequestException('exist_nickname');
 
+    const verifyToken = this.utilsService.getUUID();
     const user = new User();
     user.email = email;
     user.password = await this.utilsService.encrypt(password);
     user.nickname = nickname;
-    user.verifyToken = await this.utilsService.getUUID();
+    user.verifyToken = verifyToken;
 
     const createdUser = await this.userRepository.register(user);
-    return createdUser.userId;
 
     // TODO: 이메일 발송기능 구현필요
+    await this.emailService.sendVerifyEmail(email, verifyToken);
+
+    return createdUser.userId;
   }
 
   /**
@@ -50,13 +63,52 @@ export class AuthService {
 
     const { userId, profileImg, nickname } = user;
 
-    return {
-      userId,
-      profileImg,
-      nickname,
-      accessToken: this.jwtService.sign({ userId }),
-      refreshToken: this.jwtService.sign({ userId }, { expiresIn: '10d' }),
-    };
+    // const jwtConfig = this.configService.get<JwtConfig>('jwt');
+
+    // TODO: 환경변수로 관리필요
+    const accessToken = this.jwtService.sign(
+      { userId },
+      { secret: 'jwtSecret12345!@@!', expiresIn: '15m' },
+    );
+
+    // TODO: 환경변수로 관리필요
+    const refreshToken = this.jwtService.sign(
+      { userId },
+      { secret: 'jwtSecret12345!@@!', expiresIn: '10d' },
+    );
+
+    await this.userRepository.saveRefreshToken(userId, refreshToken);
+
+    return { userId, profileImg, nickname, accessToken, refreshToken };
+  }
+
+  async logout(tokenUserId: string, userId: string) {
+    if (tokenUserId !== userId) {
+      throw new UnauthorizedException('unauthorized_user');
+    }
+
+    await this.userRepository.removeRefreshToken(tokenUserId);
+  }
+
+  async generateAccessToken(tokenUserId: string, refreshToken: string) {
+    const user = await this.userRepository.findById(tokenUserId);
+
+    if (!user) {
+      throw new NotFoundException('user_not_found');
+    }
+
+    if (user.refreshToken !== refreshToken) {
+      throw new UnauthorizedException('unauthorized_user');
+    }
+
+    const jwtConfig = this.configService.get<JwtConfig>('jwt');
+
+    const accessToken = this.jwtService.sign(
+      { userId: user.userId },
+      { secret: jwtConfig.jwtSecret, expiresIn: jwtConfig.accessTokenExpiresIn },
+    );
+
+    return accessToken;
   }
 
   async validateUser(email: string, password: string) {
@@ -67,5 +119,9 @@ export class AuthService {
     if (!isMatchPassword) return false;
 
     return true;
+  }
+
+  async verify(verifyToken: string) {
+    await this.userRepository.verify(verifyToken);
   }
 }

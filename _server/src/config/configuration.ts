@@ -1,11 +1,3 @@
-import { Board } from '../boards/board.entity';
-import { Category } from '../boards/category/category.entity';
-import { Recommend } from '../boards/recommend/recommend.entity';
-import { Tag } from '../boards/tag/tag.entity';
-import { Comment } from '../comments/comment.entity';
-import { User } from '../users/user.entity';
-import { View } from 'typeorm/schema-builder/view/View';
-
 export default () => ({
   database: {
     type: process.env.DATABASE_TYPE,
@@ -14,8 +6,21 @@ export default () => ({
     username: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
     name: process.env.DATABASE_NAME,
-    entities: [User, Board, Category, Recommend, Tag, View, Comment],
     synchronize: true,
     dropSchema: true,
+  },
+  jwt: {
+    jwtSecret: process.env.JWT_SECRET,
+    accessTokenExpiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRES_IN,
+    refreshTokenExpiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN,
+  },
+  bcrypt: {
+    salt: process.env.BCRYPT_SALT,
+  },
+  nodemailer: {
+    user: process.env.GMAIL_OAUTH_USER,
+    clientId: process.env.GMAIL_OAUTH_CLIENT_ID,
+    clientSecret: process.env.GAMIL_OAUTH_CLIENT_SECRET,
+    refreshToken: process.env.GAMIL_OAUTH_REFRESH_TOKEN,
   },
 });

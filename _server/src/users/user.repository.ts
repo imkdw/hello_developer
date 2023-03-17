@@ -38,4 +38,20 @@ export class UserRepository {
   async remove(userId: string) {
     await this.userRepository.delete({ userId });
   }
+
+  async saveRefreshToken(userId: string, refreshToken: string) {
+    await this.userRepository.update(userId, { refreshToken });
+  }
+
+  async removeRefreshToken(userId: string) {
+    await this.userRepository.update(userId, { refreshToken: '' });
+  }
+
+  async findById(userId: string) {
+    return await this.userRepository.findOne({ where: { userId } });
+  }
+
+  async verify(verifyToken: string) {
+    await this.userRepository.update({ verifyToken }, { isVerified: true });
+  }
 }

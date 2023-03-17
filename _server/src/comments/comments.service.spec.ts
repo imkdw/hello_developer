@@ -85,10 +85,8 @@ describe('[Service] CommentsService', () => {
       const userId = 'user-id-1';
       const commentId = 1;
       const updateCommentDto: UpdateCommentDto = { comment: 'update-comment' };
-      const user = new User();
-      user.userId = 'user-id-2';
       const comment = new Comment();
-      comment.user = user;
+      comment.userId = 'user-id-2';
 
       // when
       jest.spyOn(commentRepository, 'findOne').mockResolvedValue(comment);
@@ -103,22 +101,20 @@ describe('[Service] CommentsService', () => {
 
     it('댓글 정상 수정', async () => {
       // given
+      const userId = 'user-id-1';
       const commentId = 1;
       const updateCommentDto: UpdateCommentDto = { comment: 'update-comment' };
 
-      const user = new User();
-      user.userId = 'user-id-1';
-
       const comment = new Comment();
-      comment.user = user;
+      comment.userId = 'user-id-1';
 
       // when
       jest.spyOn(commentRepository, 'findOne').mockResolvedValue(comment);
       const commentRepoSpy = jest.spyOn(commentRepository, 'update');
-      await commentsService.update(user.userId, commentId, updateCommentDto);
+      await commentsService.update(userId, commentId, updateCommentDto);
 
       // then
-      expect(commentRepoSpy).toBeCalledWith(user.userId, commentId, updateCommentDto.comment);
+      expect(commentRepoSpy).toBeCalledWith(userId, commentId, updateCommentDto.comment);
     });
   });
 
@@ -144,10 +140,8 @@ describe('[Service] CommentsService', () => {
       const userId = 'user-id-1';
       const commentId = 1;
 
-      const user = new User();
-      user.userId = 'user-id-2';
       const comment = new Comment();
-      comment.user = user;
+      comment.userId = 'user-id-2';
 
       // when
       jest.spyOn(commentRepository, 'findOne').mockResolvedValue(comment);
@@ -165,10 +159,8 @@ describe('[Service] CommentsService', () => {
       const userId = 'user-id-1';
       const commentId = 1;
 
-      const user = new User();
-      user.userId = 'user-id-1';
       const comment = new Comment();
-      comment.user = user;
+      comment.userId = 'user-id-1';
 
       // when
       jest.spyOn(commentRepository, 'findOne').mockResolvedValue(comment);

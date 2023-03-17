@@ -1,3 +1,4 @@
+import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { AppModule } from 'src/app.module';
@@ -31,6 +32,7 @@ describe('[Controller] BoardsController', () => {
           synchronize: true,
         }),
         BoardsModule,
+        ConfigModule.forRoot(),
       ],
       controllers: [BoardsController],
       providers: [BoardsService],

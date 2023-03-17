@@ -1,5 +1,5 @@
 import { Module, OnModuleInit } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { BoardsModule } from './boards/boards.module';
 import { CommentsModule } from './comments/comments.module';
@@ -14,17 +14,20 @@ import { Category } from './boards/category/category.entity';
 import { Tag } from './boards/tag/tag.entity';
 import { View } from './boards/view/view.entity';
 import { Recommend } from './boards/recommend/recommend.entity';
-import { BoardsService } from './boards/boards.service';
 import { Comment } from './comments/comment.entity';
 import { HttpExceptionFilter } from './http-exception.filter';
 import { UtilsModule } from './utils/utils.module';
 import { CategoryRepository } from './boards/category/category.repository';
+import configuration from './config/configuration';
+import { MorganModule, MorganInterceptor } from 'nest-morgan';
 
+// TODO: 환경변수 처리하기
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: join(__dirname, '..', '.env'),
+      envFilePath: join(__dirname, '..', '..', '.env'),
       isGlobal: true,
+      load: [configuration],
     }),
     // TypeOrmModule.forRoot({
     //   type: process.env.DATABASE_TYPE,
@@ -32,17 +35,11 @@ import { CategoryRepository } from './boards/category/category.repository';
     //   port: process.env.DATABASE_PORT,
     //   username: process.env.DATABASE_USERNAME,
     //   password: process.env.DATABASE_PASSWORD,
-    //   name: process.env.DATABASE_NAME,
-    //   entities: [User, Board, Category, Recommend, Tag, View, Comment],
+    //   database: process.env.DATABASE_NAME,
+    //   entities: [User, Board, Category, Tag, Recommend, Comment, View],
     //   synchronize: true,
     //   dropSchema: true,
     // }),
-    AuthModule,
-    BoardsModule,
-    CommentsModule,
-    EmailModule,
-    UtilsModule,
-    UsersModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
@@ -55,7 +52,14 @@ import { CategoryRepository } from './boards/category/category.repository';
       dropSchema: true,
     }),
     TypeOrmModule.forFeature([Board, Category, Tag]),
+    AuthModule,
+    BoardsModule,
+    CommentsModule,
+    EmailModule,
     UtilsModule,
+    UsersModule,
+    UtilsModule,
+    MorganModule,
   ],
   controllers: [],
   providers: [
@@ -63,6 +67,10 @@ import { CategoryRepository } from './boards/category/category.repository';
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: MorganInterceptor('combined'),
     },
   ],
 })
@@ -73,9 +81,3 @@ export class AppModule implements OnModuleInit {
     await this.categoryRepository.createDefaultCategorys();
   }
 }
-
-// for (let i = 1; i < 6; i++) {
-//   process.stdout.write(' '.repeat(5 - i));
-//   process.stdout.write('*'.repeat(i));
-//   console.log();
-// }

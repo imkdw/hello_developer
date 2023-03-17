@@ -7,40 +7,32 @@ import { LoginServiceReturn } from "../types/auth";
 
 /**
  * 공통된 에러처리를 위한 에러 핸들러
- * @param {any} err - axios 에러 데이터
+ * @param err - axios 에러 데이터
  */
 const errorHandler = (err: any) => {
-  console.log(err);
-
   /** 500에러 또는 상태코드가 없는 에러 발생시 Sentry에 Logging */
   if (err.status === 500 || !err.status) {
-    Sentry.captureEvent(err);
+    // Sentry.captureEvent(err);
   }
 
   throw Object.assign(new Error(), {
-    status: err.response.data.status || 500,
+    status: err.response.data.statusCode || 500,
     message: err.response.data.message || "",
-    description: err.response.data.description || "",
-    data: {
-      action: err.response.data.data.action || "",
-      parameter: err.response.data.data.parameter || "",
-      message: err.response.data.data.message || "",
-    },
   });
 };
 
 export class AuthService {
   /**
    * 회원가입 서비스 로직
-   * @param {string} email - 회원가입에 사용될 이메일
-   * @param {string} password - 회원가입에 사용될 비밀번호
-   * @param {string} nickname - 회원가입에 사용될 닉네임
-   * @returns {Promise<number>} API 응답 코드
+   * @param email - 회원가입에 사용될 이메일
+   * @param password - 회원가입에 사용될 비밀번호
+   * @param nickname - 회원가입에 사용될 닉네임
+   * @returns API 응답
    */
-  static register = async (email: string, password: string, nickname: string): Promise<number> => {
+  static register = async (email: string, password: string, nickname: string) => {
     try {
       const res = await axios.post(REGISTER_URL, { email, password, nickname });
-      return res.status;
+      return res;
     } catch (err: any) {
       errorHandler(err);
       throw err;

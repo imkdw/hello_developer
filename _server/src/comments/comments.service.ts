@@ -33,7 +33,7 @@ export class CommentsService {
       throw new NotFoundException('comment_not_found');
     }
 
-    if (existComment.user.userId !== userId) {
+    if (existComment.userId !== userId) {
       throw new UnauthorizedException('unauthorized_user');
     }
 
@@ -53,7 +53,7 @@ export class CommentsService {
       throw new NotFoundException('comment_not_found');
     }
 
-    if (existComment.user.userId !== userId) {
+    if (existComment.userId !== userId) {
       throw new UnauthorizedException('unauthorized_user');
     }
 

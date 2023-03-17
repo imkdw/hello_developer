@@ -1,8 +1,19 @@
-import { Post, Controller, Body, UsePipes, UseGuards, HttpCode } from '@nestjs/common';
+import {
+  Post,
+  Controller,
+  Body,
+  UsePipes,
+  UseGuards,
+  HttpCode,
+  Get,
+  Req,
+  Param,
+} from '@nestjs/common';
 import { ValidationPipe } from '../pipes/validation.pipe';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @Controller('auth')
@@ -30,5 +41,33 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     return await this.authService.login(loginDto);
+  }
+
+  /**
+   * [GET] /auth/logout/:userId - 로그아웃
+   * @param userId - 로그아웃을 요청하는 유저의 아이디
+   */
+  @HttpCode(204)
+  @UseGuards(JwtAuthGuard)
+  @Get('logout/:userId')
+  async logout(@Req() req, @Param('userId') userId: string) {
+    await this.authService.logout(req.user.userId, userId);
+  }
+
+  /**
+   * [GET] /auth/token - 엑세스 토큰 재발급
+   * @returns 엑세스 토큰 반환
+   */
+  @UseGuards(JwtAuthGuard)
+  @Get('token')
+  async token(@Req() req) {
+    const refreshToken = req.headers.authorization.split(' ')[1];
+    const accessToken = await this.authService.generateAccessToken(req.user.userId, refreshToken);
+    return { accessToken };
+  }
+
+  @Get('verify/:verifyToken')
+  async verify(@Param('verifyToken') verifyToken: string) {
+    await this.authService.verify(verifyToken);
   }
 }

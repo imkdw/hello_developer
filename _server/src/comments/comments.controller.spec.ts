@@ -67,10 +67,8 @@ describe('[Controller] CommentsController', () => {
       const updateCommentDto: UpdateCommentDto = {
         comment: 'update-comment',
       };
-      const user = new User();
-      user.userId = 'user-id-1';
       const comment = new Comment();
-      comment.user = user;
+      comment.userId = 'user-id-1';
 
       // when
       const commentsServiceSpy = jest.spyOn(commentsService, 'update');
@@ -87,10 +85,8 @@ describe('[Controller] CommentsController', () => {
       // given
       const req = { user: { userId: 'user-id-1' } };
       const commentId = 1;
-      const user = new User();
-      user.userId = 'user-id-1';
       const comment = new Comment();
-      comment.user = user;
+      comment.userId = 'user-id-1';
 
       // when
       const commentsServiceSpy = jest.spyOn(commentsService, 'remove');
