@@ -1,25 +1,6 @@
 import axios from "axios";
 import { LOGIN_URL, REGISTER_URL, TOKEN_URL, LOGOUT_URL, VERIFY_URL } from "../config/api";
-
-/** 센트리 */
-import * as Sentry from "@sentry/react";
-import { LoginServiceReturn } from "../types/auth";
-
-/**
- * 공통된 에러처리를 위한 에러 핸들러
- * @param err - axios 에러 데이터
- */
-const errorHandler = (err: any) => {
-  /** 500에러 또는 상태코드가 없는 에러 발생시 Sentry에 Logging */
-  if (err.status === 500 || !err.status) {
-    // Sentry.captureEvent(err);
-  }
-
-  throw Object.assign(new Error(), {
-    status: err.response.data.statusCode || 500,
-    message: err.response.data.message || "",
-  });
-};
+import { errorHandler } from "./errorHandler";
 
 export class AuthService {
   /**
@@ -41,11 +22,11 @@ export class AuthService {
 
   /**
    * 로그인 서비스 로직
-   * @param {string} email - 로그인에 사용될 이메일
-   * @param {string} password - 로그인에 사용될 비밀번호
-   * @returns {Promise<number>, data} API 응답 코드 및 토큰 등 반환값
+   * @param email - 로그인에 사용될 이메일
+   * @param password - 로그인에 사용될 비밀번호
+   * @returns API 응답
    */
-  static login = async (email: string, password: string): Promise<LoginServiceReturn> => {
+  static login = async (email: string, password: string) => {
     try {
       const res = await axios.post(LOGIN_URL, { email, password });
 
@@ -58,13 +39,9 @@ export class AuthService {
       localStorage.setItem("profileImg", profileImg);
       localStorage.setItem("nickname", nickname);
 
-      return {
-        status: res.status,
-        data: res.data,
-      };
+      return res;
     } catch (err: any) {
       errorHandler(err);
-      throw err;
     }
   };
 
@@ -72,9 +49,9 @@ export class AuthService {
    * 로그아웃 서비스 로직
    * @param {string} userId - 로그아웃을 위해 서버로 전달될 유저의 아이디
    * @param {string} accessToken - 로그아웃을 위해 서버로 전달될 엑세스 토큰
-   * @returns
+   * @returns API 응답
    */
-  static logout = async (userId: string, accessToken: string): Promise<number> => {
+  static logout = async (userId: string, accessToken: string) => {
     try {
       const res = await axios.get(`${LOGOUT_URL}/${userId}`, {
         headers: {
@@ -88,10 +65,9 @@ export class AuthService {
       localStorage.removeItem("profileImg");
       localStorage.removeItem("nickname");
 
-      return res.status;
+      return res;
     } catch (err: any) {
       errorHandler(err);
-      throw err;
     }
   };
 
@@ -109,16 +85,17 @@ export class AuthService {
 
   /**
    * 이메일 인증 서비스 로직
-   * @param {string} verifyToken - 이메일 인증에 사용될 유저의 고유 인증코드
-   * @returns {Promise<number>} API 응답 코드
+   * @param verifyToken - 이메일 인증에 사용될 유저의 고유 인증코드
+   * @returns API 응답
    */
-  static verify = async (verifyToken: string): Promise<number> => {
+  static verify = async (verifyToken: string) => {
+    console.log(verifyToken);
+
     try {
       const res = await axios.get(`${VERIFY_URL}/${verifyToken}`);
-      return res.status;
+      return res;
     } catch (err: any) {
       errorHandler(err);
-      throw err;
     }
   };
 }

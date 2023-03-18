@@ -9,7 +9,7 @@ export const TOKEN_URL = `${BASE_URL}/auth/token`; // refresh token으로 access
 export const LOGOUT_URL = `${BASE_URL}/auth/logout`; // 로그아웃
 
 /** 게시글 관련 */
-export const ADD_POST_URL = `${BASE_URL}/post/add`; // 글 작성
+export const ADD_POST_URL = `${BASE_URL}/boards`; // 글 작성
 export const POST_LIST_URL = `${BASE_URL}/post/list`; // 글 목록
 export const POST_DETAIL_URL = `${BASE_URL}/post`; // 글 상세정보
 export const DELETE_POST_URL = `${BASE_URL}/post`; // 글 상세정보

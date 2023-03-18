@@ -1,8 +1,6 @@
-import axios from "axios";
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import { VERIFY_URL } from "../../../config/api";
 import { AuthService } from "../../../services/auth";
 
 const StyledVerify = styled.div`
@@ -13,14 +11,15 @@ const StyledVerify = styled.div`
 // TODO: 인증 완료창이 2번 뜨는 현상 개선필요
 const Verify = () => {
   const verifyToken = useParams().verifyToken as string;
+  const navigator = useNavigate();
 
   useEffect(() => {
     const doVerify = async () => {
       const res = await AuthService.verify(verifyToken);
 
-      if (res === 200) {
+      if (res?.status === 200) {
         alert("인증을 성공했습니다.");
-        window.close();
+        navigator("/login");
       }
     };
 

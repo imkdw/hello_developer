@@ -1,13 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
-import { loggedInUserState } from "../../recoil/auth.recoil";
-import { AuthService } from "../../services/auth";
+import { BellIcon, BookIcon, CheckIcon, PersonIcon, QuestionIcon, TalkBallonIcon } from "../../assets/icon";
+import { loggedInUserState } from "../../recoil";
+import MenuLinkItem from "./MenuLinkItem";
 
-import { BellIcon, BookIcon, CheckIcon, PersonIcon, QuestionIcon, TalkBallonIcon } from "./SideMenuIcon";
-import SideMenuLinkItem from "./SideMenuLinkItem";
-
-const StyledSideMenuLink = styled.div`
+const StyledMenuLink = styled.div`
   width: 100%;
   height: 75%;
   display: flex;
@@ -16,7 +14,7 @@ const StyledSideMenuLink = styled.div`
   justify-content: space-between;
 `;
 
-const PostLinks = styled.ul`
+const BoardLinks = styled.ul`
   width: 90%;
   height: auto;
   display: flex;
@@ -41,12 +39,13 @@ const UtilLink = styled(Link)`
   margin: 0 0 30px 10px;
 `;
 
-interface SideMenuLinkProps {
+interface MenuLinkProps {
   onClick?: () => void;
 }
 
-const SideMenuLink = ({ onClick }: SideMenuLinkProps) => {
+const MenuLink = ({ onClick }: MenuLinkProps) => {
   const navigator = useNavigate();
+
   const sideMenuData = [
     {
       id: "notice",
@@ -88,32 +87,32 @@ const SideMenuLink = ({ onClick }: SideMenuLinkProps) => {
 
   const [loggedInUser, setLoggedInUser] = useRecoilState(loggedInUserState);
 
-  const logoutHandler = async () => {
-    try {
-      const res = await AuthService.logout(loggedInUser.userId, loggedInUser.accessToken);
+  // const logoutHandler = async () => {
+  //   try {
+  //     const res = await AuthService.logout(loggedInUser.userId, loggedInUser.accessToken);
 
-      if (res?.status === 200) {
-        setLoggedInUser((prevState) => {
-          return { ...prevState, accessToken: "", userId: "", profileImg: "", nickname: "" };
-        });
+  //     if (res?.status === 200) {
+  //       setLoggedInUser((prevState) => {
+  //         return { ...prevState, accessToken: "", userId: "", profileImg: "", nickname: "" };
+  //       });
 
-        alert("로그아웃이 완료되었습니다.");
-        navigator("/main");
-      }
-    } catch (err: any) {
-      alert("오류 발생");
-      console.error(err);
-    }
-  };
+  //       alert("로그아웃이 완료되었습니다.");
+  //       navigator("/main");
+  //     }
+  //   } catch (err: any) {
+  //     alert("오류 발생");
+  //     console.error(err);
+  //   }
+  // };
 
   return (
-    <StyledSideMenuLink>
-      <PostLinks>
+    <StyledMenuLink>
+      <BoardLinks>
         {sideMenuData.map((data) => (
-          <SideMenuLinkItem key={data.id} Icon={data.icon} to={data.to} text={data.text} onClick={onClick} />
+          <MenuLinkItem key={data.id} Icon={data.icon} to={data.to} text={data.text} onClick={onClick} />
         ))}
-      </PostLinks>
-      <UtilLinks>
+      </BoardLinks>
+      {/* <UtilLinks>
         {loggedInUser.accessToken ? (
           <>
             <UtilLink to={"/profile/" + loggedInUser.userId}>프로필</UtilLink>
@@ -124,9 +123,9 @@ const SideMenuLink = ({ onClick }: SideMenuLinkProps) => {
         ) : (
           <UtilLink to="/login">로그인 / 회원가입</UtilLink>
         )}
-      </UtilLinks>
-    </StyledSideMenuLink>
+      </UtilLinks> */}
+    </StyledMenuLink>
   );
 };
 
-export default SideMenuLink;
+export default MenuLink;

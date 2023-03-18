@@ -1,12 +1,10 @@
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { currentPostIdState, postDetailDataState } from "../../recoil/post.recoil";
-import WriteReComment from "./WriteReComment";
 import { useState } from "react";
 import { loggedInUserState } from "../../recoil/auth.recoil";
 import { PostService } from "../../services/post";
 import UpdateComment from "./UpdateComment";
-import UpdateReComment from "./UpdateReComment";
 import { dateFormat } from "../../utils/dateFormat";
 
 const StyledComments = styled.div`
@@ -58,23 +56,6 @@ const CreatedAt = styled.p`
 
 const Text = styled.div`
   width: 100%;
-`;
-
-const ReCommentButton = styled.button`
-  color: #b3b3b3;
-  text-align: start;
-`;
-
-const ReComment = styled.div`
-  width: 99%;
-  height: 140px;
-  position: relative;
-  border-left: 3px solid #d9d9d9;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin-top: 20px;
-  align-self: flex-end;
 `;
 
 const MenuButton = styled.div`
@@ -236,21 +217,6 @@ const Comments = () => {
     }
   };
 
-  /** 대댓글 삭제 */
-  const reCommentDeleteHandler = async (reCommentId: number) => {
-    try {
-      const res = await PostService.deleteReComment(reCommentId, loggedInUser.accessToken);
-
-      if (res === 200 && window.confirm("정말 대댓글을 삭제하실껀가요?")) {
-        const { post } = await PostService.detail(currentPostId);
-        setPostDetailData(post);
-      }
-    } catch (err: any) {
-      console.error(err);
-      alert("에러 발생");
-    }
-  };
-
   return (
     <StyledComments>
       {sortedComments.map((comment) => (
@@ -283,48 +249,8 @@ const Comments = () => {
                 )}
               </Header>
               <Text>{comment.content}</Text>
-              <ReCommentButton onClick={() => writerHandler(comment.commentId)}>
-                {enableWriter[comment.commentId]?.isEnable ? "답글취소" : "답글쓰기"}
-              </ReCommentButton>
             </>
           )}
-          {enableWriter[comment.commentId]?.isEnable && (
-            <WriteReComment commentId={comment.commentId} writingHanlder={writerHandler} />
-          )}
-          {comment.reComment.map((data) => (
-            <ReComment key={data.reCommentId}>
-              {isEditComment[`re-${data.reCommentId}`]?.isEditing ? (
-                <UpdateReComment
-                  commentId={data.reCommentId}
-                  content={data.content}
-                  editingHandler={editingHandler}
-                  commentIdentifier={"re-" + data.reCommentId}
-                />
-              ) : (
-                <>
-                  <Header style={{ marginLeft: "10px" }}>
-                    <Profile src={data.user.profileImg} />
-                    <Writer>
-                      <Username>{data.user.nickname}</Username>
-                      <CreatedAt>{dateFormat(data.createdAtDate)}</CreatedAt>
-                    </Writer>
-                    {comment.userId === loggedInUser.userId && (
-                      <MenuButton onClick={() => enableButtonHandler(`re-${data.reCommentId}`)}>
-                        <MenuIcon />
-                        {enableButton[`re-${data.reCommentId}`]?.isEnable && (
-                          <ButtonMenu>
-                            <Button onClick={() => editingHandler(`re-${data.reCommentId}`)}>수정하기</Button>
-                            <Button onClick={() => reCommentDeleteHandler(data.reCommentId)}>삭제하기</Button>
-                          </ButtonMenu>
-                        )}
-                      </MenuButton>
-                    )}
-                  </Header>
-                  <Text style={{ marginLeft: "10px" }}>{data.content}</Text>
-                </>
-              )}
-            </ReComment>
-          ))}
         </Comment>
       ))}
     </StyledComments>

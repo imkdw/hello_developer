@@ -81,22 +81,19 @@ const LoginForm = () => {
 
     try {
       setIsLoading(true);
-      const { status, data } = await AuthService.login(account.email, account.password);
-      const { accessToken, userId, profileImg, nickname } = data;
+      const res = await AuthService.login(account.email, account.password);
+      const { accessToken, userId, profileImg, nickname } = res?.data;
+      console.log(res?.data);
 
-      if (status === 200) {
+      if (res?.status === 200) {
         navigator("/main");
 
         setLoggedInUser((prevState) => {
           return { ...prevState, accessToken, userId, profileImg, nickname };
         });
       }
-
-      setIsLoading(false);
     } catch (err: any) {
-      setIsLoading(false);
       let errMessage = "";
-
       switch (err.status) {
         case 400:
           errMessage = "이메일이 존재하지 않거나 비밀번호가 일치하지 않습니다.";
@@ -109,6 +106,8 @@ const LoginForm = () => {
       }
 
       alert(errMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 

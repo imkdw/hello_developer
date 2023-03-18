@@ -221,9 +221,9 @@ const AddPostForm = () => {
     };
 
     try {
-      const status = await PostService.add(loggedInUser.accessToken, body);
+      const res = await PostService.add(loggedInUser.accessToken, body);
 
-      if (status === 201) {
+      if (res?.status === 201) {
         alert("게시글 작성이 완료되었습니다.");
         navigator(-1);
       }

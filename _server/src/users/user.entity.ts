@@ -36,25 +36,13 @@ export class User {
   })
   profileImg: string;
 
-  @CreateDateColumn({
-    type: 'datetime',
-    nullable: true,
-    name: 'created_at_date',
-  })
+  @CreateDateColumn({ type: 'datetime', nullable: true, name: 'created_at_date' })
   createdAt: Date;
 
-  @UpdateDateColumn({
-    type: 'datetime',
-    nullable: true,
-    name: 'update_at_date',
-  })
+  @UpdateDateColumn({ type: 'datetime', nullable: true, name: 'update_at_date' })
   updatedAt: Date;
 
-  @Column('boolean', {
-    nullable: true,
-    default: false,
-    name: 'is_verified_flag',
-  })
+  @Column('boolean', { nullable: true, default: false, name: 'is_verified_flag' })
   isVerified: boolean;
 
   @Column('varchar', { length: 255, nullable: false, name: 'verify_token' })

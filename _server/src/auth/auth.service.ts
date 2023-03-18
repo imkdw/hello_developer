@@ -56,10 +56,9 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const user = await this.userRepository.findUserByEmail(loginDto.email);
 
-    // TODO: 테스트로 인해 인증여부 비활성화, 추후 해제필요
-    // if (!user.isVerified) {
-    //   throw new UnauthorizedException('unauthorized_user');
-    // }
+    if (!user.isVerified) {
+      throw new UnauthorizedException('unauthorized_user');
+    }
 
     const { userId, profileImg, nickname } = user;
 
