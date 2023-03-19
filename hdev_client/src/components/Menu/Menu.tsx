@@ -10,6 +10,7 @@ import { enableMenuState } from "../../recoil";
 import MenuLogo from "./MenuLogo";
 import MenuSearch from "./MenuSearch";
 import MenuLink from "./MenuLink";
+import MenuUtil from "./MenuUtil";
 
 const StyledMenu = styled.div`
   height: 100%;
@@ -18,6 +19,7 @@ const StyledMenu = styled.div`
   flex-direction: column;
   border-right: 1px solid #e5e6e8;
   flex: 1.5;
+  align-items: center;
 
   @media screen and (max-width: 767px) {
     width: 100%;
@@ -61,6 +63,7 @@ const Menu = () => {
       <MenuLogo />
       <MenuSearch />
       <MenuLink />
+      <MenuUtil />
       {/* 모바일환경 사이드메뉴에 링크 클릭시 사이드메뉴 비활성화 필요 */}
       {/* {isMobile ? <MenuLink onClick={closeMenuHandler} /> : <MenuLink />} */}
     </StyledMenu>

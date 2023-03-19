@@ -7,7 +7,7 @@ import MenuLinkItem from "./MenuLinkItem";
 
 const StyledMenuLink = styled.div`
   width: 100%;
-  height: 75%;
+  height: 60%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -25,20 +25,6 @@ const BoardLinks = styled.ul`
     gap: 20px;
   }
 `;
-
-const UtilLinks = styled.div`
-  width: 90%;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-`;
-
-const UtilLink = styled(Link)`
-  font-size: 18px;
-  color: #767e8c;
-  margin: 0 0 30px 10px;
-`;
-
 interface MenuLinkProps {
   onClick?: () => void;
 }
