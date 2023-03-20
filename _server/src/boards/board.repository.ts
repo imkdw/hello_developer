@@ -23,11 +23,34 @@ export class BoardRepository {
   }
 
   async findAll(categorysIds: number[]) {
-    const boards = await this.boardRepository.find({
-      where: { categoryId1: categorysIds[0], categoryId2: categorysIds[1] || null },
-    });
+    const category1 = categorysIds[0];
+    const category2 = categorysIds[1] ? categorysIds[1] : null;
 
-    return boards;
+    let boards = this.boardRepository
+      .createQueryBuilder('board')
+      .leftJoinAndSelect('board.user', 'user')
+      .leftJoinAndSelect('board.view', 'view')
+      .leftJoinAndSelect('board.tags', 'tags')
+      .leftJoinAndSelect('board.category2', 'category')
+      .select([
+        'board.boardId',
+        'board.title',
+        'board.content',
+        'board.createdAt',
+        'user.userId',
+        'user.nickname',
+        'user.profileImg',
+        'view.viewCnt',
+        'tags.name',
+        'category.name',
+      ])
+      .where('board.category1 = :category1', { category1 });
+
+    if (category2) {
+      boards = boards.andWhere('board.category2 = :category2', { category2 });
+    }
+
+    return await boards.getMany();
   }
 
   async findOne(boardId: string) {
@@ -41,6 +64,7 @@ export class BoardRepository {
       .createQueryBuilder('board')
       .leftJoinAndSelect('board.user', 'user')
       .leftJoinAndSelect('board.comments', 'comments')
+      .leftJoinAndSelect('comments.user', 'commentsUser')
       .leftJoinAndSelect('board.view', 'view')
       .leftJoinAndSelect('board.tags', 'tag')
       .select([
@@ -55,6 +79,9 @@ export class BoardRepository {
         'comments.commentId',
         'comments.createdAt',
         'comments.comment',
+        'commentsUser.nickname',
+        'commentsUser.profileImg',
+        'commentsUser.userId',
         'view.viewCnt',
         'tag.name',
       ])

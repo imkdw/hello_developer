@@ -9,3 +9,4 @@ export {
   TalkBallonIcon,
   SearchIcon,
 } from "./MenuIcon";
+export { AddIcon, MenuIcon } from "./BoardIcon";

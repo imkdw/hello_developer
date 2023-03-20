@@ -13,12 +13,13 @@ import MenuLink from "./MenuLink";
 import MenuUtil from "./MenuUtil";
 
 const StyledMenu = styled.div`
+  flex: 1.5;
+  min-width: 350px;
   height: 100%;
   background-color: #f8f8f9;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #e5e6e8;
-  flex: 1.5;
   align-items: center;
 
   @media screen and (max-width: 767px) {

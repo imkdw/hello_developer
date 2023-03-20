@@ -86,6 +86,7 @@ const LoginForm = () => {
     email: "",
     password: "",
   });
+
   const setIsLoading = useSetRecoilState(isLoadingState);
   const setLoggedInUser = useSetRecoilState(loggedInUserState);
   const navigator = useNavigate();
@@ -154,6 +155,8 @@ const LoginForm = () => {
             name="email"
             onChange={accountChangeHandler}
             value={account.email}
+            autoCapitalize="off"
+            autoComplete="off"
           />
         </InputWrapper>
       </FormControl>
@@ -167,6 +170,8 @@ const LoginForm = () => {
             name="password"
             onChange={accountChangeHandler}
             value={account.password}
+            autoCapitalize="off"
+            autoComplete="off"
           />
         </InputWrapper>
       </FormControl>

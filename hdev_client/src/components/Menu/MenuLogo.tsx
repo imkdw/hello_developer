@@ -3,7 +3,6 @@ import { Logo } from "../Common";
 
 const SideMenuLogo = styled.div`
   width: 100%;
-  height: 15%;
   min-height: 140px;
   display: flex;
   align-items: center;

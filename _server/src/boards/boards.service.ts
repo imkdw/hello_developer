@@ -33,6 +33,10 @@ export class BoardsService {
 
     const tagsArr = [];
     for (const tag of tags) {
+      if (tag.name.length === 0) {
+        continue;
+      }
+
       const existTag = await this.tagRepository.findByName(tag.name);
 
       if (existTag) {
@@ -70,7 +74,6 @@ export class BoardsService {
       throw new BadRequestException('invalid_category');
     }
 
-    // TODO: 게시글 목록 및 관련데이터 모두 불러오는 기능 구현필요
     const boards = await this.boardRepository.findAll(categoryIds);
 
     return boards;

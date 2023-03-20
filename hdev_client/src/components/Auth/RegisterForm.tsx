@@ -85,6 +85,10 @@ const ErrMessage = styled.p`
   width: 90%;
   color: red;
   margin-top: 5px;
+
+  @media screen and (max-width: 767px) {
+    font-size: 12px;
+  }
 `;
 
 const RegisterForm = () => {
@@ -182,6 +186,8 @@ const RegisterForm = () => {
             name="email"
             onChange={accountChangeHandler}
             value={account.email}
+            autoCapitalize="off"
+            autoComplete="off"
           />
         </InputWrapper>
         {isValidAccount.email !== null && !isValidAccount.email && account.email.length !== 0 && (
@@ -198,6 +204,8 @@ const RegisterForm = () => {
             name="password"
             onChange={accountChangeHandler}
             value={account.password}
+            autoCapitalize="off"
+            autoComplete="off"
           />
         </InputWrapper>
         {isValidAccount.password !== null && !isValidAccount.password && account.password.length !== 0 && (
@@ -214,6 +222,8 @@ const RegisterForm = () => {
             name="nickname"
             onChange={accountChangeHandler}
             value={account.nickname}
+            autoCapitalize="off"
+            autoComplete="off"
           />
         </InputWrapper>
         {isValidAccount.nickname !== null && !isValidAccount.nickname && account.nickname.length !== 0 && (

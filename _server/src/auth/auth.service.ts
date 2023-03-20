@@ -12,7 +12,7 @@ import { User } from '../users/user.entity';
 import { UtilsService } from '../utils/utils.service';
 import { ConfigService } from '@nestjs/config';
 import { JwtConfig } from './auth.interface';
-import { EmailService } from 'src/email/email.service';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class AuthService {
@@ -44,8 +44,8 @@ export class AuthService {
 
     const createdUser = await this.userRepository.register(user);
 
-    // TODO: 이메일 발송기능 구현필요
-    await this.emailService.sendVerifyEmail(email, verifyToken);
+    // TODO: 인증메일 발송 활성화 필요
+    // await this.emailService.sendVerifyEmail(email, verifyToken);
 
     return createdUser.userId;
   }

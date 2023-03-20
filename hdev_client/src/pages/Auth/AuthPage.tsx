@@ -1,10 +1,6 @@
-import { useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { Intro, LoginForm, RegisterForm, SortLine, TabMenu } from "../../components/Auth";
+import { Intro, LoginForm, RegisterForm, TabMenu } from "../../components/Auth";
 import { Logo } from "../../components/Common";
-// import { Intro } from "./common";
-// import { Login } from "./Login";
-// import { Register } from "./Register";
 
 const StyledAuthPage = styled.div`
   width: 100%;
@@ -22,6 +18,10 @@ const AuthPageBar = styled.div`
   height: 100%;
   background-color: #799efb;
   left: 0;
+
+  @media screen and (max-width: 767px) {
+    display: none;
+  }
 `;
 
 const Content = styled.div`
@@ -44,6 +44,11 @@ const Form = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 50px;
+
+  @media screen and (max-width: 767px) {
+    width: 100%;
+    height: 90%;
+  }
 `;
 
 interface AuthPageProps {

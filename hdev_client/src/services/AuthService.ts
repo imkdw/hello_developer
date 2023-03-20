@@ -1,4 +1,4 @@
-import { api } from "../utils/Auth";
+import { api } from "../utils/Common";
 
 export const register = async (email: string, password: string, nickname: string) => {
   try {

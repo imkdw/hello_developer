@@ -50,7 +50,6 @@ import { MorganModule, MorganInterceptor } from 'nest-morgan';
       entities: [User, Board, Category, Tag, Recommend, Comment, View],
       synchronize: true,
       dropSchema: true,
-      logging: true,
     }),
     TypeOrmModule.forFeature([Board, Category, Tag]),
     AuthModule,
