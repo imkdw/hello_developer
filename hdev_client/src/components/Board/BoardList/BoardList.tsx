@@ -19,6 +19,25 @@ const Boards = styled.ul`
   width: 100%;
   height: auto;
   display: flex;
+  flex-wrap: wrap;
+  gap: 3%;
+  overflow-y: scroll;
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background-color: #e8e8e8;
+  }
+  ::-webkit-scrollbar-thumb,
+  ::-webkit-scrollbar-thumb:hover,
+  ::-webkit-scrollbar-thumb:active {
+    background: #a7a7a7;
+  }
+  ::-webkit-scrollbar-button {
+    display: none;
+  }
 `;
 
 interface BoardListProps {

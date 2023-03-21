@@ -9,4 +9,4 @@ export {
   TalkBallonIcon,
   SearchIcon,
 } from "./MenuIcon";
-export { AddIcon, MenuIcon } from "./BoardIcon";
+export { AddIcon, MenuIcon, RecommendIcon } from "./BoardIcon";

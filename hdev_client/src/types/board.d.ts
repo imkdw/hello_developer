@@ -49,4 +49,6 @@ export interface IBoardDetail {
     userId: string;
   };
   view: { viewCnt: number };
+  category1: { name: string };
+  category2: { name: string } | null;
 }

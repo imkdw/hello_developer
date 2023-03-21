@@ -43,6 +43,7 @@ const GlobalStyles = createGlobalStyle`
   button {
     border: none;
     cursor: pointer;
+    background-color: white;
   }
 
   li {

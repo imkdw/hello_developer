@@ -42,7 +42,7 @@ export class Comment {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Board, (board) => board.comments)
+  @ManyToOne(() => Board, (board) => board.comments, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'board_id' })
   board: Board;
 }

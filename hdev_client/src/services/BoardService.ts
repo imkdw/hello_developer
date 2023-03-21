@@ -30,5 +30,42 @@ export const createBoard = async (accessToken: string, createBoardDto: CreateBoa
 };
 
 export const getBoard = async (boardId: string) => {
-  return await api.get(`/boards/${boardId}`);
+  try {
+    return await api.get(`/boards/${boardId}`);
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+interface UpdateBoardDto {
+  category: string;
+  title: string;
+  tags: {
+    name: string;
+  }[];
+  content: string;
+}
+
+export const updateBoard = async (boardId: string, updateBoardDto: UpdateBoardDto, accessToken: string) => {
+  try {
+    return await api.patch(
+      `/boards/${boardId}`,
+      { ...updateBoardDto },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+export const removeBoard = async (boardId: string, accessToken: string) => {
+  try {
+    return await api.delete(`/boards/${boardId}`, { headers: { Authorization: `Bearer ${accessToken}` } });
+  } catch (err: any) {
+    throw err;
+  }
 };

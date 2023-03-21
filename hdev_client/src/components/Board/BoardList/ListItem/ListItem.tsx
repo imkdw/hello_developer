@@ -1,14 +1,14 @@
 import { copyFileSync } from "fs";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { EyeIcon } from "../../../../assets/icon/BoardIcon";
 import { IBoardItem } from "../../../../types/board";
 import { dateFormater } from "../../../../utils/Common";
 
 const StyledListItem = styled(Link)`
-  width: 45%;
+  width: 30%;
   min-height: 300px;
   border: 1px solid #e7e7e7;
-  margin-top: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -17,22 +17,21 @@ const StyledListItem = styled(Link)`
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   gap: 15px;
   cursor: pointer;
-  margin-bottom: 10px;
+
+  &:nth-of-type(-n + 3) {
+    margin-top: 20px;
+  }
+
+  &:nth-child(3n + 1) {
+    margin-left: 2%;
+  }
 
   &:hover {
     background-color: #e7e9eb;
   }
 
-  &:nth-child(2n - 1) {
-    margin-left: 3rem;
-  }
-
   @media screen and (max-width: 767px) {
     width: 90%;
-
-    &:nth-child(2n - 1) {
-      margin-left: 0;
-    }
   }
 `;
 
@@ -41,6 +40,7 @@ const Writer = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
 `;
 
 const Profile = styled.img`
@@ -109,16 +109,15 @@ const Tag = styled.div`
 `;
 
 const Category = styled.p`
-  width: auto;
-  height: 100%;
   background-color: #d1e9fa;
   border-radius: 5px;
   color: #4394f9;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
+  font-size: 14px;
   padding: 3px 7px;
+  white-space: nowrap;
 `;
 
 const Hashtag = styled.div`
@@ -127,11 +126,25 @@ const Hashtag = styled.div`
   gap: 10px;
 `;
 
-const HashtagText = styled.p``;
+const Views = styled.div`
+  display: flex;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  right: 10px;
+  gap: 7px;
+`;
+
+const ViewCnt = styled.p`
+  font-size: 14px;
+  color: #7c7c7c;
+`;
 
 interface ListItemProps {
   board: IBoardItem;
 }
+
 const ListItem = ({ board }: ListItemProps) => {
   const koreanCategory: { [key: string]: string } = {
     tips: "꿀팁",
@@ -151,16 +164,20 @@ const ListItem = ({ board }: ListItemProps) => {
           <Username>{board.user.nickname}</Username>
           <CreatedAt>{dateFormater(board.createdAt)}</CreatedAt>
         </ProfileData>
+        <Views>
+          <EyeIcon />
+          <ViewCnt>{board.view.viewCnt}</ViewCnt>
+        </Views>
       </Writer>
       <Content>
         <Title>{board.title}</Title>
-        <Paragraph>{board.content}</Paragraph>
+        <Paragraph>{board.content.slice(0, 100)}</Paragraph>
       </Content>
       <Tag>
         {board.category2 && <Category>{koreanCategory[board.category2.name]}</Category>}
         <Hashtag>
           {board.tags.map((tag) => (
-            <HashtagText key={tag.name}>#{tag.name}</HashtagText>
+            <p key={tag.name}>#{tag.name}</p>
           ))}
         </Hashtag>
       </Tag>

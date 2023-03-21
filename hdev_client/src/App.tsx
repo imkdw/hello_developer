@@ -10,6 +10,7 @@ import VerifyPage from "./pages/Auth/VerifyPage";
 import BoardListPage from "./pages/Board/BoardListPage";
 import BoardDetailPage from "./pages/Board/BoardDetailPage";
 import CreateBoardPage from "./pages/Board/CreateBoardPage";
+import UpdateBoardPage from "./pages/Board/UpdateBoardPage";
 
 function App() {
   const isLoading = useRecoilValue(isLoadingState);
@@ -31,6 +32,7 @@ function App() {
         <Route path="/qna/*" element={<BoardListPage currentBoard="qna" />} />
         <Route path="/recruitment/*" element={<BoardListPage currentBoard="recruitment" />} />
         <Route path="/boards/add" element={<CreateBoardPage />} />
+        <Route path="/boards/:boardId/update" element={<UpdateBoardPage />} />
         <Route path="/boards/:boardId" element={<BoardDetailPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

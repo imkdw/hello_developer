@@ -67,6 +67,8 @@ export class BoardRepository {
       .leftJoinAndSelect('comments.user', 'commentsUser')
       .leftJoinAndSelect('board.view', 'view')
       .leftJoinAndSelect('board.tags', 'tag')
+      .leftJoinAndSelect('board.category1', 'category1')
+      .leftJoinAndSelect('board.category2', 'category2')
       .select([
         'board.boardId',
         'board.title',
@@ -84,6 +86,8 @@ export class BoardRepository {
         'commentsUser.userId',
         'view.viewCnt',
         'tag.name',
+        'category1.name',
+        'category2.name',
       ])
       .where('board.boardId = :boardId', { boardId })
       .getOne();
