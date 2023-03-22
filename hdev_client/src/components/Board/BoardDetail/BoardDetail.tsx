@@ -1,12 +1,13 @@
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { useEffect } from "react";
-import { getBoard } from "../../../services/BoardService";
-import { useSetRecoilState } from "recoil";
+import { addViews, getBoard } from "../../../services/BoardService";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { boardDetailState } from "../../../recoil/board";
 import BoardHeader from "./BoardHeader";
 import BoardContent from "./BoardContent";
 import BoardComment from "./BoardComment";
+import { loggedInUserState } from "../../../recoil";
 
 const StyledBoardDetail = styled.div`
   flex: 6;
@@ -35,6 +36,7 @@ const StyledBoardDetail = styled.div`
 `;
 
 const BoardDetail = () => {
+  const loggedInUser = useRecoilValue(loggedInUserState);
   const boardId = useParams().boardId as string;
   const setBoardDetail = useSetRecoilState(boardDetailState);
 
@@ -44,8 +46,17 @@ const BoardDetail = () => {
       setBoardDetail(res.data);
     };
 
+    // TODO: 쿠키로 중복조회 불가능하도록 설정
+    const addView = async () => {
+      await addViews(boardId);
+    };
+
     if (boardId) {
       loadBoard();
+    }
+
+    if (loggedInUser.accessToken) {
+      addView();
     }
   }, []);
 

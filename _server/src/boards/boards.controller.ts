@@ -81,4 +81,15 @@ export class BoardsController {
   ) {
     await this.boardsService.update(req.user.userId, updateBoardDto, boardId);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/:boardId/recommend')
+  async recommend(@Req() req, @Param('boardId') boardId: string) {
+    await this.boardsService.recommend(req.user.userId, boardId);
+  }
+
+  @Get('/:boardId/views')
+  async views(@Param('boardId') boardId: string) {
+    await this.boardsService.views(boardId);
+  }
 }

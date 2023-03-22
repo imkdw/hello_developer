@@ -214,10 +214,10 @@ const CreateBoardForm = () => {
     const { title, category, tags, content } = postData;
 
     try {
-      await createBoard(loggedInUser.accessToken, { title, category, tags, content });
-
+      const res = await createBoard(loggedInUser.accessToken, { title, category, tags, content });
+      const boardId = res.data.boardId;
       alert("게시글 작성이 완료되었습니다.");
-      navigator(-1);
+      navigator(`/boards/${boardId}`);
     } catch (err: any) {
       const { status, data } = err.response;
       let message = "서버 오류입니다. 다시 시도해주세요.";
@@ -240,10 +240,7 @@ const CreateBoardForm = () => {
           break;
 
         case 401:
-          switch (data.message) {
-            case "unauthorized_user":
-              message = "인증이 만료되었습니다. 다시 로그인해주세요";
-          }
+          message = "인증이 만료되었습니다. 다시 로그인해주세요";
       }
 
       alert(message);

@@ -127,5 +127,6 @@ export const boardDetailState = atom<IBoardDetail>({
     view: { viewCnt: 0 },
     category1: { name: "" },
     category2: null,
+    recommends: [],
   },
 });

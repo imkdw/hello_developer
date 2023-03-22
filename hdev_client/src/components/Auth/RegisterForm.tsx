@@ -187,7 +187,6 @@ const RegisterForm = () => {
             onChange={accountChangeHandler}
             value={account.email}
             autoCapitalize="off"
-            autoComplete="off"
           />
         </InputWrapper>
         {isValidAccount.email !== null && !isValidAccount.email && account.email.length !== 0 && (
@@ -223,7 +222,6 @@ const RegisterForm = () => {
             onChange={accountChangeHandler}
             value={account.nickname}
             autoCapitalize="off"
-            autoComplete="off"
           />
         </InputWrapper>
         {isValidAccount.nickname !== null && !isValidAccount.nickname && account.nickname.length !== 0 && (

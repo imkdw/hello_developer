@@ -156,7 +156,6 @@ const LoginForm = () => {
             onChange={accountChangeHandler}
             value={account.email}
             autoCapitalize="off"
-            autoComplete="off"
           />
         </InputWrapper>
       </FormControl>

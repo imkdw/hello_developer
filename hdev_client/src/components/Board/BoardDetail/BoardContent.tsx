@@ -1,7 +1,11 @@
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { useState } from "react";
 import styled from "styled-components";
 import { RecommendIcon } from "../../../assets/icon";
+import { loggedInUserState } from "../../../recoil";
 import { boardDetailState } from "../../../recoil/board";
+import { addRecommend, getBoard } from "../../../services/BoardService";
+import { MarkdownViewer } from "../../Common";
 
 const StyledBoardContent = styled.div`
   width: 90%;
@@ -45,7 +49,7 @@ const TagText = styled.p`
   padding: 10px;
 `;
 
-const Recommend = styled.button<{ backgroundColor?: string }>`
+const Recommend = styled.button<{ isBackgroundColor: boolean }>`
   width: auto;
   padding: 5px 15px 5px 15px;
   display: flex;
@@ -55,7 +59,7 @@ const Recommend = styled.button<{ backgroundColor?: string }>`
   justify-content: center;
   gap: 10px;
   font-size: 16px;
-  background-color: ${(props) => props.backgroundColor};
+  background-color: ${(props) => props.isBackgroundColor && "#e9e9e9"};
 
   @media screen and (max-width: 767px) {
     padding: 5px 10px 5px 10px;
@@ -67,14 +71,33 @@ const Recommend = styled.button<{ backgroundColor?: string }>`
 `;
 
 const BoardContent = () => {
-  const boardDetail = useRecoilValue(boardDetailState);
+  const [boardDetail, setBoardDetail] = useRecoilState(boardDetailState);
+  const loggedInUser = useRecoilValue(loggedInUserState);
+  const [isRecommendedUser, setIsRecommendedUser] = useState(
+    boardDetail.recommends.some((recommend) => recommend.userId === loggedInUser.userId)
+  );
 
-  const recommendHandler = () => {};
+  const recommendHandler = async () => {
+    if (!loggedInUser.accessToken) {
+      alert("로그인이 필요한 서비스 입니다.");
+      return;
+    }
+
+    try {
+      await addRecommend(boardDetail.boardId, loggedInUser.accessToken);
+
+      const res = await getBoard(boardDetail.boardId);
+      setBoardDetail(res.data);
+      setIsRecommendedUser(
+        res.data.recommends.some((recommend: { [userId: string]: string }) => recommend.userId === loggedInUser.userId)
+      );
+    } catch (err: any) {}
+  };
 
   return (
     <StyledBoardContent>
       <Title>{boardDetail.title}</Title>
-      <Content>{boardDetail.content}</Content>
+      <MarkdownViewer content={boardDetail.content} />
       <TagsAndRecommend>
         <Tags>
           {boardDetail.tags.map((tag) => {
@@ -83,17 +106,10 @@ const BoardContent = () => {
             }
           })}
         </Tags>
-        {1 ? (
-          <Recommend onClick={recommendHandler} backgroundColor="#f0f0f0">
-            <RecommendIcon />
-            {boardDetail.recommendCnt}
-          </Recommend>
-        ) : (
-          <Recommend onClick={recommendHandler}>
-            <RecommendIcon />
-            {boardDetail.recommendCnt}
-          </Recommend>
-        )}
+        <Recommend onClick={recommendHandler} isBackgroundColor={isRecommendedUser}>
+          <RecommendIcon />
+          {boardDetail.recommendCnt}
+        </Recommend>
       </TagsAndRecommend>
     </StyledBoardContent>
   );

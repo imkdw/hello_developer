@@ -69,6 +69,7 @@ export class BoardRepository {
       .leftJoinAndSelect('board.tags', 'tag')
       .leftJoinAndSelect('board.category1', 'category1')
       .leftJoinAndSelect('board.category2', 'category2')
+      .leftJoinAndSelect('board.recommends', 'recommend')
       .select([
         'board.boardId',
         'board.title',
@@ -88,6 +89,7 @@ export class BoardRepository {
         'tag.name',
         'category1.name',
         'category2.name',
+        'recommend.userId',
       ])
       .where('board.boardId = :boardId', { boardId })
       .getOne();
@@ -146,5 +148,21 @@ export class BoardRepository {
   async findByUserId(userId: string) {
     const boards = this.boardRepository.find({ where: { userId } });
     return boards;
+  }
+
+  async addRecommend(boardId: string) {
+    const board = await this.findOne(boardId);
+
+    if (board) {
+      await this.boardRepository.update(boardId, { recommendCnt: board.recommendCnt + 1 });
+    }
+  }
+
+  async removeRecommend(boardId: string) {
+    const board = await this.findOne(boardId);
+
+    if (board) {
+      await this.boardRepository.update(boardId, { recommendCnt: board.recommendCnt - 1 });
+    }
   }
 }

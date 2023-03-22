@@ -1,5 +1,13 @@
 import { User } from '../../users/user.entity';
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Board } from '../board.entity';
 
 @Entity({ name: 'board_recommend' })
@@ -27,7 +35,7 @@ export class Recommend {
   })
   updatedAt: Date;
 
-  @ManyToOne(() => Board, (board) => board.boardId)
+  @ManyToOne(() => Board, (board) => board.recommends)
   @JoinColumn({ name: 'board_id' })
   board: Board;
 

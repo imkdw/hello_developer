@@ -3,6 +3,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { loggedInUserState } from "../../recoil";
 import { logout } from "../../services/AuthService";
+import { ProfileImage } from "../Common/User";
 
 const StyledMenuUtil = styled.div`
   width: 85%;
@@ -11,7 +12,7 @@ const StyledMenuUtil = styled.div`
   gap: 20px;
 `;
 
-const Profile = styled.div`
+const ProfileWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
@@ -64,10 +65,12 @@ const MenuUtil = () => {
   return (
     <StyledMenuUtil>
       {loggedInUser.accessToken && (
-        <Profile>
-          <ProfileImg src={loggedInUser.profileImg} />
-          <Nickname to={"/users/" + loggedInUser.userId}>{loggedInUser.nickname}</Nickname>
-        </Profile>
+        <>
+          <ProfileWrapper>
+            <ProfileImage />
+            <Nickname to={"/users/" + loggedInUser.userId}>{loggedInUser.nickname}</Nickname>
+          </ProfileWrapper>
+        </>
       )}
 
       <AuthLinks>

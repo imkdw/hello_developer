@@ -9,6 +9,7 @@ import { useState } from "react";
 import { removeComment } from "../../../services/CommentService";
 import UpdateComment from "./UpdateComment";
 import { getBoard } from "../../../services";
+import { ProfileImage } from "../../Common/User";
 
 const StyledBoardComment = styled.div`
   width: 90%;
@@ -41,14 +42,6 @@ const Header = styled.div`
   gap: 10px;
   position: relative;
 `;
-
-const Profile = styled.img`
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: 1px solid #dbdbdb;
-`;
-
 const Writer = styled.div`
   height: 100%;
   display: flex;
@@ -201,7 +194,7 @@ const BoardComment = () => {
           ) : (
             <>
               <Header>
-                <Profile src={comment.user.profileImg} />
+                <ProfileImage />
                 <Writer>
                   <Username>{comment.user.nickname}</Username>
                   <CreatedAt>{dateFormater(comment.createdAt)}</CreatedAt>

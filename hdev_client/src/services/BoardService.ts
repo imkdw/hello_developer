@@ -69,3 +69,19 @@ export const removeBoard = async (boardId: string, accessToken: string) => {
     throw err;
   }
 };
+
+export const addRecommend = async (boardId: string, accessToken: string) => {
+  try {
+    return await api.get(`/boards/${boardId}/recommend`, { headers: { Authorization: `Bearer ${accessToken}` } });
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+export const addViews = async (boardId: string) => {
+  try {
+    return await api.get(`/boards/${boardId}/views`);
+  } catch (err: any) {
+    throw err;
+  }
+};

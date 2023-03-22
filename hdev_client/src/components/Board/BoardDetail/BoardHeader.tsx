@@ -7,6 +7,7 @@ import { loggedInUserState } from "../../../recoil";
 import { boardDetailState } from "../../../recoil/board";
 import { removeBoard } from "../../../services/BoardService";
 import { dateFormater } from "../../../utils/Common";
+import { ProfileImage } from "../../Common/User";
 
 const StyledBoardHeader = styled.div`
   width: 90%;
@@ -14,13 +15,6 @@ const StyledBoardHeader = styled.div`
   margin-top: 30px;
   gap: 10px;
   position: relative;
-`;
-
-const Profile = styled.img`
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: 1px solid #dbdbdb;
 `;
 
 const Writer = styled.div`
@@ -131,7 +125,7 @@ const BoardHeader = () => {
 
   return (
     <StyledBoardHeader>
-      <Profile src={boardDetail.user.profileImg} />
+      <ProfileImage />
       <Writer>
         <Username>{boardDetail.user.nickname}</Username>
         <CreatedAt>

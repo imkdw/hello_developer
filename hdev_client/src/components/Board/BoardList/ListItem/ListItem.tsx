@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { EyeIcon } from "../../../../assets/icon/BoardIcon";
 import { IBoardItem } from "../../../../types/board";
 import { dateFormater } from "../../../../utils/Common";
+import { MarkdownViewer } from "../../../Common";
 
 const StyledListItem = styled(Link)`
   width: 30%;
@@ -17,6 +18,7 @@ const StyledListItem = styled(Link)`
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   gap: 15px;
   cursor: pointer;
+  margin-top: 30px;
 
   &:nth-of-type(-n + 3) {
     margin-top: 20px;
@@ -37,6 +39,7 @@ const StyledListItem = styled(Link)`
 
 const Writer = styled.div`
   width: 90%;
+  height: 50px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -52,6 +55,7 @@ const Profile = styled.img`
 const ProfileData = styled.div`
   display: flex;
   flex-direction: column;
+  height: 50px;
 `;
 
 const Username = styled.p`
@@ -64,7 +68,7 @@ const CreatedAt = styled.p`
 
 const Content = styled.div`
   width: 90%;
-  height: 150px;
+  height: 170px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -72,7 +76,7 @@ const Content = styled.div`
 
 const Title = styled.p`
   width: 100%;
-  height: 25%;
+  height: 30px;
   font-weight: bold;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -83,11 +87,13 @@ const Title = styled.p`
 
 const Paragraph = styled.p`
   width: 100%;
-  height: 60%;
+  height: 120px;
   display: block;
   overflow-y: scroll;
   text-overflow: ellipsis;
   font-size: 15px;
+  border-radius: 5px;
+  border: 1px solid #dbdbdb;
 
   &::-webkit-scrollbar {
     width: 5px;
@@ -171,7 +177,9 @@ const ListItem = ({ board }: ListItemProps) => {
       </Writer>
       <Content>
         <Title>{board.title}</Title>
-        <Paragraph>{board.content.slice(0, 100)}</Paragraph>
+        <Paragraph>
+          <MarkdownViewer content={board.content.slice(0, 100)} />
+        </Paragraph>
       </Content>
       <Tag>
         {board.category2 && <Category>{koreanCategory[board.category2.name]}</Category>}

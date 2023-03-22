@@ -8,6 +8,7 @@ import { UpdateBoardDto } from './dto/update-board.dto';
 import { Tag } from './tag/tag.entity';
 import { TagRepository } from './tag/tag.repository';
 import { ViewRepository } from './view/view.repository';
+import { RecommendRepository } from './recommend/recommend.repository';
 
 @Injectable()
 export class BoardsService {
@@ -16,6 +17,7 @@ export class BoardsService {
     private categoryRepository: CategoryRepository,
     private tagRepository: TagRepository,
     private viewRepository: ViewRepository,
+    private recommendRepository: RecommendRepository,
   ) {}
 
   /**
@@ -140,5 +142,24 @@ export class BoardsService {
     }
 
     await this.boardRepository.update(userId, boardId, updateBoardDto, categoryIds, updatedTags);
+  }
+
+  async recommend(userId: string, boardId: string) {
+    const board = await this.boardRepository.findOne(boardId);
+    const existRecommend = await this.recommendRepository.findByUserAndBoard(userId, boardId);
+
+    if (existRecommend) {
+      // 이미 추천이 되어있을경우 카운트 삭제
+      await this.boardRepository.removeRecommend(boardId);
+      await this.recommendRepository.removeRecommend(userId, boardId);
+    } else {
+      // 추천이 안되어있으면 카운트 추가
+      await this.boardRepository.addRecommend(boardId);
+      await this.recommendRepository.addRecommend(userId, boardId);
+    }
+  }
+
+  async views(boardId: string) {
+    await this.viewRepository.add(boardId);
   }
 }

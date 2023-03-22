@@ -16,6 +16,7 @@ import { Category } from './category/category.entity';
 import { Tag } from './tag/tag.entity';
 import { View } from './view/view.entity';
 import { Comment } from '../comments/comment.entity';
+import { Recommend } from './recommend/recommend.entity';
 
 @Entity('Board')
 export class Board {
@@ -79,4 +80,7 @@ export class Board {
     inverseJoinColumn: { name: 'tag_id' },
   })
   tags: Tag[];
+
+  @OneToMany(() => Recommend, (recommend) => recommend.board)
+  recommends: Recommend[];
 }

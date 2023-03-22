@@ -164,8 +164,6 @@ const UpdateBoardForm = () => {
     content: null,
   });
 
-  console.log(isBoardDataValid);
-
   const loggedInUser = useRecoilValue(loggedInUserState);
   const navigator = useNavigate();
 
