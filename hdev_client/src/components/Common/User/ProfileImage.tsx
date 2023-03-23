@@ -15,12 +15,16 @@ const ProfileImg = styled.img`
   border: 1px solid #dbdbdb;
 `;
 
-const ProfileImage = () => {
+interface ProfileImageProps {
+  profileImg: string;
+}
+
+const ProfileImage = ({ profileImg }: ProfileImageProps) => {
   const loggedInUser = useRecoilValue(loggedInUserState);
 
   return (
     <StyledProfile to={`/users/${loggedInUser.userId}`}>
-      <ProfileImg src={loggedInUser.profileImg} />
+      <ProfileImg src={profileImg} />
     </StyledProfile>
   );
 };

@@ -145,7 +145,7 @@ export class BoardsService {
   }
 
   async recommend(userId: string, boardId: string) {
-    const board = await this.boardRepository.findOne(boardId);
+    await this.boardRepository.findOne(boardId);
     const existRecommend = await this.recommendRepository.findByUserAndBoard(userId, boardId);
 
     if (existRecommend) {

@@ -43,8 +43,25 @@ export class CommentRepository {
     return await this.commentRepository.findOne({ where: { commentId } });
   }
 
-  async findByUserId(userId: string) {
-    const comments = await this.commentRepository.find({ where: { userId } });
+  async findHistoryByUserId(userId: string) {
+    console.log(userId);
+    console.log(await this.commentRepository.findOne({ where: { userId } }));
+    const comments = await this.commentRepository
+      .createQueryBuilder('comment')
+      .leftJoinAndSelect('comment.board', 'board')
+      .leftJoinAndSelect('board.category1', 'category1')
+      .leftJoinAndSelect('board.category2', 'category2')
+      .select([
+        'comment.commentId',
+        'board.boardId',
+        'board.title',
+        'board.createdAt',
+        'category1.name',
+        'category2.name',
+      ])
+      .where('comment.userId = :userId', { userId })
+      .getMany();
+
     return comments;
   }
 }

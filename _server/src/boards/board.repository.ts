@@ -145,8 +145,21 @@ export class BoardRepository {
     }
   }
 
-  async findByUserId(userId: string) {
-    const boards = this.boardRepository.find({ where: { userId } });
+  async findHistoryByUserId(userId: string) {
+    const boards = this.boardRepository
+      .createQueryBuilder('board')
+      .leftJoinAndSelect('board.category1', 'category1')
+      .leftJoinAndSelect('board.category2', 'category2')
+      .select([
+        'board.boardId',
+        'board.title',
+        'board.createdAt',
+        'category1.name',
+        'category2.name',
+      ])
+      .where('board.userId = :userId', { userId })
+      .getMany();
+
     return boards;
   }
 

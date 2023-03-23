@@ -130,3 +130,22 @@ export const boardDetailState = atom<IBoardDetail>({
     recommends: [],
   },
 });
+
+export const categoryDataState = atom<{ [key: string]: string }>({
+  key: "categoryDataState",
+  default: {
+    notice: "공지사항",
+    suggestion: "건의사항",
+    free: "자유주제",
+    knowledge: "지식공유",
+    tips: "꿀팁",
+    review: "리뷰",
+    qna: "질문답변",
+    tech: "기술",
+    career: "커리어",
+    recruitment: "인원모집",
+    project: "프로젝트",
+    study: "스터디",
+    company: "채용공고",
+  },
+});

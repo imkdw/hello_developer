@@ -46,7 +46,7 @@ export class UsersService {
   }
 
   async history(userId: string, item: string) {
-    if (!['board', 'comment', 'bookmark'].includes(item)) {
+    if (!['board', 'comment'].includes(item)) {
       throw new BadRequestException('invalid_item');
     }
 
@@ -54,10 +54,11 @@ export class UsersService {
 
     switch (item) {
       case 'board':
-        history = await this.boardRepository.findByUserId(userId);
+        history = await this.boardRepository.findHistoryByUserId(userId);
         break;
+
       case 'comment':
-        history = await this.commentRepository.findByUserId(userId);
+        history = await this.commentRepository.findHistoryByUserId(userId);
         break;
     }
 

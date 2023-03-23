@@ -8,7 +8,6 @@ export class EmailService {
   private transporter: Mail;
 
   constructor(private configService: ConfigService) {
-    // TODO: 하드코딩된 OAuth 토큰 변경필요
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       host: 'smtp.gmail.com',
@@ -25,7 +24,6 @@ export class EmailService {
   }
 
   async sendVerifyEmail(email: string, verifyToken: string) {
-    // TODO:
     const url = `http://localhost:3000/verify/${verifyToken}`;
 
     const mailOptions = {

@@ -7,7 +7,6 @@ import { account, createBoard, createComment, login, register } from './common';
 
 describe('Temp Test (e2e)', () => {
   let app: INestApplication;
-  const { email, password, nickname } = account;
 
   describe('임시', () => {
     let userId: string;
@@ -35,9 +34,11 @@ describe('Temp Test (e2e)', () => {
 
     it('임시', async () => {
       try {
-        const res = await request(app.getHttpServer()).get(`/boards/${boardId}`).expect(200);
+        const res = await request(app.getHttpServer())
+          .get(`/users/${userId}/history?item=comment`)
+          .expect(200);
 
-        console.log(res.body);
+        console.dir(res.body, { color: true, depth: 10 });
         return res;
       } catch (err: any) {
         console.error(err);

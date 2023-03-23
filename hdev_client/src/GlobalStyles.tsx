@@ -6,6 +6,7 @@ const GlobalStyles = createGlobalStyle`
     margin: 0;
     font-family: 'Noto Sans KR', sans-serif;
     box-sizing: border-box;
+    white-space: nowrap;
   }
 
   html, body {

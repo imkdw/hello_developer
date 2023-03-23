@@ -93,7 +93,6 @@ const Paragraph = styled.p`
   text-overflow: ellipsis;
   font-size: 15px;
   border-radius: 5px;
-  border: 1px solid #dbdbdb;
 
   &::-webkit-scrollbar {
     width: 5px;

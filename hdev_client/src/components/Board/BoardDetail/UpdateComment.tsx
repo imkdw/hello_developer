@@ -5,18 +5,12 @@ import { loggedInUserState } from "../../../recoil";
 import { boardDetailState } from "../../../recoil/board";
 import { getBoard } from "../../../services/BoardService";
 import { updateComment } from "../../../services/CommentService";
+import { ProfileImage } from "../../Common/User";
 
 const StyledUpdateComment = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
-`;
-
-const Profile = styled.img`
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: 1px solid #dbdbdb;
 `;
 
 const InputWrapper = styled.form`
@@ -122,7 +116,7 @@ const UpdateComment = ({ commentId, content, editingHandler, commentIdentifier }
 
   return (
     <StyledUpdateComment>
-      <Profile src={loggedInUser.profileImg} />
+      <ProfileImage profileImg={loggedInUser.profileImg} />
       <InputWrapper onSubmit={submitHandler}>
         <Textarea placeholder="1~200자 사이로 입력해주세요" onChange={commentChangeHandler} value={comment} />
         {isValidComment ? (

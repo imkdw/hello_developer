@@ -102,6 +102,7 @@ const BoardComment = () => {
   const [enableButton, setEnableButton] = useState<EnableButton>({});
   const [isEditComment, setIsEditComment] = useState<IsEditComment>({});
   const setBoardDetail = useSetRecoilState(boardDetailState);
+  console.log(boardDetail);
 
   const enableButtonHandler = (commentIdentifier: string) => {
     setEnableButton((prevState) => {
@@ -194,7 +195,7 @@ const BoardComment = () => {
           ) : (
             <>
               <Header>
-                <ProfileImage />
+                <ProfileImage profileImg={comment.user.profileImg} />
                 <Writer>
                   <Username>{comment.user.nickname}</Username>
                   <CreatedAt>{dateFormater(comment.createdAt)}</CreatedAt>

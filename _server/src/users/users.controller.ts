@@ -9,11 +9,15 @@ import {
   UseGuards,
   HttpCode,
   Query,
+  UseInterceptors,
+  Post,
+  UploadedFile,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ValidationPipe } from '../pipes/validation.pipe';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UsersService } from './users.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UsersController {
@@ -64,5 +68,21 @@ export class UsersController {
   async history(@Param('userId') userId: string, @Query('item') item: string) {
     const history = await this.usersService.history(userId, item);
     return history;
+  }
+
+  /**
+   * [POST] /users/:userId/image - 유저의 프로필사진 변경
+   * @param file - 클라이언트에서 업로드된 파일
+   * @param userId - 업로드를 요청한 유저의 아이디
+   */
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('image'))
+  @Post(':userId/image')
+  profileImage(
+    @Req() req,
+    @UploadedFile() file: Express.Multer.File,
+    @Param('userId') userId: string,
+  ) {
+    console.log(file, userId);
   }
 }
