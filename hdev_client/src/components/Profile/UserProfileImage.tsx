@@ -88,6 +88,7 @@ const UserProfileImage = ({ userId }: UserProfileImageProps) => {
 
     try {
       const res = await updateProfileImage(userId, formData, loggedInUser.accessToken);
+      console.log(res.data);
 
       localStorage.setItem("profileImg", res.data.profileImg);
 

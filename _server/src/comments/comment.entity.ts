@@ -38,7 +38,7 @@ export class Comment {
   })
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.userId)
+  @ManyToOne(() => User, (user) => user.userId, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 

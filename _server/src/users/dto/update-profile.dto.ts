@@ -1,4 +1,4 @@
-import { Length, Matches } from 'class-validator';
+import { Length, Matches, MinLength } from 'class-validator';
 
 export class UpdateProfileDto {
   @Length(2, 8)

@@ -7,8 +7,11 @@ export interface IUserInfo {
 export interface UserProfileUpdateData {
   nickname: string;
   introduce: string;
-  password?: string;
-  rePassword?: string;
+}
+
+export interface UserPasswordUpdateData {
+  password: string;
+  rePassword: string;
 }
 
 export interface UserBoardHistory {

@@ -20,6 +20,8 @@ import { UtilsModule } from './utils/utils.module';
 import { CategoryRepository } from './boards/category/category.repository';
 import configuration from './config/configuration';
 import { MorganModule, MorganInterceptor } from 'nest-morgan';
+import { AwsService } from './aws/aws.service';
+import { AwsModule } from './aws/aws.module';
 
 // TODO: 환경변수 처리하기
 @Module({
@@ -50,7 +52,6 @@ import { MorganModule, MorganInterceptor } from 'nest-morgan';
       entities: [User, Board, Category, Tag, Recommend, Comment, View],
       synchronize: true,
       dropSchema: true,
-      logging: true,
     }),
     TypeOrmModule.forFeature([Board, Category, Tag]),
     AuthModule,
@@ -61,6 +62,7 @@ import { MorganModule, MorganInterceptor } from 'nest-morgan';
     UsersModule,
     UtilsModule,
     MorganModule,
+    AwsModule,
   ],
   controllers: [],
   providers: [
@@ -73,6 +75,7 @@ import { MorganModule, MorganInterceptor } from 'nest-morgan';
       provide: APP_INTERCEPTOR,
       useClass: MorganInterceptor('combined'),
     },
+    AwsService,
   ],
 })
 export class AppModule implements OnModuleInit {

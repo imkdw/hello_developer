@@ -10,6 +10,10 @@ import { Board } from 'src/boards/board.entity';
 import { BoardRepository } from '../boards/board.repository';
 import { CommentRepository } from '../comments/comment.repostiroy';
 import { Comment } from '../comments/comment.entity';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import { UtilsService } from '../utils/utils.service';
+import { ExitUserVerifyDto } from './dto/exit-user-verify.dto';
+import { AwsService } from '../aws/aws.service';
 
 @Injectable()
 export class UsersService {
@@ -17,6 +21,8 @@ export class UsersService {
     private userRepository: UserRepository,
     private boardRepository: BoardRepository,
     private commentRepository: CommentRepository,
+    private utilsService: UtilsService,
+    private awsService: AwsService,
   ) {}
 
   async profile(userId: string) {
@@ -63,5 +69,68 @@ export class UsersService {
     }
 
     return history;
+  }
+
+  async password(tokenUserId: string, userId: string, updatePasswordDto: UpdatePasswordDto) {
+    if (tokenUserId !== userId) {
+      throw new UnauthorizedException('unauthorized_user');
+    }
+
+    const { password, rePassword } = updatePasswordDto;
+    const user = await this.userRepository.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException('user_not_found');
+    }
+
+    const isCompare = await this.utilsService.compare(password, user.password);
+    if (!isCompare) {
+      throw new BadRequestException('password_mismatch');
+    }
+
+    const hashedPassword = await this.utilsService.encrypt(rePassword);
+    await this.userRepository.updatePassword(userId, hashedPassword);
+  }
+
+  async exitUserVerify(tokenUserId: string, userId: string, exitUserVerifyDto: ExitUserVerifyDto) {
+    if (tokenUserId !== userId) {
+      throw new UnauthorizedException('unauthorized_user');
+    }
+
+    const { password } = exitUserVerifyDto;
+
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundException('user_not_found');
+    }
+
+    const isCompare = await this.utilsService.compare(password, user.password);
+    if (!isCompare) {
+      throw new BadRequestException('password_mismatch');
+    }
+
+    return isCompare;
+  }
+
+  async profileImage(
+    tokenUserId: string,
+    userId: string,
+    image: Express.Multer.File,
+  ): Promise<string> {
+    if (tokenUserId !== userId) {
+      throw new UnauthorizedException('unauthorized_user');
+    }
+    const user = await this.userRepository.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException('user_not_found');
+    }
+
+    const ext = image.originalname.split('.');
+    const fileName = userId + '.' + ext[ext.length - 1];
+
+    const imageUrl = await this.awsService.imageUploadToS3(fileName, image.buffer);
+    await this.userRepository.profileImage(userId, imageUrl);
+    return imageUrl;
   }
 }

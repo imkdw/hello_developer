@@ -1,6 +1,11 @@
-import { UserProfileUpdateData } from "../types/user";
+import { UserPasswordUpdateData, UserProfileUpdateData } from "../types/user";
 import { api } from "../utils/Common";
 
+/**
+ * [GET] /users/:userId - 사용자 프로필 가져오기
+ * @param userId
+ * @returns
+ */
 export const getProfile = async (userId: string) => {
   try {
     return await api.get(`/users/${userId}`);
@@ -9,6 +14,13 @@ export const getProfile = async (userId: string) => {
   }
 };
 
+/**
+ * [PATCH] /users/:userId - 사용자 프로필 업데이트
+ * @param userId
+ * @param updateData
+ * @param accessToken
+ * @returns
+ */
 export const updateProfile = async (userId: string, updateData: UserProfileUpdateData, accessToken: string) => {
   try {
     return await api.patch(
@@ -21,11 +33,65 @@ export const updateProfile = async (userId: string, updateData: UserProfileUpdat
   }
 };
 
+/**
+ * [PATCH] /users/:userId/password - 사용자 비밀번호 변경
+ * @param userId
+ * @param updateData
+ * @param accessToken
+ * @returns
+ */
+export const updatePassword = async (userId: string, updateData: UserPasswordUpdateData, accessToken: string) => {
+  try {
+    return await api.patch(
+      `/users/${userId}/password`,
+      { ...updateData },
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+/**
+ * [POST] /users/:userId/image - 사용자 프로필사진 업데이트
+ * @param userId
+ * @param formData
+ * @param accessToken
+ * @returns
+ */
 export const updateProfileImage = async (userId: string, formData: FormData, accessToken: string) => {
   try {
     return await api.post(`/users/${userId}/image`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+export const exitUserVerify = async (userId: string, password: string, accessToken: string) => {
+  try {
+    return await api.patch(
+      `/users/${userId}/verify`,
+      { password },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+export const exitUser = async (userId: string, accessToken: string) => {
+  try {
+    return await api.delete(`/users/${userId}`, {
+      headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });

@@ -39,7 +39,7 @@ export class Recommend {
   @JoinColumn({ name: 'board_id' })
   board: Board;
 
-  @ManyToOne(() => User, (user) => user.userId)
+  @ManyToOne(() => User, (user) => user.userId, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 }

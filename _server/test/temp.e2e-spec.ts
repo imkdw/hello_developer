@@ -23,8 +23,9 @@ describe('Temp Test (e2e)', () => {
 
       userId = await register(app);
       accessToken = await login(app);
-      boardId = await createBoard(app, accessToken);
-      await createComment(app, boardId, accessToken);
+      for (let i = 0; i <= 50; i++) {
+        await createBoard(app, accessToken);
+      }
     });
 
     afterEach(async () => {
@@ -33,16 +34,7 @@ describe('Temp Test (e2e)', () => {
     });
 
     it('임시', async () => {
-      try {
-        const res = await request(app.getHttpServer())
-          .get(`/users/${userId}/history?item=comment`)
-          .expect(200);
-
-        console.dir(res.body, { color: true, depth: 10 });
-        return res;
-      } catch (err: any) {
-        console.error(err);
-      }
+      expect(1).toBe(1);
     });
   });
 });

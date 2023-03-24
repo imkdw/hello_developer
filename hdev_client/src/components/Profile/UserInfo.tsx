@@ -1,14 +1,13 @@
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { useState, FormEvent, ChangeEvent, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getProfile } from "../../services";
 import { loggedInUserState } from "../../recoil";
-import { ProfileImage } from "../Common/User";
-import { nicknameValidation, passwordValidation } from "../../utils/Auth";
-import { updateProfile } from "../../services/UserService";
-import { IUserInfo, UserProfileUpdateData } from "../../types/user";
 import { userInfoState } from "../../recoil/user";
 import UserProfileImage from "./UserProfileImage";
+import UpdateProfile from "./Update/UpdateProfile";
+import UpdatePassword from "./Update/UpdatePassword";
+import ExitUser from "./ExitUser";
 
 const StyledUserInfo = styled.div`
   width: 45%;
@@ -20,92 +19,43 @@ const StyledUserInfo = styled.div`
   align-items: center;
 `;
 
-const Form = styled.form`
-  width: 95%;
+const HistoryTab = styled.div`
+  width: 100%;
+  height: 8%;
+  border-bottom: 1px solid #cfcfcf;
   display: flex;
-  flex-direction: column;
+  justify-content: space-around;
+`;
+
+const TabItem = styled.button<{ $isBorder: boolean }>`
+  font-size: 20px;
+  width: 30%;
+  height: 100%;
+  display: flex;
   align-items: center;
-  gap: 15px;
-`;
+  justify-content: center;
+  cursor: pointer;
+  border-bottom: ${(props) => (props.$isBorder ? "2px solid #0090f9" : "")};
 
-const FormControl = styled.div`
-  width: 95%;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-const Label = styled.label`
-  font-size: 24px;
-`;
-
-const LabelDesc = styled.span`
-  font-size: 16px;
-  color: #0090f9;
-`;
-
-const Input = styled.input`
-  height: 50px;
-  font-size: 14px;
-  border-radius: 10px;
-  border: 1px solid #a1a1a1;
-  padding: 0 10px;
-`;
-
-const Buttons = styled.div`
-  width: auto;
-  height: 50px;
-  display: flex;
-  gap: 20px;
-  margin-top: 10px;
-`;
-
-const UpdateButton = styled.button`
-  font-size: 17px;
-  width: 80px;
-  background-color: #0090f9;
-  color: white;
-  border-radius: 10px;
-`;
-
-const ExitUserButton = styled.button`
-  font-size: 17px;
-  width: 80px;
-  background-color: #ff0000;
-  color: white;
-  border-radius: 10px;
+  &:hover {
+    border-bottom: 2px solid #0090f9;
+  }
 `;
 
 interface UserInfoProps {
   userId: string;
 }
 
-interface IsValidUpdateData {
-  [key: string]: boolean | null;
-}
-
 const UserInfo = ({ userId }: UserInfoProps) => {
-  const [userInfo, setUserInfo] = useRecoilState(userInfoState);
-  const [loggedInUser, setLoggedInuser] = useRecoilState(loggedInUserState);
-  const [isEdit, setIsEdit] = useState(false);
-  const [isSubmit, setIsSubmit] = useState(false);
+  const setUserInfo = useSetRecoilState(userInfoState);
+  const loggedInUser = useRecoilValue(loggedInUserState);
 
-  const [updateData, setUpdateData] = useState({
-    nickname: userInfo.nickname,
-    introduce: userInfo.introduce,
-    password: "",
-    rePassword: "",
+  const [enableTab, setEnableTag] = useState({
+    profile: true,
+    password: false,
+    exit: false,
   });
 
-  /** 업데이트 데이터 유효성 여부 */
-  const [isValidUpdateData, setIsValidUpdateData] = useState<IsValidUpdateData>({
-    nickname: null,
-    introduce: null,
-    rePassword: null,
-  });
-
-  /** 페이지 렌더링과 동시에 updateProfile 업데이트 */
   useEffect(() => {
     const loadProfile = async () => {
       const res = await getProfile(userId);
@@ -117,210 +67,39 @@ const UserInfo = ({ userId }: UserInfoProps) => {
     }
   }, [userId]);
 
-  const editHandler = () => {
-    setIsEdit(!isEdit);
-  };
-
-  const isSubmitHandler = () => {
-    setIsSubmit(!isSubmit);
-  };
-
-  const updateDataChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.currentTarget;
-
-    // setUpdateData((prevState) => {
-    //   return { ...prevState, [name]: value };
-    // });
-
-    setIsValidUpdateData((prevState) => {
-      let isValid = false;
-
-      switch (name) {
-        case "nickname":
-          isValid = nicknameValidation(value);
-          break;
-        case "introduce":
-          isValid = value.length < 31;
-          break;
-        case "rePassword":
-          isValid = passwordValidation(value);
-      }
-
-      return { ...prevState, [name]: isValid };
-    });
-  };
-
-  const submitHanlder = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    // 수정 모드일때만 submit 이벤트 처리
-    if (isSubmit) {
-      try {
-        const res = await updateProfile(userId, updateData, loggedInUser.accessToken);
-
-        alert("회원정보 수정이 완료되었습니다.");
-
-        setUserInfo({
-          nickname: updateData.nickname,
-          introduce: updateData.introduce,
-          profileImg: userInfo.profileImg,
-        });
-
-        setIsEdit(false);
-        setIsSubmit(false);
-        // setUpdateData((prevState) => {
-        //   return { ...prevState, password: "", rePassword: "" };
-        // });
-      } catch (err: any) {
-        let message = "";
-
-        if (err.status === 400) {
-          switch (err.data.message) {
-            case "invalid_nickname":
-              message = "닉네임 형식이 잘못됬습니다.";
-              break;
-            case "invalid_introduce":
-              message = "자기소개 형식이 잘못되었습니다";
-              break;
-            case "invalid_password":
-              message = "비밀번호 형식이 잘못되었습니다.";
-              break;
-            case "user_not_match":
-              message = "사용자 정보가 일치하지 않습니다.";
-              break;
-            case "password_not_match":
-              message = "비밀번호가 일치하지 않습니다.";
-              break;
-            case "expired_token":
-              message = "인증이 만료되었습니다. 다시 로그인 해주세요";
-              break;
-            default:
-              message = "서버 오류입니다. 다시 시도해주세요";
-          }
-        } else if (err.status === 404) {
-          message = "프로필 업데이트에 필요한 정보를 찾을수 없습니다.";
-        } else {
-          message = "서버 오류입니다. 다시 시도해주세요";
-        }
-
-        alert(message);
-      }
-    }
-  };
-
-  const exitHandler = async () => {
-    // TODO: prompt -> 모달창으로 변경필요
-    const password = window.prompt("비밀번호를 입력해주세요");
-    if (!password) {
-      alert("올바른 비밀번호를 입력해주세요");
-      return;
-    }
-
-    const isExit = window.confirm("회원탈퇴시 다시 복구가 불가능합니다. 정말 탈퇴하실껀가요?");
-    if (isExit) {
-      try {
-        // await UserService.exit(password, loggedInUser.accessToken);
-
-        setLoggedInuser((prevState) => {
-          return { ...prevState, accessToken: "", userId: "", profileImg: "", nickname: "" };
-        });
-      } catch (err: any) {
-        alert("에러발생");
-        console.error(err);
-      }
-    }
+  const changeTagHandler = (item: "profile" | "password" | "exit") => {
+    setEnableTag({ profile: item === "profile", password: item === "password", exit: item === "exit" });
   };
 
   return (
     <StyledUserInfo>
       <UserProfileImage userId={userId} />
-      <Form onSubmit={submitHanlder}>
-        <FormControl>
-          <Label>
-            닉네임 - <LabelDesc>사용자를 대표하는 이름입니다</LabelDesc>
-          </Label>
-          {isEdit ? (
-            <Input
-              type="text"
-              name="nickname"
-              value={updateData.nickname}
-              onChange={updateDataChangeHandler}
-              placeholder="공백과 특수문자없이 8자리 이하로 입력해주세요"
-            />
-          ) : (
-            <Input type="text" name="nickname" value={userInfo.nickname} disabled />
-          )}
-        </FormControl>
-        <FormControl>
-          <Label>
-            자기소개 - <LabelDesc>나는 어떤사람인지 소개해보세요</LabelDesc>
-          </Label>
-          {isEdit ? (
-            <Input
-              type="text"
-              name="introduce"
-              value={updateData.introduce}
-              onChange={updateDataChangeHandler}
-              placeholder="자기소개는 최대 30자까지 입력이 가능합니다"
-            />
-          ) : (
-            <Input type="text" name="introduce" value={userInfo.introduce} disabled />
-          )}
-        </FormControl>
-        {loggedInUser.userId === userId && (
-          <FormControl>
-            <Label>
-              현재 비밀번호 - <LabelDesc>변경을 희망하는 경우 입력해주세요</LabelDesc>
-            </Label>
-            {isEdit ? (
-              <Input type="password" name="password" value={updateData.password} onChange={updateDataChangeHandler} />
-            ) : (
-              <Input type="password" name="password" disabled />
-            )}
-          </FormControl>
-        )}
-        {loggedInUser.userId === userId && (
-          <FormControl>
-            <Label>
-              변경할 비밀번호 - <LabelDesc>변경하고 싶은 비밀번호를 입력해주세요</LabelDesc>
-            </Label>
-            {isEdit ? (
-              <Input
-                type="password"
-                name="rePassword"
-                value={updateData.rePassword}
-                onChange={updateDataChangeHandler}
-                placeholder="영문, 숫자, 특수문자를 포함하여 10자리 이상 입력해주세요"
-              />
-            ) : (
-              <Input type="password" name="rePassword" disabled />
-            )}
-          </FormControl>
-        )}
-        {loggedInUser.userId === userId && (
-          <>
-            {isEdit ? (
-              <Buttons>
-                <UpdateButton type="submit" onClick={isSubmitHandler}>
-                  저장하기
-                </UpdateButton>
-                <UpdateButton type="button" onClick={editHandler}>
-                  취소하기
-                </UpdateButton>
-              </Buttons>
-            ) : (
-              <Buttons>
-                <UpdateButton type="button" onClick={editHandler}>
-                  수정하기
-                </UpdateButton>
-                <ExitUserButton type="button" onClick={exitHandler}>
-                  회원탈퇴
-                </ExitUserButton>
-              </Buttons>
-            )}
-          </>
-        )}
-      </Form>
+      <HistoryTab>
+        <TabItem onClick={() => changeTagHandler("profile")} $isBorder={enableTab.profile}>
+          회원정보
+        </TabItem>
+        <TabItem
+          onClick={() => {
+            changeTagHandler("password");
+          }}
+          $isBorder={enableTab.password}
+          disabled={userId !== loggedInUser.userId}
+        >
+          비밀번호 변경
+        </TabItem>
+        <TabItem
+          onClick={() => {
+            changeTagHandler("exit");
+          }}
+          $isBorder={enableTab.exit}
+          disabled={userId !== loggedInUser.userId}
+        >
+          회원탈퇴
+        </TabItem>
+      </HistoryTab>
+      {enableTab.profile && <UpdateProfile userId={userId} />}
+      {enableTab.password && <UpdatePassword userId={userId} />}
+      {enableTab.exit && <ExitUser userId={userId} />}
     </StyledUserInfo>
   );
 };

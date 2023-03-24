@@ -18,6 +18,8 @@ import { ValidationPipe } from '../pipes/validation.pipe';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import { ExitUserVerifyDto } from './dto/exit-user-verify.dto';
 
 @Controller('users')
 export class UsersController {
@@ -78,11 +80,34 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('image'))
   @Post(':userId/image')
-  profileImage(
+  async profileImage(
     @Req() req,
     @UploadedFile() file: Express.Multer.File,
     @Param('userId') userId: string,
   ) {
-    console.log(file, userId);
+    const imageUrl = await this.usersService.profileImage(req.user.userId, userId, file);
+    return { profileImg: imageUrl };
+  }
+
+  @HttpCode(204)
+  @UseGuards(JwtAuthGuard)
+  @Patch(':userId/password')
+  async password(
+    @Req() req,
+    @Body(ValidationPipe) updatePasswordDto: UpdatePasswordDto,
+    @Param('userId') userId: string,
+  ) {
+    await this.usersService.password(req.user.userId, userId, updatePasswordDto);
+  }
+
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @Patch(':userId/verify')
+  async exitUserVerify(
+    @Req() req,
+    @Body() exitUserVerifyDto: ExitUserVerifyDto,
+    @Param('userId') userId: string,
+  ) {
+    return await this.usersService.exitUserVerify(req.user.userId, userId, exitUserVerifyDto);
   }
 }

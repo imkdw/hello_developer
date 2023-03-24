@@ -54,4 +54,12 @@ export class UserRepository {
   async verify(verifyToken: string) {
     await this.userRepository.update({ verifyToken }, { isVerified: true });
   }
+
+  async updatePassword(userId: string, password: string) {
+    await this.userRepository.update({ userId }, { password });
+  }
+
+  async profileImage(userId: string, imageUrl: string) {
+    await this.userRepository.update({ userId }, { profileImg: imageUrl });
+  }
 }

@@ -23,4 +23,8 @@ export default () => ({
     clientSecret: process.env.GAMIL_OAUTH_CLIENT_SECRET,
     refreshToken: process.env.GAMIL_OAUTH_REFRESH_TOKEN,
   },
+  aws: {
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
 });

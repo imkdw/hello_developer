@@ -55,7 +55,7 @@ export class Board {
   @Column({ type: 'int', default: 0, nullable: true, name: 'recommend_cnt' })
   recommendCnt: number;
 
-  @ManyToOne(() => User, (user) => user.board)
+  @ManyToOne(() => User, (user) => user.board, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 

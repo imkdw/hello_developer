@@ -140,7 +140,7 @@ const UserHistory = ({ userId }: UserHistoryProps) => {
     }
   };
 
-  const enableTagHandler = (item: "board" | "comment" | "bookmark") => {
+  const enableTabHandler = (item: "board" | "comment" | "bookmark") => {
     switch (item) {
       case "board":
         setEnableTag((prevState) => {
@@ -162,7 +162,7 @@ const UserHistory = ({ userId }: UserHistoryProps) => {
         <TabItem
           onClick={async () => {
             await historyHandler("board");
-            enableTagHandler("board");
+            enableTabHandler("board");
           }}
           $isBorder={enableTab.board}
         >
@@ -171,7 +171,7 @@ const UserHistory = ({ userId }: UserHistoryProps) => {
         <TabItem
           onClick={async () => {
             await historyHandler("comment");
-            enableTagHandler("comment");
+            enableTabHandler("comment");
           }}
           $isBorder={enableTab.comment}
         >
