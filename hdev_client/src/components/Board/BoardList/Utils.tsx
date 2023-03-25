@@ -1,8 +1,9 @@
 import { useMediaQuery } from "react-responsive";
 import { Link } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { boardDataState, currentBoardState } from "../../../recoil/board";
+import { boardDataState, currentBoardState, searchKeywordState } from "../../../recoil/board";
+import { ChangeEvent } from "react";
 
 const StyledUtils = styled.div`
   width: 100%;
@@ -76,6 +77,11 @@ const Utils = () => {
   const isMobile = useMediaQuery({ maxWidth: "767px" });
   const boardData = useRecoilValue(boardDataState);
   const currentBoard = useRecoilValue(currentBoardState);
+  const [searchKeyword, setSearchKeyword] = useRecoilState(searchKeywordState);
+
+  const keywordChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchKeyword(event.currentTarget.value);
+  };
 
   return (
     <StyledUtils>
@@ -90,7 +96,11 @@ const Utils = () => {
         <>
           <Search>
             <SearchIcon />
-            <Input placeholder={boardData[currentBoard].title + "에서 검색해보세요!"} />
+            <Input
+              placeholder={boardData[currentBoard].title + "에서 검색해보세요!"}
+              onChange={keywordChangeHandler}
+              value={searchKeyword}
+            />
           </Search>
         </>
       )}

@@ -13,8 +13,7 @@ const { email, password, nickname } = account;
 export const boardData = {
   title: '테스트 게시글의 제목입니다.',
   category: 'qna-tech',
-  content:
-    '테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.테스트 게시글의 본문입니다.',
+  content: 'content',
   tags: [{ name: 'nestjs' }],
 };
 
@@ -41,9 +40,12 @@ export async function login(app: INestApplication): Promise<string> {
 }
 
 export async function createBoard(app: INestApplication, accessToken: string): Promise<string> {
+  const title = '테스트 게시글';
+  const titleNumber = Math.floor(Math.random() * 1000);
+
   const response = await request(app.getHttpServer())
     .post('/boards')
-    .send({ title, content, tags, category })
+    .send({ title: title + titleNumber, content, tags, category })
     .set({ Authorization: `Bearer ${accessToken}` })
     .expect(201);
 

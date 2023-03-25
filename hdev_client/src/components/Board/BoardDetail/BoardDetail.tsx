@@ -8,6 +8,7 @@ import BoardHeader from "./BoardHeader";
 import BoardContent from "./BoardContent";
 import BoardComment from "./BoardComment";
 import { loggedInUserState } from "../../../recoil";
+import { useCookies } from "react-cookie";
 
 const StyledBoardDetail = styled.div`
   flex: 6;
@@ -39,6 +40,7 @@ const BoardDetail = () => {
   const loggedInUser = useRecoilValue(loggedInUserState);
   const boardId = useParams().boardId as string;
   const setBoardDetail = useSetRecoilState(boardDetailState);
+  const [cookies, setCookie] = useCookies();
 
   useEffect(() => {
     const loadBoard = async () => {
@@ -48,7 +50,17 @@ const BoardDetail = () => {
 
     // TODO: 쿠키로 중복조회 불가능하도록 설정
     const addView = async () => {
-      await addViews(boardId);
+      const cookieName = `views-${boardId}`;
+
+      if (!cookies[cookieName]) {
+        const cookieValue = boardId;
+        const cookieExpires = new Date();
+        cookieExpires.setTime(cookieExpires.getTime() + 24 * 60 * 60 * 1000);
+
+        setCookie(cookieName, cookieValue, { expires: cookieExpires });
+
+        await addViews(boardId);
+      }
     };
 
     if (boardId) {

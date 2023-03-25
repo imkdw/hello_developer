@@ -8,6 +8,7 @@ interface TextEditorProps {
 }
 
 const TextEditor = ({ onChange }: TextEditorProps) => {
+  const addImageBlobHook = (blob: Blob, callback: any) => {};
   const editorRef = useRef(null);
 
   useEffect(() => {
@@ -20,6 +21,7 @@ const TextEditor = ({ onChange }: TextEditorProps) => {
         previewStyle: "vertical",
         hideModeSwitch: true,
         initialValue: "# 내용은 최소 10자부터 100,000자 까지 입력이 가능합니다.",
+        hooks: { addImageBlobHook },
       });
 
       editor.on("change", () => {

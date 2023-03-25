@@ -102,7 +102,6 @@ const BoardComment = () => {
   const [enableButton, setEnableButton] = useState<EnableButton>({});
   const [isEditComment, setIsEditComment] = useState<IsEditComment>({});
   const setBoardDetail = useSetRecoilState(boardDetailState);
-  console.log(boardDetail);
 
   const enableButtonHandler = (commentIdentifier: string) => {
     setEnableButton((prevState) => {

@@ -85,3 +85,13 @@ export const addViews = async (boardId: string) => {
     throw err;
   }
 };
+
+export const uploadBoardImage = async (boardId: string, formData: FormData, accessToken: string) => {
+  try {
+    return await api.post(`/boards/${boardId}/image`, formData, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+  } catch (err: any) {
+    throw err;
+  }
+};

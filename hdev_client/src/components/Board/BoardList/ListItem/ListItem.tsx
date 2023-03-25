@@ -1,7 +1,9 @@
 import { copyFileSync } from "fs";
 import { Link } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { EyeIcon } from "../../../../assets/icon/BoardIcon";
+import { searchKeywordState } from "../../../../recoil/board";
 import { IBoardItem } from "../../../../types/board";
 import { dateFormater } from "../../../../utils/Common";
 import { MarkdownViewer } from "../../../Common";
@@ -151,6 +153,8 @@ interface ListItemProps {
 }
 
 const ListItem = ({ board }: ListItemProps) => {
+  const searchKeyword = useRecoilValue(searchKeywordState);
+
   const koreanCategory: { [key: string]: string } = {
     tips: "꿀팁",
     review: "리뷰",
@@ -161,7 +165,7 @@ const ListItem = ({ board }: ListItemProps) => {
     company: "채용공고",
   };
 
-  return (
+  return board.title.includes(searchKeyword) ? (
     <StyledListItem to={"/boards/" + board.boardId}>
       <Writer>
         <Profile src={board.user.profileImg} />
@@ -189,7 +193,7 @@ const ListItem = ({ board }: ListItemProps) => {
         </Hashtag>
       </Tag>
     </StyledListItem>
-  );
+  ) : null;
 };
 
 export default ListItem;

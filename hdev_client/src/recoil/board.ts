@@ -149,3 +149,8 @@ export const categoryDataState = atom<{ [key: string]: string }>({
     company: "채용공고",
   },
 });
+
+export const searchKeywordState = atom({
+  key: "searchKeywordState",
+  default: "",
+});

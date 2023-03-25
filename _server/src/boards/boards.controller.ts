@@ -11,12 +11,13 @@ import {
   HttpCode,
   Patch,
 } from '@nestjs/common';
-import { Body, Query } from '@nestjs/common/decorators';
+import { Body, Query, UploadedFile, UseInterceptors } from '@nestjs/common/decorators';
 import { ValidationPipe } from '../pipes/validation.pipe';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('boards')
 export class BoardsController {
@@ -50,7 +51,7 @@ export class BoardsController {
    * 게시글 상세보기
    * @param boardId - 게시글 아이디
    */
-  @Get('/:boardId')
+  @Get(':boardId')
   async findOne(@Param('boardId') boardId: string) {
     const board = await this.boardsService.findOne(boardId);
     return board;
@@ -62,7 +63,7 @@ export class BoardsController {
    */
   @HttpCode(204)
   @UseGuards(JwtAuthGuard)
-  @Delete('/:boardId')
+  @Delete(':boardId')
   async remove(@Req() req, @Param('boardId') boardId: string) {
     await this.boardsService.remove(req.user.userId, boardId);
   }
@@ -73,7 +74,7 @@ export class BoardsController {
    * @param boardId - 수정요청한 게시글 아이디
    */
   @UseGuards(JwtAuthGuard)
-  @Patch('/:boardId')
+  @Patch(':boardId')
   async update(
     @Req() req,
     @Param('boardId') boardId: string,
@@ -88,8 +89,20 @@ export class BoardsController {
     await this.boardsService.recommend(req.user.userId, boardId);
   }
 
-  @Get('/:boardId/views')
+  @Get(':boardId/views')
   async views(@Param('boardId') boardId: string) {
     await this.boardsService.views(boardId);
+  }
+
+  // @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('image'))
+  @Post(':boardid/image')
+  async imageUpload(
+    @Req() req,
+    @Param('boardId') boardId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    console.log(file);
+    // return file;
   }
 }
