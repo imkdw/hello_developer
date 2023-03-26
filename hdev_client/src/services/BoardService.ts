@@ -1,4 +1,5 @@
 import { api } from "../utils/Common";
+import { v4 } from "uuid";
 
 export const getBoards = async (mainCategory: string, subCategory: string) => {
   try {
@@ -86,9 +87,9 @@ export const addViews = async (boardId: string) => {
   }
 };
 
-export const uploadBoardImage = async (boardId: string, formData: FormData, accessToken: string) => {
+export const uploadBoardImage = async (formData: FormData, accessToken: string) => {
   try {
-    return await api.post(`/boards/${boardId}/image`, formData, {
+    return await api.post(`/boards/image`, formData, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
   } catch (err: any) {

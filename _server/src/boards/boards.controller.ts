@@ -96,13 +96,8 @@ export class BoardsController {
 
   // @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('image'))
-  @Post(':boardid/image')
-  async imageUpload(
-    @Req() req,
-    @Param('boardId') boardId: string,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
+  @Post('image')
+  async imageUpload(@Req() req, @UploadedFile() file: Express.Multer.File) {
     console.log(file);
-    // return file;
   }
 }

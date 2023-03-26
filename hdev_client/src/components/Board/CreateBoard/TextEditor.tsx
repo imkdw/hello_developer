@@ -2,13 +2,25 @@ import Editor from "@toast-ui/editor";
 import "@toast-ui/editor/dist/toastui-editor.css";
 
 import { useEffect, useRef } from "react";
+import { uploadBoardImage } from "../../../services/BoardService";
 
 interface TextEditorProps {
   onChange(markdown: string): void;
+  accessToken: string;
 }
 
-const TextEditor = ({ onChange }: TextEditorProps) => {
-  const addImageBlobHook = (blob: Blob, callback: any) => {};
+const TextEditor = ({ onChange, accessToken }: TextEditorProps) => {
+  const addImageBlobHook = async (blob: Blob, callback: any) => {
+    const formData = new FormData();
+    formData.append("image", blob);
+
+    try {
+      const imageUrl = await uploadBoardImage(formData, accessToken);
+      callback(imageUrl, `<img src=${imageUrl}>`);
+    } catch (err: any) {
+      callback("이미지 업로드 실패", `이미지 업로드에 실패했습니다. 다시 시도해주세요`);
+    }
+  };
   const editorRef = useRef(null);
 
   useEffect(() => {

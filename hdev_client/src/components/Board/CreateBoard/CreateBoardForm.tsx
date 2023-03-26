@@ -290,7 +290,7 @@ const CreateBoardForm = () => {
         </FormControl>
         <FormControl>
           <Label>내용</Label>
-          <TextEditor onChange={changeContent} />
+          <TextEditor onChange={changeContent} accessToken={loggedInUser.accessToken} />
         </FormControl>
         <Buttons>
           <CancelButton>취소</CancelButton>

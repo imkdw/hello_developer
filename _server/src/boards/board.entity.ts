@@ -23,6 +23,9 @@ export class Board {
   @PrimaryGeneratedColumn('uuid', { name: 'board_id' })
   boardId: string;
 
+  @Column({ type: 'varchar', length: 255, name: 'temp_board_id' })
+  tempBoardId: string;
+
   @Column({ type: 'varchar', length: 36, name: 'user_id' })
   userId: string;
 
