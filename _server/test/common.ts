@@ -45,7 +45,7 @@ export async function createBoard(app: INestApplication, accessToken: string): P
 
   const response = await request(app.getHttpServer())
     .post('/boards')
-    .send({ title: title + titleNumber, content, tags, category })
+    .send({ title: title + titleNumber, content, tags, category, tempBoardId: '' })
     .set({ Authorization: `Bearer ${accessToken}` })
     .expect(201);
 

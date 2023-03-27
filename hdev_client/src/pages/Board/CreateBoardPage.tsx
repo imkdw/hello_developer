@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useRecoilValue } from "recoil";
 import { loggedInUserState } from "../../recoil";
 import { useNavigate } from "react-router-dom";
+import { v4 } from "uuid";
 
 const StyledCreateBoardPage = styled.div`
   width: 100%;
@@ -13,6 +14,7 @@ const StyledCreateBoardPage = styled.div`
 `;
 
 const CreateBoardPage = () => {
+  const tempBoardId = v4();
   const loggedInUser = useRecoilValue(loggedInUserState);
   const navigator = useNavigate();
 
@@ -26,7 +28,7 @@ const CreateBoardPage = () => {
   return (
     <StyledCreateBoardPage>
       <Menu />
-      <CreateBoardForm />
+      <CreateBoardForm tempBoardId={tempBoardId} />
     </StyledCreateBoardPage>
   );
 };

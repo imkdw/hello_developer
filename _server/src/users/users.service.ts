@@ -115,7 +115,7 @@ export class UsersService {
   async profileImage(
     tokenUserId: string,
     userId: string,
-    image: Express.Multer.File,
+    file: Express.Multer.File,
   ): Promise<string> {
     if (tokenUserId !== userId) {
       throw new UnauthorizedException('unauthorized_user');
@@ -126,10 +126,9 @@ export class UsersService {
       throw new NotFoundException('user_not_found');
     }
 
-    const ext = image.originalname.split('.');
-    const fileName = userId + '.' + ext[ext.length - 1];
-
-    const imageUrl = await this.awsService.imageUploadToS3(fileName, image.buffer);
+    const ext = file.originalname.split('.');
+    const fileName = `user_profile/${userId}.${ext}`;
+    const imageUrl = await this.awsService.imageUploadToS3(fileName, file);
     await this.userRepository.profileImage(userId, imageUrl);
     return imageUrl;
   }

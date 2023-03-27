@@ -11,6 +11,7 @@ import {
   JoinColumn,
   OneToMany,
   OneToOne,
+  PrimaryColumn,
 } from 'typeorm';
 import { Category } from './category/category.entity';
 import { Tag } from './tag/tag.entity';
@@ -20,10 +21,10 @@ import { Recommend } from './recommend/recommend.entity';
 
 @Entity('Board')
 export class Board {
-  @PrimaryGeneratedColumn('uuid', { name: 'board_id' })
+  @PrimaryColumn({ type: 'varchar', length: 255, name: 'board_id' })
   boardId: string;
 
-  @Column({ type: 'varchar', length: 255, name: 'temp_board_id' })
+  @Column({ type: 'varchar', length: 255, name: 'temp_board_id', nullable: true, default: '' })
   tempBoardId: string;
 
   @Column({ type: 'varchar', length: 36, name: 'user_id' })

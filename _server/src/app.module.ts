@@ -71,10 +71,10 @@ import { AwsModule } from './aws/aws.module';
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
     },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: MorganInterceptor('combined'),
-    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: MorganInterceptor('combined'),
+    // },
     AwsService,
   ],
 })

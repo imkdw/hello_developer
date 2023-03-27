@@ -127,7 +127,6 @@ const UserHistory = ({ userId }: UserHistoryProps) => {
   const historyHandler = async (item: "board" | "comment") => {
     try {
       const res = await getHistory(userId, item);
-      console.log(res.data);
 
       if (item === "board") {
         setBoards(res.data);

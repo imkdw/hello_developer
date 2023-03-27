@@ -22,10 +22,6 @@ describe('Temp Test (e2e)', () => {
       await app.init();
 
       userId = await register(app);
-      accessToken = await login(app);
-      for (let i = 0; i <= 50; i++) {
-        await createBoard(app, accessToken);
-      }
     });
 
     afterEach(async () => {

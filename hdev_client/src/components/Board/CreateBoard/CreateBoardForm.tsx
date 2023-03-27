@@ -1,8 +1,10 @@
-import { ChangeEvent, useState, useCallback, FormEvent } from "react";
+import { ChangeEvent, useState, useCallback, FormEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
+import { v4 } from "uuid";
 import { loggedInUserState } from "../../../recoil";
+import { tempBoardIdState } from "../../../recoil/board";
 import { createBoard } from "../../../services/BoardService";
 import { categoryValidation, contentValidation, titleValidation } from "../../../utils/Board";
 import TextEditor from "./TextEditor";
@@ -125,7 +127,11 @@ const InputWrapper = styled.div`
   }
 `;
 
-const CreateBoardForm = () => {
+interface CreateBoardFormProps {
+  tempBoardId: string;
+}
+
+const CreateBoardForm = ({ tempBoardId }: CreateBoardFormProps) => {
   const [postData, setPostData] = useState({
     category: "none",
     title: "",
@@ -212,9 +218,10 @@ const CreateBoardForm = () => {
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const { title, category, tags, content } = postData;
+    console.log("submit");
 
     try {
-      const res = await createBoard(loggedInUser.accessToken, { title, category, tags, content });
+      const res = await createBoard(loggedInUser.accessToken, { title, category, tags, content, tempBoardId });
       const boardId = res.data.boardId;
       alert("게시글 작성이 완료되었습니다.");
       navigator(`/boards/${boardId}`);
@@ -290,7 +297,7 @@ const CreateBoardForm = () => {
         </FormControl>
         <FormControl>
           <Label>내용</Label>
-          <TextEditor onChange={changeContent} accessToken={loggedInUser.accessToken} />
+          <TextEditor onChange={changeContent} accessToken={loggedInUser.accessToken} tempBoardId={tempBoardId} />
         </FormControl>
         <Buttons>
           <CancelButton>취소</CancelButton>

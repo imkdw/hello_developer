@@ -10,6 +10,7 @@ export const getBoards = async (mainCategory: string, subCategory: string) => {
 };
 
 interface CreateBoardDto {
+  tempBoardId: string;
   category: string;
   title: string;
   tags: {

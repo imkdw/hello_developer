@@ -154,3 +154,8 @@ export const searchKeywordState = atom({
   key: "searchKeywordState",
   default: "",
 });
+
+export const tempBoardIdState = atom({
+  key: "tempBoardIdState",
+  default: "",
+});

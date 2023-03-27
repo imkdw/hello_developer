@@ -17,9 +17,8 @@ export class BoardRepository {
    * @param board - 새로운 게시글 데이터
    * @returns 게시글 ID 반환
    */
-  async create(board: Board): Promise<string> {
-    const createdBoard = await this.boardRepository.save(board);
-    return createdBoard.boardId;
+  async create(board: Board) {
+    await this.boardRepository.save(board);
   }
 
   async findAll(categorysIds: number[]) {

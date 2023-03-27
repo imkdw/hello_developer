@@ -21,6 +21,11 @@ const TextEditor = ({ onChange, value }: TextEditorProps) => {
         previewStyle: "vertical",
         hideModeSwitch: true,
         initialValue: value,
+        hooks: {
+          addImageBlobHook(blob, callback) {
+            console.log(blob);
+          },
+        },
       });
 
       editor.on("change", () => {

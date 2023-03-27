@@ -10,6 +10,11 @@ import {
 
 export class CreateBoardDto {
   /**
+   * 임시 게시글 아이디
+   */
+  tempBoardId: string;
+
+  /**
    * 1. 제목은 1~50자로 설정 필요
    */
   @IsNotEmpty()

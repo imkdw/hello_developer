@@ -18,6 +18,7 @@ import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ImageUploadDto } from './dto/image-upload.dto';
 
 @Controller('boards')
 export class BoardsController {
@@ -94,10 +95,14 @@ export class BoardsController {
     await this.boardsService.views(boardId);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('image'))
   @Post('image')
-  async imageUpload(@Req() req, @UploadedFile() file: Express.Multer.File) {
-    console.log(file);
+  async imageUpload(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() imageUploadDto: ImageUploadDto,
+  ) {
+    const imageUrl = await this.boardsService.imageUpload(file, imageUploadDto);
+    return imageUrl;
   }
 }

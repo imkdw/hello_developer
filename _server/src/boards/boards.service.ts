@@ -9,6 +9,9 @@ import { Tag } from './tag/tag.entity';
 import { TagRepository } from './tag/tag.repository';
 import { ViewRepository } from './view/view.repository';
 import { RecommendRepository } from './recommend/recommend.repository';
+import { UtilsService } from '../utils/utils.service';
+import { AwsService } from '../aws/aws.service';
+import { ImageUploadDto } from './dto/image-upload.dto';
 
 @Injectable()
 export class BoardsService {
@@ -18,6 +21,8 @@ export class BoardsService {
     private tagRepository: TagRepository,
     private viewRepository: ViewRepository,
     private recommendRepository: RecommendRepository,
+    private utilsService: UtilsService,
+    private awsService: AwsService,
   ) {}
 
   /**
@@ -26,7 +31,7 @@ export class BoardsService {
    * @param createBoardDto - 게시글 생성 데이터
    */
   async create(userId: string, createBoardDto: CreateBoardDto) {
-    const { title, content, category, tags } = createBoardDto;
+    const { title, content, category, tags, tempBoardId } = createBoardDto;
 
     const categoryIds = await this.categoryRepository.findIdByName(category);
     if (!categoryIds[0]) {
@@ -50,16 +55,26 @@ export class BoardsService {
       }
     }
 
+    const boardId = this.utilsService.getUUID();
+    const replaceRegExp = new RegExp(`${tempBoardId}`, 'g');
+    const replaceContent = content.replace(replaceRegExp, boardId);
+
     const newBoard = new Board();
+    newBoard.boardId = boardId;
+    newBoard.tempBoardId = tempBoardId;
     newBoard.userId = userId;
     newBoard.title = title;
-    newBoard.content = content;
+    newBoard.content = replaceContent;
     newBoard.categoryId1 = categoryIds[0];
     newBoard.categoryId2 = categoryIds[1] || null;
     newBoard.tags = tagsArr;
-    const boardId = await this.boardRepository.create(newBoard);
 
+    await this.boardRepository.create(newBoard);
     await this.viewRepository.create(boardId);
+
+    const oldPath = `boards_image/${tempBoardId}`;
+    const newPath = `boards_image/${boardId}`;
+    await this.awsService.changeFolderName(oldPath, newPath);
 
     return boardId;
   }
@@ -161,5 +176,15 @@ export class BoardsService {
 
   async views(boardId: string) {
     await this.viewRepository.add(boardId);
+  }
+
+  async imageUpload(file: Express.Multer.File, imageUploadDto: ImageUploadDto) {
+    const imageName = this.utilsService.getUUID();
+    const tempBoardId = JSON.parse(JSON.stringify(imageUploadDto)).tempBoardId;
+
+    const ext = file.originalname.split('.');
+    const fileName = `boards_image/${tempBoardId}/${imageName}.${ext[ext.length - 1]}`;
+    const imageUrl = await this.awsService.imageUploadToS3(fileName, file);
+    return { imageUrl };
   }
 }
