@@ -1,10 +1,12 @@
 import { atom } from "recoil";
 import { BoardData, IBoardDetail } from "../types/board";
+import { persistAtom } from "./persist";
 
 // 현재 접속중인 보드
 export const currentBoardState = atom({
   key: "currentBoardState",
   default: "",
+  effects_UNSTABLE: [persistAtom],
 });
 
 // 게시글 목록 상단부분에 사용되는 보드데이터
@@ -152,10 +154,5 @@ export const categoryDataState = atom<{ [key: string]: string }>({
 
 export const searchKeywordState = atom({
   key: "searchKeywordState",
-  default: "",
-});
-
-export const tempBoardIdState = atom({
-  key: "tempBoardIdState",
   default: "",
 });

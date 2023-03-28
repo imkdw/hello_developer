@@ -5,6 +5,7 @@ import { EmailIcon, PasswordIcon } from "../../assets/icon";
 import { login } from "../../services/AuthService";
 import { useNavigate } from "react-router-dom";
 import { isLoadingState, loggedInUserState } from "../../recoil";
+import { useCookies } from "react-cookie";
 
 const StyledLoginForm = styled.form`
   width: 100%;
@@ -87,6 +88,8 @@ const LoginForm = () => {
     password: "",
   });
 
+  const [cookies, setCookie] = useCookies();
+
   const setIsLoading = useSetRecoilState(isLoadingState);
   const setLoggedInUser = useSetRecoilState(loggedInUserState);
   const navigator = useNavigate();
@@ -100,14 +103,16 @@ const LoginForm = () => {
       const res = await login(account.email, account.password);
 
       const { accessToken, refreshToken, profileImg, nickname, userId } = res.data;
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
-      localStorage.setItem("profileImg", profileImg);
-      localStorage.setItem("nickname", nickname);
-      localStorage.setItem("userId", userId);
+
+      // refresh 토큰은 쿠키에 저장
+      const cookieValue = refreshToken;
+      const cookieExpires = new Date();
+      cookieExpires.setTime(cookieExpires.getTime() + 24 * 60 * 60 * 1000);
+
+      setCookie(cookieName, cookieValue, { expires: cookieExpires });
 
       setLoggedInUser((prevState) => {
-        return { ...prevState, accessToken, refreshToken, profileImg, nickname, userId };
+        return { ...prevState, accessToken, profileImg, nickname, userId };
       });
 
       navigator("/main");

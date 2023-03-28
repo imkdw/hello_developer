@@ -57,7 +57,7 @@ const BoardDetail = () => {
         const cookieExpires = new Date();
         cookieExpires.setTime(cookieExpires.getTime() + 24 * 60 * 60 * 1000);
 
-        setCookie(cookieName, cookieValue, { expires: cookieExpires });
+        setCookie(cookieName, cookieValue, { expires: cookieExpires, httpOnly: true });
 
         await addViews(boardId);
       }

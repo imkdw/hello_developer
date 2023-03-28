@@ -4,7 +4,6 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { v4 } from "uuid";
 import { loggedInUserState } from "../../../recoil";
-import { tempBoardIdState } from "../../../recoil/board";
 import { createBoard } from "../../../services/BoardService";
 import { categoryValidation, contentValidation, titleValidation } from "../../../utils/Board";
 import TextEditor from "./TextEditor";

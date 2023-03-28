@@ -95,7 +95,6 @@ const ExitUser = ({ userId }: ExitUSerProps) => {
           accessToken: "",
           nickname: "",
           profileImg: "",
-          refreshToken: "",
           userId: "",
         });
 

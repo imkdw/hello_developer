@@ -20,15 +20,19 @@ interface CreateBoardDto {
 }
 
 export const createBoard = async (accessToken: string, createBoardDto: CreateBoardDto) => {
-  return await api.post(
-    "/boards",
-    { ...createBoardDto },
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
+  try {
+    return await api.post(
+      "/boards",
+      { ...createBoardDto },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+  } catch (err: any) {
+    throw err;
+  }
 };
 
 export const getBoard = async (boardId: string) => {
