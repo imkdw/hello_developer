@@ -1,6 +1,9 @@
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { Intro, LoginForm, RegisterForm, TabMenu } from "../../components/Auth";
 import { Logo } from "../../components/Common";
+import { enableMenuState } from "../../recoil";
+import { useEffect } from "react";
 
 const StyledAuthPage = styled.div`
   width: 100%;
@@ -56,6 +59,12 @@ interface AuthPageProps {
 }
 
 const AuthPage = ({ type }: AuthPageProps) => {
+  const setEnableMenu = useSetRecoilState(enableMenuState);
+
+  useEffect(() => {
+    setEnableMenu(false);
+  }, []);
+
   return (
     <StyledAuthPage>
       <AuthPageBar />

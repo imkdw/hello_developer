@@ -20,15 +20,19 @@ export const categoryValidation = (category: string) => {
   return true;
 };
 
-export const tagsValidation = (tag: string) => {
-  /**
-   * 1. 태그는 최대 10자 까지 설정가능
-   */
-  if (tag.length > 10) {
-    return false;
+export const tagsValidation = (tags: { [key: string]: string }[]) => {
+  const tagMap: { [key: string]: boolean } = {};
+
+  for (let i = 0; i < tags.length; i++) {
+    const tagName = tags[i].name;
+    if (tagMap[tagName]) {
+      return true;
+    } else {
+      tagMap[tagName] = true;
+    }
   }
 
-  return true;
+  return false;
 };
 
 export const contentValidation = (content: string) => {

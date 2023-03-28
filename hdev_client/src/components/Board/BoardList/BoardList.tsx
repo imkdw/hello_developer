@@ -13,6 +13,11 @@ const StyledBoardList = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
+  flex: 6;
+
+  @media screen and (max-width: 767px) {
+    overflow-y: scroll;
+  }
 `;
 
 const Boards = styled.ul`
@@ -37,6 +42,17 @@ const Boards = styled.ul`
   }
   ::-webkit-scrollbar-button {
     display: none;
+  }
+
+  @media screen and (max-width: 767px) {
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    gap: 0;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
   }
 `;
 

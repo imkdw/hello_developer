@@ -1,4 +1,3 @@
-import { copyFileSync } from "fs";
 import { Link } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
@@ -20,11 +19,7 @@ const StyledListItem = styled(Link)`
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   gap: 15px;
   cursor: pointer;
-  margin-top: 30px;
-
-  &:nth-of-type(-n + 3) {
-    margin-top: 20px;
-  }
+  margin-top: 20px;
 
   &:nth-child(3n + 1) {
     margin-left: 2%;
@@ -36,6 +31,14 @@ const StyledListItem = styled(Link)`
 
   @media screen and (max-width: 767px) {
     width: 90%;
+
+    &:nth-child(3n + 1) {
+      margin-left: 0px;
+    }
+
+    &:last-child {
+      margin-bottom: 20px;
+    }
   }
 `;
 

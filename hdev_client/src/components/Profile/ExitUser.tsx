@@ -13,6 +13,10 @@ const Form = styled.form`
   justify-content: center;
   gap: 15px;
   margin-top: 20px;
+
+  @media screen and (max-width: 767px) {
+    height: 300px;
+  }
 `;
 
 const FormControl = styled.div`
@@ -25,11 +29,19 @@ const FormControl = styled.div`
 
 const Label = styled.label`
   font-size: 22px;
+
+  @media screen and (max-width: 767px) {
+    font-size: 20px;
+  }
 `;
 
 const LabelDesc = styled.span`
   font-size: 14px;
   color: #0090f9;
+
+  @media screen and (max-width: 767px) {
+    font-size: 12px;
+  }
 `;
 
 const Input = styled.input`

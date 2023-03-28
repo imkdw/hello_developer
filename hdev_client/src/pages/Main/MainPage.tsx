@@ -2,6 +2,10 @@ import styled from "styled-components";
 import { Menu } from "../../components/Menu";
 import { RecentBoard } from "../../components/RecentBoard";
 import { useMediaQuery } from "react-responsive";
+import { useRecoilValue } from "recoil";
+import { enableMenuState } from "../../recoil";
+import MobileHeader from "../../components/Mobile/Header/MobileHeader";
+import { Transition } from "react-transition-group";
 
 const StyledMain = styled.div`
   width: 100%;
@@ -17,17 +21,13 @@ const StyledMain = styled.div`
 
 const MainPage = () => {
   const isMobile = useMediaQuery({ maxWidth: "767px" });
-  // const enableSideMenu = useRecoilValue(enableSideMenuState);
+  const enableSideMenu = useRecoilValue(enableMenuState);
 
   return (
     <StyledMain>
-      <Menu />
-      {/* {isMobile && <MobileHeader />} */}
-
-      {/* 모바일 환경에서는 사이드메뉴 렌더링 X */}
-      {/* {!isMobile && <SideMenu />} */}
-      {/* 모바일 헤더 메뉴버튼 클릭시 사이드메뉴 비활성화 / 활성화 */}
-      {/* {enableSideMenu && <SideMenu />} */}
+      {isMobile && <MobileHeader />}
+      {!isMobile && <Menu />}
+      {enableSideMenu && <Menu />}
       <RecentBoard />
     </StyledMain>
   );

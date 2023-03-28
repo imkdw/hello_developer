@@ -8,15 +8,19 @@
 
 - Language
   - Typescript
-  - Javascript
 - Frontend
+
   - React
   - Recoil
   - Styled-components
+
 - Backend
-  - Express.js
+
+  - Nest.js
   - TypeORM
+
 - Infra
   - AWS EC2
   - AWS S3
   - AWS RDB
+  - Mysql

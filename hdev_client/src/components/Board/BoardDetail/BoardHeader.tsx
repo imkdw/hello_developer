@@ -62,7 +62,7 @@ const ButtonMenu = styled.div`
   height: 80px;
   position: absolute;
   top: 100%;
-  left: 0;
+  right: 0;
   border-radius: 10px;
   border: 1px solid #dbdbdb;
 `;

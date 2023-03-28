@@ -25,13 +25,7 @@ const BoardLinks = styled.ul`
     gap: 20px;
   }
 `;
-interface MenuLinkProps {
-  onClick?: () => void;
-}
-
-const MenuLink = ({ onClick }: MenuLinkProps) => {
-  const navigator = useNavigate();
-
+const MenuLink = () => {
   const sideMenuData = [
     {
       id: "notice",
@@ -71,45 +65,13 @@ const MenuLink = ({ onClick }: MenuLinkProps) => {
     },
   ];
 
-  const [loggedInUser, setLoggedInUser] = useRecoilState(loggedInUserState);
-
-  // const logoutHandler = async () => {
-  //   try {
-  //     const res = await AuthService.logout(loggedInUser.userId, loggedInUser.accessToken);
-
-  //     if (res?.status === 200) {
-  //       setLoggedInUser((prevState) => {
-  //         return { ...prevState, accessToken: "", userId: "", profileImg: "", nickname: "" };
-  //       });
-
-  //       alert("로그아웃이 완료되었습니다.");
-  //       navigator("/main");
-  //     }
-  //   } catch (err: any) {
-  //     alert("오류 발생");
-  //     console.error(err);
-  //   }
-  // };
-
   return (
     <StyledMenuLink>
       <BoardLinks>
         {sideMenuData.map((data) => (
-          <MenuLinkItem key={data.id} Icon={data.icon} to={data.to} text={data.text} onClick={onClick} />
+          <MenuLinkItem key={data.id} Icon={data.icon} to={data.to} text={data.text} />
         ))}
       </BoardLinks>
-      {/* <UtilLinks>
-        {loggedInUser.accessToken ? (
-          <>
-            <UtilLink to={"/profile/" + loggedInUser.userId}>프로필</UtilLink>
-            <UtilLink to="" onClick={logoutHandler}>
-              로그아웃
-            </UtilLink>
-          </>
-        ) : (
-          <UtilLink to="/login">로그인 / 회원가입</UtilLink>
-        )}
-      </UtilLinks> */}
     </StyledMenuLink>
   );
 };

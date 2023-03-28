@@ -14,6 +14,10 @@ const StyledUserProfileImage = styled.form`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  @media screen and (max-width: 767px) {
+    height: 50%;
+  }
 `;
 
 const ImageBackground = styled.div<{ image: string }>`
@@ -28,11 +32,15 @@ const ImageBackground = styled.div<{ image: string }>`
 
 const Image = styled.img`
   position: relative;
-  z-index: 1;
   width: 200px;
   height: 200px;
   border-radius: 50%;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+
+  @media screen and (max-width: 767px) {
+    width: 150px;
+    height: 150px;
+  }
 `;
 
 const ImageChangeButton = styled.button`
@@ -88,7 +96,6 @@ const UserProfileImage = ({ userId }: UserProfileImageProps) => {
 
     try {
       const res = await updateProfileImage(userId, formData, loggedInUser.accessToken);
-      console.log(res.data);
 
       localStorage.setItem("profileImg", res.data.profileImg);
 

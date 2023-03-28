@@ -8,6 +8,12 @@ const StyledSubject = styled.div`
   display: flex;
   align-items: flex-end;
   gap: 10px;
+
+  @media screen and (max-width: 767px) {
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+  }
 `;
 
 const MainText = styled.h1`

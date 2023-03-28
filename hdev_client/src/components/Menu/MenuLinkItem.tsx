@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
+import { enableMenuState } from "../../recoil";
 
 const StyledMenuLinkItem = styled.li<{ backgroundColor?: boolean }>`
   width: 100%;
@@ -42,36 +43,11 @@ interface LinkItemProps {
   Icon: any;
   to: string;
   text: string;
-  onClick?: () => void;
 }
 
-const MenuLinkItem = ({ Icon, to, text, onClick }: LinkItemProps) => {
-  // const currentPage = useRecoilValue(currentPageState);
-
-  /** 접속중인 페이지와 선택한 페이지가 같은지 확인하는 함수 */
-  const isCurrentPage = (text: string) => {
-    interface IPageList {
-      [key: string]: string;
-    }
-
-    const pageList: IPageList = {
-      notice: "공지사항",
-      suggestion: "건의사항",
-      free: "자유주제",
-      knowledge: "지식공유",
-      qna: "질문답변",
-      recruitment: "인원모집",
-    };
-
-    // if (pageList[currentPage] === text) {
-    //   return true;
-    // }
-
-    return false;
-  };
-
+const MenuLinkItem = ({ Icon, to, text }: LinkItemProps) => {
   return (
-    <StyledMenuLinkItem onClick={onClick} backgroundColor={isCurrentPage(text)}>
+    <StyledMenuLinkItem>
       <LinkItem to={to}>
         <IconWrapper>
           <Icon />

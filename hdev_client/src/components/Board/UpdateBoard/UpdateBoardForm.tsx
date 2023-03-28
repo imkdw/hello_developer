@@ -4,7 +4,7 @@ import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { loggedInUserState } from "../../../recoil";
 import { getBoard, updateBoard } from "../../../services/BoardService";
-import { categoryValidation, contentValidation, titleValidation } from "../../../utils/Board";
+import { categoryValidation, contentValidation, tagsValidation, titleValidation } from "../../../utils/Board";
 import TextEditor from "./TextEditor";
 
 const StyledUpdateBoardForm = styled.form`
@@ -35,6 +35,7 @@ const Wrapper = styled.div`
 
 const Message = styled.p`
   width: 100%;
+  height: 50px;
   font-size: 30px;
 
   @media screen and (max-width: 767px) {
@@ -44,7 +45,7 @@ const Message = styled.p`
 
 const FormControl = styled.div`
   width: 100%;
-  height: 100px;
+  height: auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -118,8 +119,8 @@ const InputWrapper = styled.div`
   gap: 10px;
 
   @media screen and (max-width: 767px) {
-    flex-direction: column;
     height: 150px;
+    flex-direction: column;
   }
 `;
 
@@ -235,9 +236,19 @@ const UpdateBoardForm = () => {
     });
   }, []);
 
+  const cancelHandler = () => {
+    navigator(-1);
+  };
+
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const { title, category, tags, content } = boardData;
+
+    let isDupTag = tagsValidation(tags);
+    if (isDupTag) {
+      alert("중복된 태그는 입력이 불가능합니다.");
+      return;
+    }
 
     try {
       await updateBoard(boardId, { title, category, tags, content }, loggedInUser.accessToken);
@@ -307,9 +318,7 @@ const UpdateBoardForm = () => {
         <FormControl>
           <Label>
             태그 -{" "}
-            <span style={{ fontSize: "14px", color: "#005DFF" }}>
-              내용을 대표하는 태그를 10자까지 입력해주세요. (미입력 가능)
-            </span>
+            <span style={{ fontSize: "14px", color: "#005DFF" }}>내용을 대표하는 태그를 10자까지 입력해주세요.</span>
           </Label>
           <InputWrapper>
             <Input
@@ -340,10 +349,19 @@ const UpdateBoardForm = () => {
         </FormControl>
         <FormControl>
           <Label>내용</Label>
-          {boardData.content && <TextEditor onChange={changeContent} value={boardData.content} />}
+          {boardData.content && (
+            <TextEditor
+              onChange={changeContent}
+              value={boardData.content}
+              boardId={boardId}
+              accessToken={loggedInUser.accessToken}
+            />
+          )}
         </FormControl>
         <Buttons>
-          <CancelButton>취소</CancelButton>
+          <CancelButton type="button" onClick={cancelHandler}>
+            취소
+          </CancelButton>
           {isBoardDataValid.category && isBoardDataValid.title && isBoardDataValid.content ? (
             <SubmitButton type="submit">등록</SubmitButton>
           ) : (

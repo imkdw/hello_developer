@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { loggedInUserState } from "../../recoil";
+import { enableMenuState, loggedInUserState } from "../../recoil";
 import { logout } from "../../services/AuthService";
 import { ProfileImage } from "../Common/User";
 
@@ -38,26 +38,21 @@ const AuthLink = styled(Link)`
 const MenuUtil = () => {
   const [loggedInUser, setLoggedInUser] = useRecoilState(loggedInUserState);
   const navigator = useNavigate();
+  const setEnableMenu = useSetRecoilState(enableMenuState);
 
-  const onLogoutHandler = async () => {
+  const logoutHandler = async () => {
     try {
       await logout(loggedInUser.userId, loggedInUser.accessToken);
     } catch (err: any) {
     } finally {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("profileImg");
-      localStorage.removeItem("nickname");
-      localStorage.removeItem("userId");
-
       setLoggedInUser({
         accessToken: "",
-        refreshToken: "",
         profileImg: "",
         nickname: "",
         userId: "",
       });
 
+      setEnableMenu(false);
       navigator("/");
     }
   };
@@ -75,7 +70,7 @@ const MenuUtil = () => {
 
       <AuthLinks>
         {loggedInUser.accessToken ? (
-          <AuthLink to="" onClick={onLogoutHandler}>
+          <AuthLink to="" onClick={logoutHandler}>
             로그아웃
           </AuthLink>
         ) : (

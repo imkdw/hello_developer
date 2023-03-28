@@ -1,20 +1,21 @@
 import styled from "styled-components";
 import { Menu } from "../../components/Menu";
 import { useEffect } from "react";
-import { useRecoilState } from "recoil";
-import { currentBoardState } from "../../recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { currentBoardState, enableMenuState } from "../../recoil";
 import BoardList from "../../components/Board/BoardList/BoardList";
 import { useLocation } from "react-router-dom";
+import { useMediaQuery } from "react-responsive";
+import { MobileHeader } from "../../components/Mobile";
 
 const StyledBoardListPage = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
-`;
 
-const Wrapper = styled.div`
-  flex: 6;
-  height: 100%;
+  @media screen and (max-width: 767px) {
+    flex-direction: column;
+  }
 `;
 
 interface BoardListPageProps {
@@ -22,6 +23,8 @@ interface BoardListPageProps {
 }
 
 const BoardListPage = ({ currentBoard }: BoardListPageProps) => {
+  const isMobile = useMediaQuery({ maxWidth: "767px" });
+  const enableMenu = useRecoilValue(enableMenuState);
   const [_currentBoard, setCurrentBoard] = useRecoilState(currentBoardState);
   const pathnameArr = useLocation().pathname.split("/");
 
@@ -33,8 +36,10 @@ const BoardListPage = ({ currentBoard }: BoardListPageProps) => {
 
   return (
     <StyledBoardListPage>
-      <Menu />
-      <Wrapper>{_currentBoard && <BoardList subCategory={subCategory} />}</Wrapper>
+      {!isMobile && <Menu />}
+      {isMobile && <MobileHeader />}
+      {enableMenu && <Menu />}
+      {_currentBoard && <BoardList subCategory={subCategory} />}
     </StyledBoardListPage>
   );
 };

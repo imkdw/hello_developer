@@ -47,10 +47,6 @@ const Input = styled.input`
   height: 100%;
   border-radius: 10px;
   font-size: 13px;
-
-  @media screen and (max-width: 767px) {
-    font-size: 11px;
-  }
 `;
 
 const Button = styled.button`
@@ -104,12 +100,7 @@ const LoginForm = () => {
 
       const { accessToken, refreshToken, profileImg, nickname, userId } = res.data;
 
-      // refresh 토큰은 쿠키에 저장
-      const cookieValue = refreshToken;
-      const cookieExpires = new Date();
-      cookieExpires.setTime(cookieExpires.getTime() + 24 * 60 * 60 * 1000);
-
-      setCookie(cookieName, cookieValue, { expires: cookieExpires });
+      setCookie("refreshToken", refreshToken, { httpOnly: true });
 
       setLoggedInUser((prevState) => {
         return { ...prevState, accessToken, profileImg, nickname, userId };

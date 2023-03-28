@@ -23,7 +23,7 @@ const TextEditor = ({ onChange, accessToken, tempBoardId }: TextEditorProps) => 
         initialEditType: "markdown",
         previewStyle: "vertical",
         hideModeSwitch: true,
-        initialValue: "# 내용은 최소 10자부터 100,000자 까지 입력이 가능합니다.",
+        initialValue: "### 내용은 최소 10자부터 100,000자 까지 입력이 가능합니다.",
         hooks: { addImageBlobHook },
       });
 
@@ -41,10 +41,8 @@ const TextEditor = ({ onChange, accessToken, tempBoardId }: TextEditorProps) => 
 
     try {
       const res = await uploadBoardImage(formData, accessToken);
-      console.log(res.data);
       callback(res.data.imageUrl, `image`);
     } catch (err: any) {
-      console.error(err);
       callback(`이미지 업로드 실패, ${err.message}`);
     }
   };

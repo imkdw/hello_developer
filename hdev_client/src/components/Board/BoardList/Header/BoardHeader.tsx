@@ -1,3 +1,4 @@
+import { useMediaQuery } from "react-responsive";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { AddIcon } from "../../../../assets/icon";
@@ -36,14 +37,18 @@ const ButtonText = styled.p`
 `;
 
 const BoardHeader = () => {
+  const isMobile = useMediaQuery({ maxWidth: "767px" });
+
   return (
     <StyledBoardHeader>
       <Subject />
       <CategoryTab />
-      <CreateButton to="/boards/add">
-        <AddIcon />
-        <ButtonText>새로운 글 작성</ButtonText>
-      </CreateButton>
+      {!isMobile && (
+        <CreateButton to="/boards/add">
+          <AddIcon />
+          <ButtonText>새로운 글 작성</ButtonText>
+        </CreateButton>
+      )}
     </StyledBoardHeader>
   );
 };

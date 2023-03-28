@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { v4 } from "uuid";
 import { loggedInUserState } from "../../../recoil";
 import { createBoard } from "../../../services/BoardService";
-import { categoryValidation, contentValidation, titleValidation } from "../../../utils/Board";
+import { categoryValidation, contentValidation, tagsValidation, titleValidation } from "../../../utils/Board";
 import TextEditor from "./TextEditor";
 
 const StyledCreateBoardForm = styled.form`
@@ -36,6 +36,7 @@ const Wrapper = styled.div`
 
 const Message = styled.p`
   width: 100%;
+  height: 50px;
   font-size: 30px;
 
   @media screen and (max-width: 767px) {
@@ -45,7 +46,7 @@ const Message = styled.p`
 
 const FormControl = styled.div`
   width: 100%;
-  height: 100px;
+  height: auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -77,8 +78,6 @@ const Select = styled.select`
   padding: 0 10px;
   cursor: pointer;
 `;
-
-const Option = styled.option``;
 
 const Buttons = styled.div`
   width: 200px;
@@ -121,8 +120,8 @@ const InputWrapper = styled.div`
   gap: 10px;
 
   @media screen and (max-width: 767px) {
-    flex-direction: column;
     height: 150px;
+    flex-direction: column;
   }
 `;
 
@@ -214,10 +213,20 @@ const CreateBoardForm = ({ tempBoardId }: CreateBoardFormProps) => {
     });
   }, []);
 
+  const cancelHandler = () => {
+    navigator(-1);
+  };
+
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const { title, category, tags, content } = postData;
-    console.log("submit");
+
+    // 태그의 중복값이 있는지 검사
+    let isDupTag = tagsValidation(tags);
+    if (isDupTag) {
+      alert("중복된 태그는 입력이 불가능합니다.");
+      return;
+    }
 
     try {
       const res = await createBoard(loggedInUser.accessToken, { title, category, tags, content, tempBoardId });
@@ -260,16 +269,16 @@ const CreateBoardForm = ({ tempBoardId }: CreateBoardFormProps) => {
         <FormControl>
           <Label>카테고리</Label>
           <Select onChange={changeCategory} value={postData.category}>
-            <Option value="none">카테고리를 선택해주세요</Option>
-            <Option value="suggestion">건의사항</Option>
-            <Option value="free">자유주제</Option>
-            <Option value="knowledge-tips">지식공유 - 꿀팁</Option>
-            <Option value="knowledge-review">지식공유 - 리뷰</Option>
-            <Option value="qna-career">질문답변 - 커리어</Option>
-            <Option value="qna-tech">질문답변 - 기술</Option>
-            <Option value="recruitment-project">인원모집 - 프로젝트</Option>
-            <Option value="recruitment-study">인원모집 - 스터디</Option>
-            <Option value="recruitment-company">인원모집 - 채용공고</Option>
+            <option value="none">카테고리를 선택해주세요</option>
+            <option value="suggestion">건의사항</option>
+            <option value="free">자유주제</option>
+            <option value="knowledge-tips">지식공유 - 꿀팁</option>
+            <option value="knowledge-review">지식공유 - 리뷰</option>
+            <option value="qna-career">질문답변 - 커리어</option>
+            <option value="qna-tech">질문답변 - 기술</option>
+            <option value="recruitment-project">인원모집 - 프로젝트</option>
+            <option value="recruitment-study">인원모집 - 스터디</option>
+            <option value="recruitment-company">인원모집 - 채용공고</option>
           </Select>
         </FormControl>
         <FormControl>
@@ -284,9 +293,7 @@ const CreateBoardForm = ({ tempBoardId }: CreateBoardFormProps) => {
         <FormControl>
           <Label>
             태그 -{" "}
-            <span style={{ fontSize: "14px", color: "#005DFF" }}>
-              내용을 대표하는 태그를 10자까지 입력해주세요. (미입력 가능)
-            </span>
+            <span style={{ fontSize: "14px", color: "#005DFF" }}>내용을 대표하는 태그를 10자까지 입력해주세요.</span>
           </Label>
           <InputWrapper>
             <Input type="text" placeholder="첫번째 태그" style={{ flex: 1 }} name="tag1" onChange={changeTags} />
@@ -299,7 +306,9 @@ const CreateBoardForm = ({ tempBoardId }: CreateBoardFormProps) => {
           <TextEditor onChange={changeContent} accessToken={loggedInUser.accessToken} tempBoardId={tempBoardId} />
         </FormControl>
         <Buttons>
-          <CancelButton>취소</CancelButton>
+          <CancelButton type="button" onClick={cancelHandler}>
+            취소
+          </CancelButton>
           {isPostDataValid.category && isPostDataValid.title && isPostDataValid.content ? (
             <SubmitButton type="submit">등록</SubmitButton>
           ) : (

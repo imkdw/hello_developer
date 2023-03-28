@@ -1,5 +1,5 @@
 import { useRecoilState, useRecoilValue } from "recoil";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { RecommendIcon } from "../../../assets/icon";
 import { loggedInUserState } from "../../../recoil";
@@ -73,9 +73,11 @@ const Recommend = styled.button<{ isBackgroundColor: boolean }>`
 const BoardContent = () => {
   const [boardDetail, setBoardDetail] = useRecoilState(boardDetailState);
   const loggedInUser = useRecoilValue(loggedInUserState);
-  const [isRecommendedUser, setIsRecommendedUser] = useState(
-    boardDetail.recommends.some((recommend) => recommend.userId === loggedInUser.userId)
-  );
+  const [isRecommendedUser, setIsRecommendedUser] = useState(false);
+
+  useEffect(() => {
+    setIsRecommendedUser(boardDetail.recommends.some((recommend) => recommend.userId === loggedInUser.userId));
+  }, [boardDetail.recommends]);
 
   const recommendHandler = async () => {
     if (!loggedInUser.accessToken) {
@@ -84,19 +86,19 @@ const BoardContent = () => {
     }
 
     try {
+      console.log(isRecommendedUser);
       await addRecommend(boardDetail.boardId, loggedInUser.accessToken);
 
       const res = await getBoard(boardDetail.boardId);
       setBoardDetail(res.data);
-      setIsRecommendedUser(
-        res.data.recommends.some((recommend: { [userId: string]: string }) => recommend.userId === loggedInUser.userId)
-      );
+      setIsRecommendedUser((prevState) => !prevState);
+      console.log(isRecommendedUser);
     } catch (err: any) {}
   };
 
   return (
     <StyledBoardContent>
-      <Title>{boardDetail.title}</Title>
+      <Title>제목 : {boardDetail.title}</Title>
       <MarkdownViewer content={boardDetail.content} />
       <TagsAndRecommend>
         <Tags>

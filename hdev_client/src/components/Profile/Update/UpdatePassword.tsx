@@ -14,6 +14,10 @@ const Form = styled.form`
   justify-content: center;
   gap: 15px;
   margin-top: 20px;
+
+  @media screen and (max-width: 767px) {
+    height: 300px;
+  }
 `;
 
 const FormControl = styled.div`
@@ -26,11 +30,19 @@ const FormControl = styled.div`
 
 const Label = styled.label`
   font-size: 22px;
+
+  @media screen and (max-width: 767px) {
+    font-size: 18px;
+  }
 `;
 
 const LabelDesc = styled.span`
   font-size: 14px;
   color: #0090f9;
+
+  @media screen and (max-width: 767px) {
+    font-size: 13px;
+  }
 `;
 
 const Input = styled.input`
@@ -154,14 +166,14 @@ const UpdatePassword = ({ userId }: UpdatePasswordProps) => {
       </FormControl>
       <FormControl>
         <Label>
-          변경할 비밀번호 - <LabelDesc>변경하고싶은 비밀번호를 입력해주세요</LabelDesc>
+          변경 비밀번호 - <LabelDesc>변경하고싶은 비밀번호를 입력해주세요</LabelDesc>
         </Label>
         <Input
           type="password"
           name="rePassword"
           value={updateData.rePassword}
           onChange={updateDataChangeHandler}
-          placeholder="영문, 숫자, 특수문자를 포함하여 10자리 이상 입력해주세요"
+          placeholder="영문, 숫자, 특수문자를 포함하여 10자리 이상"
         />
       </FormControl>
       {/* TODO: disabled 처리 안되는거 해결필요 */}

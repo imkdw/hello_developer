@@ -3,9 +3,8 @@ import { persistAtom } from "./persist";
 
 /** 사이드메뉴 활성화/비활성화 여부 */
 export const enableMenuState = atom<boolean>({
-  key: "enableSideMenuState",
+  key: "enableMenuState",
   default: false,
-  effects_UNSTABLE: [persistAtom],
 });
 
 /** 현재 페이지 */

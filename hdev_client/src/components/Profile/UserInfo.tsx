@@ -17,6 +17,11 @@ const StyledUserInfo = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @media screen and (max-width: 767px) {
+    width: 90%;
+    height: 650px;
+  }
 `;
 
 const HistoryTab = styled.div`
@@ -25,6 +30,10 @@ const HistoryTab = styled.div`
   border-bottom: 1px solid #cfcfcf;
   display: flex;
   justify-content: space-around;
+
+  @media screen and (max-width: 767px) {
+    height: 10%;
+  }
 `;
 
 const TabItem = styled.button<{ $isBorder: boolean }>`
@@ -39,6 +48,10 @@ const TabItem = styled.button<{ $isBorder: boolean }>`
 
   &:hover {
     border-bottom: 2px solid #0090f9;
+  }
+
+  @media screen and (max-width: 767px) {
+    font-size: 16px;
   }
 `;
 

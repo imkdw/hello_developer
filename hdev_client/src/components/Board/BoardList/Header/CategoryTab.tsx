@@ -8,6 +8,10 @@ const StyledCategoryTab = styled.div`
   height: 50px;
   display: flex;
   gap: 10px;
+
+  @media screen and (max-width: 767px) {
+    justify-content: center;
+  }
 `;
 
 const CategoryItem = styled(Link)<{ $isBorderBottom: boolean }>`
@@ -20,6 +24,10 @@ const CategoryItem = styled(Link)<{ $isBorderBottom: boolean }>`
 
   &:hover {
     border-bottom: 2px solid #0064fe;
+  }
+
+  @media screen and (max-width: 767px) {
+    width: 20%;
   }
 `;
 

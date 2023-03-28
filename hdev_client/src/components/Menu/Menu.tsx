@@ -1,8 +1,5 @@
 import { useMediaQuery } from "react-responsive";
 import styled from "styled-components";
-// import MenuLink from "./MenuLink";
-// import MenuLogo from "./MenuLogo";
-// import MenuSearch from "./MenuSearch";
 
 import { useSetRecoilState } from "recoil";
 import { CloseIcon } from "../../assets/icon";
@@ -21,6 +18,23 @@ const StyledMenu = styled.div`
   flex-direction: column;
   border-right: 1px solid #e5e6e8;
   align-items: center;
+  position: relative;
+  z-index: 999;
+
+  @keyframes loadEffect {
+    0% {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    50% {
+      opacity: 0.5;
+      transform: translateX(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0px);
+    }
+  }
 
   @media screen and (max-width: 767px) {
     width: 100%;
@@ -28,10 +42,11 @@ const StyledMenu = styled.div`
     position: absolute;
     max-width: initial;
     z-index: 1;
+    animation: 0.6s ease-in-out loadEffect;
   }
 `;
 
-const CloseButton = styled.div`
+const CloseButton = styled.button`
   width: 40px;
   height: 40px;
   position: absolute;
@@ -41,6 +56,7 @@ const CloseButton = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: transparent;
 `;
 
 const Menu = () => {
@@ -65,8 +81,6 @@ const Menu = () => {
       <MenuSearch />
       <MenuLink />
       <MenuUtil />
-      {/* 모바일환경 사이드메뉴에 링크 클릭시 사이드메뉴 비활성화 필요 */}
-      {/* {isMobile ? <MenuLink onClick={closeMenuHandler} /> : <MenuLink />} */}
     </StyledMenu>
   );
 };
