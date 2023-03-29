@@ -2,17 +2,40 @@ import Editor from "@toast-ui/editor";
 import { HookCallback } from "@toast-ui/editor/types/editor";
 import "@toast-ui/editor/dist/toastui-editor.css";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { uploadBoardImage } from "../../../services/BoardService";
+import { useRecoilState } from "recoil";
+import { loggedInUserState } from "../../../recoil";
 
 interface TextEditorProps {
   onChange(markdown: string): void;
-  accessToken: string;
   tempBoardId: string;
 }
 
-const TextEditor = ({ onChange, accessToken, tempBoardId }: TextEditorProps) => {
+const TextEditor = ({ onChange, tempBoardId }: TextEditorProps) => {
+  const [loggedInUser, setLoggedInUser] = useRecoilState(loggedInUserState);
   const editorRef = useRef(null);
+
+  const addImageBlobHook = useCallback(
+    async (blob: Blob, callback: HookCallback) => {
+      const formData = new FormData();
+      formData.append("image", blob);
+      formData.append("tempBoardId", tempBoardId);
+
+      try {
+        const res = await uploadBoardImage(formData, loggedInUser.accessToken);
+        callback(res.data.imageUrl, `image`);
+        if (res.data.accessToken) {
+          setLoggedInUser((prevState) => {
+            return { ...prevState, accessToken: res.data.accessToken };
+          });
+        }
+      } catch (err: any) {
+        callback(`이미지 업로드 실패, ${err.message}`);
+      }
+    },
+    [loggedInUser.accessToken, tempBoardId]
+  );
 
   useEffect(() => {
     if (editorRef.current) {
@@ -32,20 +55,7 @@ const TextEditor = ({ onChange, accessToken, tempBoardId }: TextEditorProps) => 
         onChange(markdown);
       });
     }
-  }, [onChange]);
-
-  const addImageBlobHook = async (blob: Blob, callback: HookCallback) => {
-    const formData = new FormData();
-    formData.append("image", blob);
-    formData.append("tempBoardId", tempBoardId);
-
-    try {
-      const res = await uploadBoardImage(formData, accessToken);
-      callback(res.data.imageUrl, `image`);
-    } catch (err: any) {
-      callback(`이미지 업로드 실패, ${err.message}`);
-    }
-  };
+  }, [onChange, addImageBlobHook]);
 
   return <div ref={editorRef}></div>;
 };

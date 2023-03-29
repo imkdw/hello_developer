@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import { FormEvent, useState, ChangeEvent, MouseEvent } from "react";
 import { updateProfile } from "../../../services/UserService";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { loggedInUserState } from "../../../recoil";
 import { userInfoState } from "../../../recoil/user";
-import { nicknameValidation, passwordValidation } from "../../../utils/Auth";
+import { nicknameValidation } from "../../../utils/Auth";
 
 const Form = styled.form`
   width: 95%;
@@ -122,8 +122,6 @@ const UpdateProfile = ({ userId }: UpdateProfileProps) => {
 
       return { ...prevState, [name]: isValid };
     });
-
-    console.log(`${name}: ${value}, ${JSON.stringify(isValidUpdateData)}`);
   };
 
   const submitHanlder = async (event: FormEvent<HTMLFormElement>) => {

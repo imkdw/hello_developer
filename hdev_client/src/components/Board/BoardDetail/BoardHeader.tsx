@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { MenuIcon } from "../../../assets/icon";
 import { loggedInUserState } from "../../../recoil";
@@ -83,7 +83,7 @@ const MenuItem = styled(Link)`
 
 const BoardHeader = () => {
   const boardDetail = useRecoilValue(boardDetailState);
-  const loggedInUser = useRecoilValue(loggedInUserState);
+  const [loggedInUser, setLoggedInUser] = useRecoilState(loggedInUserState);
   const [enableMenu, setEnableMenu] = useState(false);
   const navigator = useNavigate();
 
@@ -95,7 +95,13 @@ const BoardHeader = () => {
     try {
       const isRemove = window.confirm("게시글을 삭제하면 복구가 불가능합니다. 정말 삭제하실껀가요?");
       if (isRemove) {
-        await removeBoard(boardDetail.boardId, loggedInUser.accessToken);
+        const res = await removeBoard(boardDetail.boardId, loggedInUser.accessToken);
+        if (res.data.accessToken) {
+          setLoggedInUser((prevState) => {
+            return { ...prevState, accessToken: res.data.accessToken };
+          });
+        }
+
         alert("게시글 삭제가 완료되었습니다.");
         navigator(-1);
       }

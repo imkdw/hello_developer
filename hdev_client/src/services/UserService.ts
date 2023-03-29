@@ -1,5 +1,6 @@
 import { UserPasswordUpdateData, UserProfileUpdateData } from "../types/user";
 import { api } from "../utils/Common";
+import { token } from "./AuthService";
 
 /**
  * [GET] /users/:userId - 사용자 프로필 가져오기
@@ -29,6 +30,17 @@ export const updateProfile = async (userId: string, updateData: UserProfileUpdat
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
   } catch (err: any) {
+    if (err.response.status === 401) {
+      const tokenRes = await token();
+      const res = await api.patch(
+        `/users/${userId}`,
+        { ...updateData },
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      res.data.accessToken = tokenRes.data.accessToken;
+      return res;
+    }
+
     throw err;
   }
 };

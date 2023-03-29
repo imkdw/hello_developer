@@ -20,8 +20,10 @@ import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { ExitUserVerifyDto } from './dto/exit-user-verify.dto';
+import { ApiTags } from '@nestjs/swagger/dist/decorators/api-use-tags.decorator';
 
 @Controller('users')
+@ApiTags('사용자 API')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 

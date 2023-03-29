@@ -17,7 +17,7 @@ const Verify = () => {
     if (verifyToken) {
       doVerify();
     }
-  }, []);
+  }, [verifyToken, navigator]);
 
   return <div></div>;
 };

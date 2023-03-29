@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { useSetRecoilState } from "recoil";
-import { Link } from "react-router-dom";
 import { HeaderMenuIcon } from "../../../assets/icon";
 import { enableMenuState } from "../../../recoil";
 import { Logo } from "../../Common";

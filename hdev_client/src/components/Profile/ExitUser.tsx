@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import { FormEvent, useState, ChangeEvent, MouseEvent } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { FormEvent, useState, ChangeEvent } from "react";
+import { useRecoilState } from "recoil";
 import { exitUser, exitUserVerify } from "../../services/UserService";
 import { loggedInUserState } from "../../recoil";
 import { useNavigate } from "react-router-dom";
@@ -81,10 +81,6 @@ interface ExitUSerProps {
   userId: string;
 }
 
-interface IsValidUpdateData {
-  [key: string]: boolean | null;
-}
-
 const ExitUser = ({ userId }: ExitUSerProps) => {
   const [loggedInUser, setLoggedInUser] = useRecoilState(loggedInUserState);
   const [password, setPassword] = useState("");
@@ -119,7 +115,7 @@ const ExitUser = ({ userId }: ExitUSerProps) => {
         navigator("/");
       }
     } catch (err: any) {
-      const { status, data } = err.response;
+      const { status } = err.response;
 
       let errMessage = "서버 오류입니다. 다시 시도해주세요.";
       switch (status) {

@@ -53,3 +53,22 @@ export interface IBoardDetail {
   category2: { name: string } | null;
   recommends: { userId: string }[];
 }
+
+export interface CreateBoardDto {
+  tempBoardId: string;
+  category: string;
+  title: string;
+  tags: {
+    name: string;
+  }[];
+  content: string;
+}
+
+export interface UpdateBoardDto {
+  category: string;
+  title: string;
+  tags: {
+    name: string;
+  }[];
+  content: string;
+}

@@ -23,7 +23,7 @@ const BoardDetailPage = () => {
 
   useEffect(() => {
     setEnableMenu(false);
-  }, []);
+  }, [setEnableMenu]);
 
   return (
     <StyledBoardDetailPage>

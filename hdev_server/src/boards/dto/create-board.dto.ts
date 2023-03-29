@@ -1,17 +1,15 @@
-import {
-  MinLength,
-  MaxLength,
-  NotEquals,
-  IsArray,
-  ArrayMaxSize,
-  Length,
-  IsNotEmpty,
-} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger/dist/decorators';
+import { NotEquals, IsArray, ArrayMaxSize, Length, IsNotEmpty } from 'class-validator';
 
 export class CreateBoardDto {
   /**
    * 임시 게시글 아이디
    */
+  @ApiProperty({
+    example: '게시글 작성시 자동생성(UUID)',
+    description: 'temp_board_id',
+    required: true,
+  })
   tempBoardId: string;
 
   /**
@@ -19,6 +17,11 @@ export class CreateBoardDto {
    */
   @IsNotEmpty()
   @Length(1, 50)
+  @ApiProperty({
+    example: '게시글 제목입니다',
+    description: '게시글 제목',
+    required: true,
+  })
   title: string;
 
   /**
@@ -26,6 +29,11 @@ export class CreateBoardDto {
    */
   @IsNotEmpty()
   @Length(1, 100000)
+  @ApiProperty({
+    example: '게시글 본문(내용)입니다',
+    description: '게시글 내용',
+    required: true,
+  })
   content: string;
 
   /**
@@ -33,6 +41,11 @@ export class CreateBoardDto {
    */
   @IsNotEmpty()
   @NotEquals('none')
+  @ApiProperty({
+    example: 'qna-tech',
+    description: '게시글 카테고리',
+    required: true,
+  })
   category: string;
 
   /**
@@ -40,6 +53,11 @@ export class CreateBoardDto {
    */
   @IsArray()
   @ArrayMaxSize(3)
+  @ApiProperty({
+    example: '[{name: "태그"}]',
+    description: '게시글 태그',
+    required: true,
+  })
   tags: {
     name: string;
   }[];

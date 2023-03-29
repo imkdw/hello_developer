@@ -67,7 +67,7 @@ export class AuthService {
     // TODO: 환경변수로 관리필요
     const accessToken = this.jwtService.sign(
       { userId },
-      { secret: 'jwtSecret12345!@@!', expiresIn: '15m' },
+      { secret: 'jwtSecret12345!@@!', expiresIn: '1h' },
     );
 
     // TODO: 환경변수로 관리필요
@@ -89,25 +89,15 @@ export class AuthService {
     await this.userRepository.removeRefreshToken(tokenUserId);
   }
 
-  async generateAccessToken(tokenUserId: string, refreshToken: string) {
-    const user = await this.userRepository.findById(tokenUserId);
-
-    if (!user) {
-      throw new NotFoundException('user_not_found');
-    }
-
-    if (user.refreshToken !== refreshToken) {
-      throw new UnauthorizedException('unauthorized_user');
-    }
-
-    const jwtConfig = this.configService.get<JwtConfig>('jwt');
-
-    const accessToken = this.jwtService.sign(
-      { userId: user.userId },
-      { secret: jwtConfig.jwtSecret, expiresIn: jwtConfig.accessTokenExpiresIn },
+  createAccessToken(refreshToken: string) {
+    const decodedToken = this.jwtService.decode(refreshToken);
+    const token = this.jwtService.sign(
+      { userId: decodedToken['userId'] },
+      { secret: 'jwtSecret12345!@@!', expiresIn: '1h' },
     );
 
-    return accessToken;
+    console.log(`refreshToken: ${token}`);
+    return token;
   }
 
   async validateUser(email: string, password: string) {
@@ -124,5 +114,7 @@ export class AuthService {
     await this.userRepository.verify(verifyToken);
   }
 
-  async verfiyRefreshToken(refreshToken: string) {}
+  async verfiyRefreshToken(refreshToken: string) {
+    return this.jwtService.verify(refreshToken);
+  }
 }

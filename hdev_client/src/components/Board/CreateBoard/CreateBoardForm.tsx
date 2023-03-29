@@ -1,8 +1,7 @@
-import { ChangeEvent, useState, useCallback, FormEvent, useEffect } from "react";
+import { ChangeEvent, useState, useCallback, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { v4 } from "uuid";
 import { loggedInUserState } from "../../../recoil";
 import { createBoard } from "../../../services/BoardService";
 import { categoryValidation, contentValidation, tagsValidation, titleValidation } from "../../../utils/Board";
@@ -129,6 +128,10 @@ interface CreateBoardFormProps {
   tempBoardId: string;
 }
 
+interface IsPostDataValid {
+  [key: string]: null | boolean;
+}
+
 const CreateBoardForm = ({ tempBoardId }: CreateBoardFormProps) => {
   const [postData, setPostData] = useState({
     category: "none",
@@ -137,17 +140,13 @@ const CreateBoardForm = ({ tempBoardId }: CreateBoardFormProps) => {
     content: "",
   });
 
-  interface IsPostDataValid {
-    [key: string]: null | boolean;
-  }
-
   const [isPostDataValid, setIsPostDataValid] = useState<IsPostDataValid>({
     category: null,
     title: null,
     content: null,
   });
 
-  const loggedInUser = useRecoilValue(loggedInUserState);
+  const [loggedInUser, setLoggedInUser] = useRecoilState(loggedInUserState);
   const navigator = useNavigate();
 
   const changeCategory = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -221,7 +220,6 @@ const CreateBoardForm = ({ tempBoardId }: CreateBoardFormProps) => {
     event.preventDefault();
     const { title, category, tags, content } = postData;
 
-    // 태그의 중복값이 있는지 검사
     let isDupTag = tagsValidation(tags);
     if (isDupTag) {
       alert("중복된 태그는 입력이 불가능합니다.");
@@ -230,6 +228,13 @@ const CreateBoardForm = ({ tempBoardId }: CreateBoardFormProps) => {
 
     try {
       const res = await createBoard(loggedInUser.accessToken, { title, category, tags, content, tempBoardId });
+
+      if (res.data.accessToken) {
+        setLoggedInUser((prevState) => {
+          return { ...prevState, accessToken: res.data.accessToken };
+        });
+      }
+
       const boardId = res.data.boardId;
       alert("게시글 작성이 완료되었습니다.");
       navigator(`/boards/${boardId}`);
@@ -303,7 +308,7 @@ const CreateBoardForm = ({ tempBoardId }: CreateBoardFormProps) => {
         </FormControl>
         <FormControl>
           <Label>내용</Label>
-          <TextEditor onChange={changeContent} accessToken={loggedInUser.accessToken} tempBoardId={tempBoardId} />
+          <TextEditor onChange={changeContent} tempBoardId={tempBoardId} />
         </FormControl>
         <Buttons>
           <CancelButton type="button" onClick={cancelHandler}>

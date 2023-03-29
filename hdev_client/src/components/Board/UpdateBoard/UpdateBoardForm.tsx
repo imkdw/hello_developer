@@ -1,6 +1,6 @@
 import { ChangeEvent, useState, useCallback, FormEvent, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { loggedInUserState } from "../../../recoil";
 import { getBoard, updateBoard } from "../../../services/BoardService";
@@ -146,7 +146,7 @@ const UpdateBoardForm = () => {
     };
 
     loadBoard();
-  }, []);
+  }, [boardId]);
 
   const [boardData, setBoardData] = useState({
     category: "none",
@@ -165,7 +165,7 @@ const UpdateBoardForm = () => {
     content: null,
   });
 
-  const loggedInUser = useRecoilValue(loggedInUserState);
+  const [loggedInUser, setLoggedInUser] = useRecoilState(loggedInUserState);
   const navigator = useNavigate();
 
   const changeCategory = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -251,7 +251,13 @@ const UpdateBoardForm = () => {
     }
 
     try {
-      await updateBoard(boardId, { title, category, tags, content }, loggedInUser.accessToken);
+      const res = await updateBoard(boardId, { title, category, tags, content }, loggedInUser.accessToken);
+
+      if (res.data.accessToken) {
+        setLoggedInUser((prevState) => {
+          return { ...prevState, accessToken: res.data.accessToken };
+        });
+      }
 
       alert("게시글 수정이 완료되었습니다.");
       navigator(-1);
@@ -349,14 +355,7 @@ const UpdateBoardForm = () => {
         </FormControl>
         <FormControl>
           <Label>내용</Label>
-          {boardData.content && (
-            <TextEditor
-              onChange={changeContent}
-              value={boardData.content}
-              boardId={boardId}
-              accessToken={loggedInUser.accessToken}
-            />
-          )}
+          {boardData.content && <TextEditor onChange={changeContent} value={boardData.content} boardId={boardId} />}
         </FormControl>
         <Buttons>
           <CancelButton type="button" onClick={cancelHandler}>

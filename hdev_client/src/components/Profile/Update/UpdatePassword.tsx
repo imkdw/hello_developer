@@ -1,9 +1,8 @@
 import styled from "styled-components";
-import { FormEvent, useState, ChangeEvent, MouseEvent } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { FormEvent, useState, ChangeEvent } from "react";
+import { useRecoilValue } from "recoil";
 import { loggedInUserState } from "../../../recoil";
-import { userInfoState } from "../../../recoil/user";
-import { nicknameValidation, passwordValidation } from "../../../utils/Auth";
+import { passwordValidation } from "../../../utils/Auth";
 import { updatePassword } from "../../../services/UserService";
 
 const Form = styled.form`
@@ -78,8 +77,7 @@ interface IsValidUpdateData {
 }
 
 const UpdatePassword = ({ userId }: UpdatePasswordProps) => {
-  const [loggedInUser, setLoggedInUser] = useRecoilState(loggedInUserState);
-  const [userInfo, setUserInfo] = useRecoilState(userInfoState);
+  const loggedInUser = useRecoilValue(loggedInUserState);
 
   const [updateData, setUpdateData] = useState({
     password: "",

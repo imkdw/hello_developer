@@ -16,8 +16,10 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { ApiTags } from '@nestjs/swagger/dist/decorators/api-use-tags.decorator';
 
 @Controller('comments')
+@ApiTags('댓글 API')
 export class CommentsController {
   constructor(private commentsService: CommentsService) {}
   /**

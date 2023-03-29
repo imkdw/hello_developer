@@ -1,8 +1,5 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { BellIcon, BookIcon, CheckIcon, PersonIcon, QuestionIcon, TalkBallonIcon } from "../../assets/icon";
-import { loggedInUserState } from "../../recoil";
 import MenuLinkItem from "./MenuLinkItem";
 
 const StyledMenuLink = styled.div`

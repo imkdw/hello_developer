@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { categoryDataState } from "../../recoil/board";
-import { userInfoState } from "../../recoil/user";
 import { getHistory } from "../../services/UserService";
 import { UserBoardHistory, UserCommentHistory } from "../../types/user";
 import { dateFormater } from "../../utils/Common";
@@ -144,6 +143,24 @@ const UserHistory = ({ userId }: UserHistoryProps) => {
     comment: false,
   });
 
+  const historyHandler = useCallback(
+    async (item: "board" | "comment") => {
+      try {
+        const res = await getHistory(userId, item);
+
+        if (item === "board") {
+          setBoards(res.data);
+        } else if (item === "comment") {
+          setCommentsBoard(res.data);
+        }
+      } catch (err: any) {
+        alert("에러발생");
+        console.error(err);
+      }
+    },
+    [userId]
+  );
+
   useEffect(() => {
     const getBoard = async () => {
       await historyHandler("board");
@@ -152,22 +169,7 @@ const UserHistory = ({ userId }: UserHistoryProps) => {
     if (userId) {
       getBoard();
     }
-  }, [userId]);
-
-  const historyHandler = async (item: "board" | "comment") => {
-    try {
-      const res = await getHistory(userId, item);
-
-      if (item === "board") {
-        setBoards(res.data);
-      } else if (item === "comment") {
-        setCommentsBoard(res.data);
-      }
-    } catch (err: any) {
-      alert("에러발생");
-      console.error(err);
-    }
-  };
+  }, [userId, historyHandler]);
 
   const enableTabHandler = (item: "board" | "comment" | "bookmark") => {
     switch (item) {

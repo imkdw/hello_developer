@@ -25,6 +25,7 @@ export const tagsValidation = (tags: { [key: string]: string }[]) => {
 
   for (let i = 0; i < tags.length; i++) {
     const tagName = tags[i].name;
+    if (tagName === "") continue;
     if (tagMap[tagName]) {
       return true;
     } else {

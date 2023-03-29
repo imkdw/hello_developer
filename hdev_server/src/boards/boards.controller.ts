@@ -4,14 +4,16 @@ import {
   Get,
   Param,
   Delete,
-  Put,
   UseGuards,
   Req,
   UsePipes,
   HttpCode,
   Patch,
+  Header,
+  Body,
+  Query,
 } from '@nestjs/common';
-import { Body, Query, UploadedFile, UseInterceptors } from '@nestjs/common/decorators';
+import { UploadedFile, UseInterceptors } from '@nestjs/common/decorators';
 import { ValidationPipe } from '../pipes/validation.pipe';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BoardsService } from './boards.service';
@@ -19,18 +21,19 @@ import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageUploadDto } from './dto/image-upload.dto';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger/dist';
+import { ApiBadRequestResponse } from '@nestjs/swagger/dist/decorators/api-response.decorator';
 
 @Controller('boards')
+@ApiTags('게시글 API')
 export class BoardsController {
   constructor(private boardsService: BoardsService) {}
 
-  /**
-   * 게시글 작성
-   * @param createBoardDto - 게시글 작성 데이터
-   */
-  @UsePipes(ValidationPipe)
   @UseGuards(JwtAuthGuard)
+  @UsePipes(ValidationPipe)
   @Post()
+  @ApiOperation({ summary: '게시글 생성 API', description: '새로운 게시글을 생성' })
+  @ApiCreatedResponse({ description: '새로운 게시글을 생성', type: '게시글 아이디' })
   async create(@Req() req, @Body() createBoardDto: CreateBoardDto) {
     const boardId = await this.boardsService.create(req.user.userId, createBoardDto);
     return { boardId };

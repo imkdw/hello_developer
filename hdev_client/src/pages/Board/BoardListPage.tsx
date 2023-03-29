@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Menu } from "../../components/Menu";
 import { useEffect } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { currentBoardState, enableMenuState } from "../../recoil";
 import BoardList from "../../components/Board/BoardList/BoardList";
 import { useLocation } from "react-router-dom";
@@ -24,7 +24,7 @@ interface BoardListPageProps {
 
 const BoardListPage = ({ currentBoard }: BoardListPageProps) => {
   const isMobile = useMediaQuery({ maxWidth: "767px" });
-  const enableMenu = useRecoilValue(enableMenuState);
+  const [enableMenu, setEnableMenu] = useRecoilState(enableMenuState);
   const [_currentBoard, setCurrentBoard] = useRecoilState(currentBoardState);
   const pathnameArr = useLocation().pathname.split("/");
 
@@ -32,7 +32,8 @@ const BoardListPage = ({ currentBoard }: BoardListPageProps) => {
 
   useEffect(() => {
     if (currentBoard) setCurrentBoard(currentBoard);
-  }, [currentBoard]);
+    setEnableMenu(false);
+  }, [currentBoard, setCurrentBoard]);
 
   return (
     <StyledBoardListPage>

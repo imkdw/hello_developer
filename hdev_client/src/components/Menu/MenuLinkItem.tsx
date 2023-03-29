@@ -1,7 +1,5 @@
 import { Link } from "react-router-dom";
-import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { enableMenuState } from "../../recoil";
 
 const StyledMenuLinkItem = styled.li<{ backgroundColor?: boolean }>`
   width: 100%;

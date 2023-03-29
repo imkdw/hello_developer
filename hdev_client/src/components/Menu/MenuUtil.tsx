@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { enableMenuState, loggedInUserState } from "../../recoil";
 import { logout } from "../../services/AuthService";
@@ -16,13 +16,6 @@ const ProfileWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-`;
-
-const ProfileImg = styled.img`
-  width: 50px;
-  height: 50px;
-  border: 1px solid #dbdbdb;
-  border-radius: 50%;
 `;
 
 const Nickname = styled(Link)`

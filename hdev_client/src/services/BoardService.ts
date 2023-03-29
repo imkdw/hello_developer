@@ -1,5 +1,8 @@
+import { useSetRecoilState } from "recoil";
+import { loggedInUserState } from "../recoil";
+import { CreateBoardDto, UpdateBoardDto } from "../types/board";
 import { api } from "../utils/Common";
-import { v4 } from "uuid";
+import { token } from "./AuthService";
 
 export const getBoards = async (mainCategory: string, subCategory: string) => {
   try {
@@ -8,16 +11,6 @@ export const getBoards = async (mainCategory: string, subCategory: string) => {
     throw err;
   }
 };
-
-interface CreateBoardDto {
-  tempBoardId: string;
-  category: string;
-  title: string;
-  tags: {
-    name: string;
-  }[];
-  content: string;
-}
 
 export const createBoard = async (accessToken: string, createBoardDto: CreateBoardDto) => {
   try {
@@ -31,6 +24,21 @@ export const createBoard = async (accessToken: string, createBoardDto: CreateBoa
       }
     );
   } catch (err: any) {
+    if (err.response.status === 401) {
+      const tokenRes = await token();
+      const res = await api.post(
+        "/boards",
+        { ...createBoardDto },
+        {
+          headers: {
+            Authorization: `Bearer ${tokenRes.data.accessToken}`,
+          },
+        }
+      );
+      res.data.accessToken = tokenRes.data.accessToken;
+      return res;
+    }
+
     throw err;
   }
 };
@@ -42,15 +50,6 @@ export const getBoard = async (boardId: string) => {
     throw err;
   }
 };
-
-interface UpdateBoardDto {
-  category: string;
-  title: string;
-  tags: {
-    name: string;
-  }[];
-  content: string;
-}
 
 export const updateBoard = async (boardId: string, updateBoardDto: UpdateBoardDto, accessToken: string) => {
   try {
@@ -64,6 +63,21 @@ export const updateBoard = async (boardId: string, updateBoardDto: UpdateBoardDt
       }
     );
   } catch (err: any) {
+    if (err.response.status === 401) {
+      const tokenRes = await token();
+      const res = await api.post(
+        "/boards",
+        { ...updateBoardDto },
+        {
+          headers: {
+            Authorization: `Bearer ${tokenRes.data.accessToken}`,
+          },
+        }
+      );
+      res.data.accessToken = tokenRes.data.accessToken;
+      return res;
+    }
+
     throw err;
   }
 };
@@ -72,6 +86,15 @@ export const removeBoard = async (boardId: string, accessToken: string) => {
   try {
     return await api.delete(`/boards/${boardId}`, { headers: { Authorization: `Bearer ${accessToken}` } });
   } catch (err: any) {
+    if (err.response.status === 401) {
+      const tokenRes = await token();
+      const res = await api.delete(`/boards/${boardId}`, {
+        headers: { Authorization: `Bearer ${tokenRes.data.accessToken}` },
+      });
+      res.data.accessToken = tokenRes.data.accessToken;
+      return res;
+    }
+
     throw err;
   }
 };
@@ -80,6 +103,15 @@ export const addRecommend = async (boardId: string, accessToken: string) => {
   try {
     return await api.get(`/boards/${boardId}/recommend`, { headers: { Authorization: `Bearer ${accessToken}` } });
   } catch (err: any) {
+    if (err.response.status === 401) {
+      const tokenRes = await token();
+      const res = await api.get(`/boards/${boardId}/recommend`, {
+        headers: { Authorization: `Bearer ${tokenRes.data.accessToken}` },
+      });
+      res.data.accessToken = tokenRes.data.accessToken;
+      return res;
+    }
+
     throw err;
   }
 };
@@ -98,6 +130,15 @@ export const uploadBoardImage = async (formData: FormData, accessToken: string) 
       headers: { Authorization: `Bearer ${accessToken}` },
     });
   } catch (err: any) {
+    if (err.response.status === 401) {
+      const tokenRes = await token();
+      const res = await api.post(`/boards/image`, formData, {
+        headers: { Authorization: `Bearer ${tokenRes.data.accessToken}` },
+      });
+      res.data.accessToken = tokenRes.data.accessToken;
+      return res;
+    }
+
     throw err;
   }
 };

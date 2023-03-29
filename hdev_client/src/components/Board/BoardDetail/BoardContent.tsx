@@ -19,12 +19,6 @@ const Title = styled.h1`
   font-size: 40px;
 `;
 
-const Content = styled.div`
-  width: 100%;
-  height: auto;
-  font-size: 18px;
-`;
-
 const TagsAndRecommend = styled.div`
   width: 100%;
   display: flex;
@@ -72,12 +66,12 @@ const Recommend = styled.button<{ isBackgroundColor: boolean }>`
 
 const BoardContent = () => {
   const [boardDetail, setBoardDetail] = useRecoilState(boardDetailState);
-  const loggedInUser = useRecoilValue(loggedInUserState);
+  const [loggedInUser, setLoggedInUser] = useRecoilState(loggedInUserState);
   const [isRecommendedUser, setIsRecommendedUser] = useState(false);
 
   useEffect(() => {
     setIsRecommendedUser(boardDetail.recommends.some((recommend) => recommend.userId === loggedInUser.userId));
-  }, [boardDetail.recommends]);
+  }, [boardDetail.recommends, loggedInUser.userId]);
 
   const recommendHandler = async () => {
     if (!loggedInUser.accessToken) {
@@ -86,11 +80,16 @@ const BoardContent = () => {
     }
 
     try {
-      console.log(isRecommendedUser);
-      await addRecommend(boardDetail.boardId, loggedInUser.accessToken);
+      const res = await addRecommend(boardDetail.boardId, loggedInUser.accessToken);
 
-      const res = await getBoard(boardDetail.boardId);
-      setBoardDetail(res.data);
+      if (res.data.accessToken) {
+        setLoggedInUser((prevState) => {
+          return { ...prevState, accessToken: res.data.accessToken };
+        });
+      }
+
+      const boardRes = await getBoard(boardDetail.boardId);
+      setBoardDetail(boardRes.data);
       setIsRecommendedUser((prevState) => !prevState);
       console.log(isRecommendedUser);
     } catch (err: any) {}
@@ -106,6 +105,8 @@ const BoardContent = () => {
             if (tag.name.length !== 0) {
               return <TagText key={tag.name}># {tag.name}</TagText>;
             }
+
+            return null;
           })}
         </Tags>
         <Recommend onClick={recommendHandler} isBackgroundColor={isRecommendedUser}>

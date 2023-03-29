@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { useEffect } from "react";
-import { getProfile } from "../../services";
 import UserInfo from "./UserInfo";
 import UserHistory from "./UserHistory";
 import { useSetRecoilState } from "recoil";
@@ -28,7 +27,7 @@ const Profile = () => {
 
   useEffect(() => {
     setEnableMenu(false);
-  }, []);
+  }, [setEnableMenu]);
 
   return (
     <StyledProfile>

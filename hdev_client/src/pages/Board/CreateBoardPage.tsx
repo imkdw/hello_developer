@@ -31,7 +31,7 @@ const CreateBoardPage = () => {
       alert("로그인이 필요한 서비스 입니다.");
       navigator("/login");
     }
-  }, []);
+  }, [navigator, loggedInUser.accessToken]);
 
   return (
     <StyledCreateBoardPage>

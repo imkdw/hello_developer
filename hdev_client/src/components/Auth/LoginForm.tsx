@@ -1,3 +1,4 @@
+/* eslint-disable */
 import styled from "styled-components";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useSetRecoilState } from "recoil";
@@ -98,9 +99,7 @@ const LoginForm = () => {
     try {
       const res = await login(account.email, account.password);
 
-      const { accessToken, refreshToken, profileImg, nickname, userId } = res.data;
-
-      setCookie("refreshToken", refreshToken, { httpOnly: true });
+      const { accessToken, profileImg, nickname, userId } = res.data;
 
       setLoggedInUser((prevState) => {
         return { ...prevState, accessToken, profileImg, nickname, userId };

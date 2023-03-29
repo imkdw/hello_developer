@@ -1,6 +1,6 @@
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
-import { useRef, ChangeEvent, FormEvent, useState, useEffect } from "react";
+import { useRef, ChangeEvent, FormEvent } from "react";
 import { userInfoState } from "../../recoil/user";
 import { loggedInUserState } from "../../recoil";
 import { updateProfileImage } from "../../services/UserService";

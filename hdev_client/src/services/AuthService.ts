@@ -35,3 +35,12 @@ export const logout = async (userId: string, accessToken: string) => {
     throw err;
   }
 };
+
+export const token = async () => {
+  try {
+    const res = await api.get("/auth/token");
+    return res;
+  } catch (err: any) {
+    throw err;
+  }
+};

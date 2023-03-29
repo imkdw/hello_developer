@@ -1,5 +1,5 @@
 import { ChangeEvent, useState, FormEvent } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { loggedInUserState } from "../../../recoil";
 import { boardDetailState } from "../../../recoil/board";

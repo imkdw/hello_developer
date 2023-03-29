@@ -63,7 +63,7 @@ const AuthPage = ({ type }: AuthPageProps) => {
 
   useEffect(() => {
     setEnableMenu(false);
-  }, []);
+  }, [setEnableMenu]);
 
   return (
     <StyledAuthPage>

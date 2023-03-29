@@ -8,7 +8,10 @@ import {
   Get,
   Req,
   Param,
+  Res,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger/dist/decorators/api-use-tags.decorator';
+import { Response } from 'express';
 import { ValidationPipe } from '../pipes/validation.pipe';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -17,6 +20,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @Controller('auth')
+@ApiTags('인증 API')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -39,8 +43,11 @@ export class AuthController {
   @HttpCode(200)
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
-    return await this.authService.login(loginDto);
+  async login(@Res({ passthrough: true }) res: Response, @Body() loginDto: LoginDto) {
+    const { userId, profileImg, nickname, accessToken, refreshToken } =
+      await this.authService.login(loginDto);
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, path: '/' });
+    return { userId, profileImg, nickname, accessToken };
   }
 
   /**
@@ -58,11 +65,10 @@ export class AuthController {
    * [GET] /auth/token - 엑세스 토큰 재발급
    * @returns 엑세스 토큰 반환
    */
-  @UseGuards(JwtAuthGuard)
   @Get('token')
   async token(@Req() req) {
-    const refreshToken = req.headers.authorization.split(' ')[1];
-    const accessToken = await this.authService.generateAccessToken(req.user.userId, refreshToken);
+    const refreshToken = req.cookies['refreshToken'];
+    const accessToken = this.authService.createAccessToken(refreshToken);
     return { accessToken };
   }
 
