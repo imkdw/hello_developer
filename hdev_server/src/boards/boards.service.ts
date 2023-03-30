@@ -25,11 +25,6 @@ export class BoardsService {
     private awsService: AwsService,
   ) {}
 
-  /**
-   * 게시글 생성
-   * @param userId - 작성자 아이디
-   * @param createBoardDto - 게시글 생성 데이터
-   */
   async create(userId: string, createBoardDto: CreateBoardDto) {
     const { title, content, category, tags, tempBoardId } = createBoardDto;
 
@@ -74,7 +69,9 @@ export class BoardsService {
 
     const oldPath = `boards_image/${tempBoardId}`;
     const newPath = `boards_image/${boardId}`;
-    await this.awsService.changeFolderName(oldPath, newPath);
+    if (tempBoardId !== 'temp-board-id') {
+      await this.awsService.changeFolderName(oldPath, newPath);
+    }
 
     return boardId;
   }
@@ -160,7 +157,6 @@ export class BoardsService {
   }
 
   async recommend(userId: string, boardId: string) {
-    await this.boardRepository.findOne(boardId);
     const existRecommend = await this.recommendRepository.findByUserAndBoard(userId, boardId);
 
     if (existRecommend) {

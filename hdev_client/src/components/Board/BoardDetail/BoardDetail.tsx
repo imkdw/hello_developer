@@ -44,11 +44,19 @@ const BoardDetail = () => {
 
   useEffect(() => {
     const loadBoard = async () => {
-      const res = await getBoard(boardId);
-      setBoardDetail(res.data);
+      try {
+        const res = await getBoard(boardId);
+        setBoardDetail(res.data);
+      } catch (err: any) {
+        let errMessage = "서버 오류입니다. 다시 시도해주세요.";
+        if (err.response.status === 404) {
+          errMessage = "게시글을 찾을 수 없습니다.";
+        }
+
+        alert(errMessage);
+      }
     };
 
-    // TODO: 쿠키로 중복조회 불가능하도록 설정
     const addView = async () => {
       const cookieName = `views-${boardId}`;
 

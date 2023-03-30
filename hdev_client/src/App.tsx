@@ -12,9 +12,14 @@ import BoardDetailPage from "./pages/Board/BoardDetailPage";
 import CreateBoardPage from "./pages/Board/CreateBoardPage";
 import UpdateBoardPage from "./pages/Board/UpdateBoardPage";
 import ProfilePage from "./pages/User/ProfilePage";
+import { useEffect } from "react";
 
 function App() {
   const isLoading = useRecoilValue(isLoadingState);
+
+  useEffect(() => {
+    // TODO: access token으로 사용자 인증로직 구현필여
+  }, []);
 
   return (
     <>

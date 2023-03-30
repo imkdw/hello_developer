@@ -1,5 +1,3 @@
-import { useSetRecoilState } from "recoil";
-import { loggedInUserState } from "../recoil";
 import { CreateBoardDto, UpdateBoardDto } from "../types/board";
 import { api } from "../utils/Common";
 import { token } from "./AuthService";

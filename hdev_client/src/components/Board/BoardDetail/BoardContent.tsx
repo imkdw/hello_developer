@@ -91,8 +91,13 @@ const BoardContent = () => {
       const boardRes = await getBoard(boardDetail.boardId);
       setBoardDetail(boardRes.data);
       setIsRecommendedUser((prevState) => !prevState);
-      console.log(isRecommendedUser);
-    } catch (err: any) {}
+    } catch (err: any) {
+      let errMessage = "서버 오류입니다. 다시 시도해주세요.";
+      if (err.status.response === 401) {
+        errMessage = "인증이 만료되었습니다. 다시 로그인해주세요";
+      }
+      alert(errMessage);
+    }
   };
 
   return (

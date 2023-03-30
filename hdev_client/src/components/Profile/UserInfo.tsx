@@ -71,8 +71,16 @@ const UserInfo = ({ userId }: UserInfoProps) => {
 
   useEffect(() => {
     const loadProfile = async () => {
-      const res = await getProfile(userId);
-      setUserInfo(res.data);
+      try {
+        const res = await getProfile(userId);
+        setUserInfo(res.data);
+      } catch (err: any) {
+        let errMessage = "서버 오류입니다. 다시 시도해주세요.";
+        if (err.response.status === 404) {
+          errMessage = "사용자를 찾을수 없습니다.";
+        }
+        alert(errMessage);
+      }
     };
 
     if (userId) {

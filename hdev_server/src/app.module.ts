@@ -52,6 +52,7 @@ import { AwsModule } from './aws/aws.module';
       entities: [User, Board, Category, Tag, Recommend, Comment, View],
       synchronize: true,
       dropSchema: true,
+      poolSize: 100,
     }),
     TypeOrmModule.forFeature([Board, Category, Tag]),
     AuthModule,

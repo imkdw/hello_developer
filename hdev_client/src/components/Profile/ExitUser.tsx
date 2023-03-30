@@ -95,6 +95,13 @@ const ExitUser = ({ userId }: ExitUSerProps) => {
 
     try {
       const res = await exitUserVerify(userId, password, loggedInUser.accessToken);
+
+      if (res.data.accessToken) {
+        setLoggedInUser((prevState) => {
+          return { ...prevState, accessToken: res.data.accessToken };
+        });
+      }
+
       if (res.status === 200) {
         await exitUser(userId, loggedInUser.accessToken);
         alert("회원탈퇴가 완료되었습니다.");

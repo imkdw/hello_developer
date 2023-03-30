@@ -18,5 +18,4 @@ export const currentPageState = atom({
 export const isLoadingState = atom({
   key: "isLoadingState",
   default: false,
-  effects_UNSTABLE: [persistAtom],
 });

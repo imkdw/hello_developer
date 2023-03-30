@@ -27,7 +27,6 @@ const MainPage = () => {
     const res = await axios.get("http://localhost:5000/auth/test", {
       withCredentials: true,
     });
-    console.log(res.data);
   };
 
   return (
@@ -36,7 +35,6 @@ const MainPage = () => {
       {!isMobile && <Menu />}
       {enableSideMenu && <Menu />}
       <RecentBoard />
-      <button onClick={test}>1</button>
     </StyledMain>
   );
 };

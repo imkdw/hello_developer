@@ -1,9 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { Connection } from 'typeorm';
-import { account, createBoard, createComment, login, register } from './common';
+import { createBoard, login, register } from './common';
 
 describe('Temp Test (e2e)', () => {
   let app: INestApplication;
@@ -22,12 +20,12 @@ describe('Temp Test (e2e)', () => {
       await app.init();
 
       userId = await register(app);
-    });
-
-    afterEach(async () => {
-      // const connection = app.get(Connection);
-      // await connection.synchronize(true);
-    });
+      accessToken = await login(app);
+      for (let i = 0; i < 100; i++) {
+        await createBoard(app, accessToken);
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      }
+    }, 1000000);
 
     it('임시', async () => {
       expect(1).toBe(1);

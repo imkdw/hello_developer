@@ -1,5 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
+import { v4 } from 'uuid';
 
 export const account = {
   email: 'test@test.com',
@@ -41,11 +42,10 @@ export async function login(app: INestApplication): Promise<string> {
 
 export async function createBoard(app: INestApplication, accessToken: string): Promise<string> {
   const title = '테스트 게시글';
-  const titleNumber = Math.floor(Math.random() * 1000);
 
   const response = await request(app.getHttpServer())
     .post('/boards')
-    .send({ title: title + titleNumber, content, tags, category, tempBoardId: '' })
+    .send({ title, content, tags, category, tempBoardId: 'temp-board-id' })
     .set({ Authorization: `Bearer ${accessToken}` })
     .expect(201);
 

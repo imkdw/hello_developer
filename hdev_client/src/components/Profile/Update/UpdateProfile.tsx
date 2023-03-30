@@ -128,7 +128,13 @@ const UpdateProfile = ({ userId }: UpdateProfileProps) => {
     event.preventDefault();
 
     try {
-      await updateProfile(userId, updateData, loggedInUser.accessToken);
+      const res = await updateProfile(userId, updateData, loggedInUser.accessToken);
+
+      if (res.data.accessToken) {
+        setLoggedInUser((prevState) => {
+          return { ...prevState, accessToken: res.data.accessToken };
+        });
+      }
 
       alert("회원정보 수정이 완료되었습니다.");
 

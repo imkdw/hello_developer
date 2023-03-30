@@ -32,10 +32,11 @@ export const updateProfile = async (userId: string, updateData: UserProfileUpdat
   } catch (err: any) {
     if (err.response.status === 401) {
       const tokenRes = await token();
+
       const res = await api.patch(
         `/users/${userId}`,
         { ...updateData },
-        { headers: { Authorization: `Bearer ${accessToken}` } }
+        { headers: { Authorization: `Bearer ${tokenRes.data.accessToken}` } }
       );
       res.data.accessToken = tokenRes.data.accessToken;
       return res;
@@ -60,6 +61,18 @@ export const updatePassword = async (userId: string, updateData: UserPasswordUpd
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
   } catch (err: any) {
+    if (err.response.status === 401) {
+      const tokenRes = await token();
+
+      const res = await api.patch(
+        `/users/${userId}/password`,
+        { ...updateData },
+        { headers: { Authorization: `Bearer ${tokenRes.data.accessToken}` } }
+      );
+      res.data.accessToken = tokenRes.data.accessToken;
+      return res;
+    }
+
     throw err;
   }
 };
@@ -80,6 +93,18 @@ export const updateProfileImage = async (userId: string, formData: FormData, acc
       },
     });
   } catch (err: any) {
+    if (err.response.status === 401) {
+      const tokenRes = await token();
+      const res = await api.post(`/users/${userId}/image`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${tokenRes.data.accessToken}`,
+        },
+      });
+      res.data.accessToken = tokenRes.data.accessToken;
+      return res;
+    }
+
     throw err;
   }
 };
@@ -96,6 +121,21 @@ export const exitUserVerify = async (userId: string, password: string, accessTok
       }
     );
   } catch (err: any) {
+    if (err.response.status === 401) {
+      const tokenRes = await token();
+      const res = await api.patch(
+        `/users/${userId}/verify`,
+        { password },
+        {
+          headers: {
+            Authorization: `Bearer ${tokenRes.data.accessToken}`,
+          },
+        }
+      );
+      res.data.accessToken = tokenRes.data.accessToken;
+      return res;
+    }
+
     throw err;
   }
 };
@@ -108,6 +148,17 @@ export const exitUser = async (userId: string, accessToken: string) => {
       },
     });
   } catch (err: any) {
+    if (err.response.status === 401) {
+      const tokenRes = await token();
+      const res = await api.delete(`/users/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${tokenRes.data.accessToken}`,
+        },
+      });
+      res.data.accessToken = tokenRes.data.accessToken;
+      return res;
+    }
+
     throw err;
   }
 };

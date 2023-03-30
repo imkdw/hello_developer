@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { FormEvent, useState, ChangeEvent } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { loggedInUserState } from "../../../recoil";
 import { passwordValidation } from "../../../utils/Auth";
 import { updatePassword } from "../../../services/UserService";
@@ -77,7 +77,7 @@ interface IsValidUpdateData {
 }
 
 const UpdatePassword = ({ userId }: UpdatePasswordProps) => {
-  const loggedInUser = useRecoilValue(loggedInUserState);
+  const [loggedInUser, setLoggedInUser] = useRecoilState(loggedInUserState);
 
   const [updateData, setUpdateData] = useState({
     password: "",
@@ -113,7 +113,13 @@ const UpdatePassword = ({ userId }: UpdatePasswordProps) => {
     event.preventDefault();
 
     try {
-      await updatePassword(userId, updateData, loggedInUser.accessToken);
+      const res = await updatePassword(userId, updateData, loggedInUser.accessToken);
+
+      if (res.data.accessToken) {
+        setLoggedInUser((prevState) => {
+          return { ...prevState, accessToken: res.data.accessToken };
+        });
+      }
 
       alert("비밀번호 변경이 완료되었습니다");
       setUpdateData({

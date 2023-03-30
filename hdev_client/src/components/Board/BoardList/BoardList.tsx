@@ -70,7 +70,16 @@ const BoardList = ({ subCategory }: BoardListProps) => {
       setBoards(res.data);
     };
 
+    const handleScroll = () => {
+      console.log(window.scrollY);
+    };
+
+    const scrollCheck = () => {
+      window.addEventListener("scroll", handleScroll);
+    };
+
     loadBoards();
+    scrollCheck();
   }, [currentBoard, subCategory]);
 
   return (

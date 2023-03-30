@@ -58,7 +58,7 @@ interface UserProfileImageProps {
 
 const UserProfileImage = ({ userId }: UserProfileImageProps) => {
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
-  const [loggedInUser, setLoggedInuser] = useRecoilState(loggedInUserState);
+  const [loggedInUser, setLoggedInUser] = useRecoilState(loggedInUserState);
   const fileUploadRef = useRef<HTMLInputElement | null>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
 
@@ -96,10 +96,15 @@ const UserProfileImage = ({ userId }: UserProfileImageProps) => {
 
     try {
       const res = await updateProfileImage(userId, formData, loggedInUser.accessToken);
+      if (res.data.accessToken) {
+        setLoggedInUser((prevState) => {
+          return { ...prevState, accessToken: res.data.accessToken };
+        });
+      }
 
       localStorage.setItem("profileImg", res.data.profileImg);
 
-      setLoggedInuser((prevState) => {
+      setLoggedInUser((prevState) => {
         return { ...prevState, profileImg: res.data.profileImg };
       });
     } catch (err: any) {

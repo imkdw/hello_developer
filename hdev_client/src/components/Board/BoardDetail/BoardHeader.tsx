@@ -107,8 +107,8 @@ const BoardHeader = () => {
       }
     } catch (err: any) {
       const { status, data } = err.response;
-
       let errMessage = "서버 오류입니다. 다시 시도해주세요.";
+
       switch (status) {
         case 401:
           switch (data.message) {

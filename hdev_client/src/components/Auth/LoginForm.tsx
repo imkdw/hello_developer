@@ -6,7 +6,6 @@ import { EmailIcon, PasswordIcon } from "../../assets/icon";
 import { login } from "../../services/AuthService";
 import { useNavigate } from "react-router-dom";
 import { isLoadingState, loggedInUserState } from "../../recoil";
-import { useCookies } from "react-cookie";
 
 const StyledLoginForm = styled.form`
   width: 100%;
@@ -85,8 +84,6 @@ const LoginForm = () => {
     password: "",
   });
 
-  const [cookies, setCookie] = useCookies();
-
   const setIsLoading = useSetRecoilState(isLoadingState);
   const setLoggedInUser = useSetRecoilState(loggedInUserState);
   const navigator = useNavigate();
@@ -107,9 +104,8 @@ const LoginForm = () => {
 
       navigator("/main");
     } catch (err: any) {
-      const { status, data } = err.response;
-
       let errMessage = "서버 오류입니다. 다시 시도해주세요.";
+      const { status, data } = err.response;
       switch (status) {
         case 400:
           switch (data.message) {

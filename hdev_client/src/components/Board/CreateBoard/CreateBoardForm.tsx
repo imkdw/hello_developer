@@ -239,8 +239,8 @@ const CreateBoardForm = ({ tempBoardId }: CreateBoardFormProps) => {
       alert("게시글 작성이 완료되었습니다.");
       navigator(`/boards/${boardId}`);
     } catch (err: any) {
-      const { status, data } = err.response;
       let message = "서버 오류입니다. 다시 시도해주세요.";
+      const { status, data } = err.response;
       switch (status) {
         case 400:
           switch (data.message) {
