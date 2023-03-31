@@ -7,6 +7,7 @@ import { currentBoardState } from "../../../recoil";
 import { getBoards } from "../../../services/BoardService";
 import ListItem from "./ListItem/ListItem";
 import { IBoardItem } from "../../../types/board";
+import "./BoardList.css";
 
 const StyledBoardList = styled.div`
   width: 100%;
@@ -70,16 +71,7 @@ const BoardList = ({ subCategory }: BoardListProps) => {
       setBoards(res.data);
     };
 
-    const handleScroll = () => {
-      console.log(window.scrollY);
-    };
-
-    const scrollCheck = () => {
-      window.addEventListener("scroll", handleScroll);
-    };
-
     loadBoards();
-    scrollCheck();
   }, [currentBoard, subCategory]);
 
   return (

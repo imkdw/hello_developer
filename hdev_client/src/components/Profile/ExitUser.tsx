@@ -40,7 +40,7 @@ const LabelDesc = styled.span`
   color: #0090f9;
 
   @media screen and (max-width: 767px) {
-    font-size: 12px;
+    font-size: 13px;
   }
 `;
 
@@ -75,6 +75,15 @@ const Warnings = styled.div`
 
 const WarningMessage = styled.p`
   color: red;
+`;
+
+const DisableButton = styled.button`
+  font-size: 17px;
+  width: 80px;
+  background-color: #ffc6c6;
+  color: white;
+  border-radius: 10px;
+  cursor: default;
 `;
 
 interface ExitUSerProps {
@@ -160,9 +169,9 @@ const ExitUser = ({ userId }: ExitUSerProps) => {
           {password ? (
             <Button type="submit">탈퇴하기</Button>
           ) : (
-            <Button type="button" disabled>
-              탈퇴못함
-            </Button>
+            <DisableButton type="button" disabled>
+              탈퇴하기
+            </DisableButton>
           )}
         </Buttons>
       )}

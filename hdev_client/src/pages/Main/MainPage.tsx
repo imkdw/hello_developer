@@ -5,7 +5,6 @@ import { useMediaQuery } from "react-responsive";
 import { useRecoilValue } from "recoil";
 import { enableMenuState } from "../../recoil";
 import MobileHeader from "../../components/Mobile/Header/MobileHeader";
-import axios from "axios";
 
 const StyledMain = styled.div`
   width: 100%;
@@ -22,12 +21,6 @@ const StyledMain = styled.div`
 const MainPage = () => {
   const isMobile = useMediaQuery({ maxWidth: "767px" });
   const enableSideMenu = useRecoilValue(enableMenuState);
-
-  const test = async () => {
-    const res = await axios.get("http://localhost:5000/auth/test", {
-      withCredentials: true,
-    });
-  };
 
   return (
     <StyledMain>

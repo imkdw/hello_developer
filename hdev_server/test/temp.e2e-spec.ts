@@ -21,10 +21,7 @@ describe('Temp Test (e2e)', () => {
 
       userId = await register(app);
       accessToken = await login(app);
-      for (let i = 0; i < 100; i++) {
-        await createBoard(app, accessToken);
-        await new Promise((resolve) => setTimeout(resolve, 50));
-      }
+      await createBoard(app, accessToken);
     }, 1000000);
 
     it('임시', async () => {

@@ -68,6 +68,15 @@ const Button = styled.button`
   border-radius: 10px;
 `;
 
+const DisableButton = styled.button`
+  font-size: 17px;
+  width: 80px;
+  background-color: #5fbcff;
+  color: white;
+  border-radius: 10px;
+  cursor: default;
+`;
+
 interface UpdatePasswordProps {
   userId: string;
 }
@@ -186,9 +195,9 @@ const UpdatePassword = ({ userId }: UpdatePasswordProps) => {
           {isValidUpdateData.rePassword ? (
             <Button type="submit">저장하기</Button>
           ) : (
-            <Button type="button" disabled>
-              저장못함
-            </Button>
+            <DisableButton type="button" disabled>
+              저장하기
+            </DisableButton>
           )}
         </Buttons>
       )}

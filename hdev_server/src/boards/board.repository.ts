@@ -43,10 +43,13 @@ export class BoardRepository {
         'tags.name',
         'category.name',
       ])
-      .where('board.category1 = :category1', { category1 });
+      .where('board.category1 = :category1', { category1 })
+      .orderBy('board.createdAt');
 
     if (category2) {
-      boards = boards.andWhere('board.category2 = :category2', { category2 });
+      boards = boards
+        .andWhere('board.category2 = :category2', { category2 })
+        .orderBy('board.createdAt', 'DESC');
     }
 
     return await boards.getMany();
@@ -176,5 +179,26 @@ export class BoardRepository {
     if (board) {
       await this.boardRepository.update(boardId, { recommendCnt: board.recommendCnt - 1 });
     }
+  }
+
+  async recent(categoryId: number) {
+    const board = await this.boardRepository
+      .createQueryBuilder('board')
+      .leftJoinAndSelect('board.user', 'user')
+      .leftJoinAndSelect('board.view', 'view')
+      .select([
+        'board.boardId',
+        'board.title',
+        'board.createdAt',
+        'user.nickname',
+        'user.profileImg',
+        'view.viewCnt',
+      ])
+      .where('board.category1 = :category1', { category1: categoryId })
+      .orderBy('board.createdAt', 'DESC')
+      .limit(4)
+      .getMany();
+
+    return board;
   }
 }

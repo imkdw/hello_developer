@@ -1,0 +1,37 @@
+import styled from "styled-components";
+import RecentItem from "./RecentItem";
+
+const StyledRecentBoardBox = styled.div`
+  width: 85%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+`;
+
+interface RecentBoardBoxProps {
+  boardData: {
+    boardId: string;
+    title: string;
+    createdAt: string;
+    user: {
+      nickname: string;
+      profileImg: string;
+    };
+    view: {
+      viewCnt: number;
+    };
+  }[];
+}
+
+const RecentBoardBox = ({ boardData }: RecentBoardBoxProps) => {
+  console.log(boardData);
+  return (
+    <StyledRecentBoardBox>
+      {boardData.map((data) => (
+        <RecentItem data={data} />
+      ))}
+    </StyledRecentBoardBox>
+  );
+};
+export default RecentBoardBox;

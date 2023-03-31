@@ -25,13 +25,13 @@ const StyledUserHistory = styled.div`
 
 const HistoryTab = styled.div`
   width: 95%;
-  height: 8%;
+  min-height: 80px;
   border-bottom: 1px solid #cfcfcf;
   display: flex;
   justify-content: space-around;
 
   @media screen and (max-width: 767px) {
-    height: 10%;
+    min-height: 60px;
   }
 `;
 
@@ -55,11 +55,27 @@ const TabItem = styled.div<{ $isBorder: boolean }>`
 `;
 
 const History = styled.ul`
-  width: 93%;
-  height: 92%;
+  width: 95%;
+  height: auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow-y: scroll;
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background-color: #e8e8e8;
+  }
+  ::-webkit-scrollbar-thumb,
+  ::-webkit-scrollbar-thumb:hover,
+  ::-webkit-scrollbar-thumb:active {
+    background: #a7a7a7;
+  }
+  ::-webkit-scrollbar-button {
+    display: none;
+  }
 
   @media screen and (max-width: 767px) {
     height: 90%;
@@ -68,12 +84,13 @@ const History = styled.ul`
 
 const HistoryItem = styled(Link)`
   width: 100%;
-  height: 16%;
+  min-height: 100px;
   border-bottom: 1px solid #e5e6e8;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   cursor: pointer;
+  padding: 0 10px;
 
   &:first-child {
     margin-top: 10px;
@@ -85,16 +102,12 @@ const HistoryItem = styled(Link)`
 `;
 
 const HistoryCategory = styled.div`
-  font-size: 20px;
+  font-size: 18px;
   width: 100%;
-
-  @media screen and (max-width: 767px) {
-    font-size: 18px;
-  }
 `;
 
 const CategoryText = styled.span`
-  font-size: 22px;
+  font-size: 20px;
   color: #0090f9;
 
   @media screen and (max-width: 767px) {
@@ -113,7 +126,7 @@ const BoardTitle = styled.div`
 `;
 
 const BoardCreatedAt = styled.div`
-  font-size: 20px;
+  font-size: 18px;
   color: #7d7d7d;
 
   @media screen and (max-width: 767px) {

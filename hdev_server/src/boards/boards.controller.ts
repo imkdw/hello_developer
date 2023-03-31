@@ -22,7 +22,6 @@ import { UpdateBoardDto } from './dto/update-board.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageUploadDto } from './dto/image-upload.dto';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger/dist';
-import { ApiBadRequestResponse } from '@nestjs/swagger/dist/decorators/api-response.decorator';
 
 @Controller('boards')
 @ApiTags('게시글 API')
@@ -49,6 +48,12 @@ export class BoardsController {
   async findAll(@Query('category1') category1: string, @Query('category2') category2: string) {
     const boards = await this.boardsService.findAll(category1, category2);
     return boards;
+  }
+
+  @Get('recent')
+  async recent() {
+    const recentBoards = await this.boardsService.recent();
+    return { ...recentBoards };
   }
 
   /**

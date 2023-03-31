@@ -33,7 +33,7 @@ const BoardListPage = ({ currentBoard }: BoardListPageProps) => {
   useEffect(() => {
     if (currentBoard) setCurrentBoard(currentBoard);
     setEnableMenu(false);
-  }, [currentBoard, setCurrentBoard]);
+  }, [currentBoard, setCurrentBoard, setEnableMenu]);
 
   return (
     <StyledBoardListPage>

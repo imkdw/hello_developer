@@ -27,6 +27,7 @@ const Profile = () => {
 
   useEffect(() => {
     setEnableMenu(false);
+    document.body.style.overflow = "scroll";
   }, [setEnableMenu]);
 
   return (

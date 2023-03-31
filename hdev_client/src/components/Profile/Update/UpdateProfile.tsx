@@ -69,6 +69,15 @@ const Button = styled.button`
   border-radius: 10px;
 `;
 
+const DisableButton = styled.button`
+  font-size: 17px;
+  width: 80px;
+  background-color: #5fbcff;
+  color: white;
+  border-radius: 10px;
+  cursor: default;
+`;
+
 interface UpdateProfileProps {
   userId: string;
 }
@@ -204,21 +213,21 @@ const UpdateProfile = ({ userId }: UpdateProfileProps) => {
             value={updateData.introduce}
             onChange={updateDataChangeHandler}
             placeholder="자기소개는 최대 30자까지 입력이 가능합니다"
+            autoComplete="false"
           />
         ) : (
           <Input type="text" name="introduce" value={userInfo.introduce} disabled />
         )}
       </FormControl>
-      {/* TODO: disabled 처리 안되는거 해결필요 */}
       {loggedInUser.userId === userId &&
         (isEdit ? (
           <Buttons>
             {isValidUpdateData.nickname && isValidUpdateData.introduce ? (
               <Button type="submit">저장하기</Button>
             ) : (
-              <Button type="button" disabled onClick={buttonHandler}>
-                저장못함
-              </Button>
+              <DisableButton type="button" disabled onClick={buttonHandler}>
+                저장하기
+              </DisableButton>
             )}
             <Button
               type="button"

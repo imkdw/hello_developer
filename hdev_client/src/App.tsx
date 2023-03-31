@@ -41,6 +41,7 @@ function App() {
         <Route path="/boards/:boardId/update" element={<UpdateBoardPage />} />
         <Route path="/boards/:boardId" element={<BoardDetailPage />} />
         <Route path="/users/:userId" element={<ProfilePage />} />
+        <Route path="/404" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

@@ -140,3 +140,11 @@ export const uploadBoardImage = async (formData: FormData, accessToken: string) 
     throw err;
   }
 };
+
+export const getRecentBoards = async () => {
+  try {
+    return await api.get("/boards/recent");
+  } catch (err: any) {
+    throw err;
+  }
+};

@@ -1,4 +1,7 @@
 import styled from "styled-components";
+import { useEffect, useState } from "react";
+import { getRecentBoards } from "../../services/BoardService";
+import RecentBoardBox from "./RecentBoardBox";
 
 const StyledRecentBoard = styled.div`
   height: 100%;
@@ -40,7 +43,7 @@ const BoardWrapper = styled.div`
 
 const SortationTitle = styled.div`
   width: 90%;
-  height: 50px;
+  min-height: 50px;
   background-color: #2c65ff;
   border-radius: 20px;
   display: flex;
@@ -62,35 +65,63 @@ const TitleText = styled.p`
   }
 `;
 
+interface RecentBoardResponse {
+  [key: string]: {
+    boardId: string;
+    title: string;
+    createdAt: string;
+    user: {
+      nickname: string;
+      profileImg: string;
+    };
+    view: {
+      viewCnt: number;
+    };
+  }[];
+}
+
 const RecentBoard = () => {
+  const [boards, setBoards] = useState<RecentBoardResponse>();
+
+  useEffect(() => {
+    const loadRecentBoard = async () => {
+      const res = await getRecentBoards();
+      setBoards(res.data);
+    };
+
+    loadRecentBoard();
+  }, []);
+
   return (
     <StyledRecentBoard>
-      <Wrapper>
-        <BoardWrapper>
-          <SortationTitle>
-            <TitleText>공지사항</TitleText>
-          </SortationTitle>
-          {/* <Boards /> */}
-        </BoardWrapper>{" "}
-        <BoardWrapper>
-          <SortationTitle>
-            <TitleText>질문답변</TitleText>
-          </SortationTitle>
-          {/* <Boards /> */}
-        </BoardWrapper>{" "}
-        <BoardWrapper>
-          <SortationTitle>
-            <TitleText>지식공유</TitleText>
-          </SortationTitle>
-          {/* <Boards /> */}
-        </BoardWrapper>{" "}
-        <BoardWrapper>
-          <SortationTitle>
-            <TitleText>인원모집</TitleText>
-          </SortationTitle>
-          {/* <Boards /> */}
-        </BoardWrapper>
-      </Wrapper>
+      {boards && (
+        <Wrapper>
+          <BoardWrapper>
+            <SortationTitle>
+              <TitleText>공지사항</TitleText>
+            </SortationTitle>
+            <RecentBoardBox boardData={boards["notice"]} />
+          </BoardWrapper>{" "}
+          <BoardWrapper>
+            <SortationTitle>
+              <TitleText>질문답변</TitleText>
+            </SortationTitle>
+            <RecentBoardBox boardData={boards["qna"]} />
+          </BoardWrapper>{" "}
+          <BoardWrapper>
+            <SortationTitle>
+              <TitleText>지식공유</TitleText>
+            </SortationTitle>
+            <RecentBoardBox boardData={boards["knowledge"]} />
+          </BoardWrapper>{" "}
+          <BoardWrapper>
+            <SortationTitle>
+              <TitleText>인원모집</TitleText>
+            </SortationTitle>
+            <RecentBoardBox boardData={boards["recruitment"]} />
+          </BoardWrapper>
+        </Wrapper>
+      )}
     </StyledRecentBoard>
   );
 };

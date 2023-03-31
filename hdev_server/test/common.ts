@@ -40,16 +40,62 @@ export async function login(app: INestApplication): Promise<string> {
   return response.body.accessToken;
 }
 
-export async function createBoard(app: INestApplication, accessToken: string): Promise<string> {
+export async function createBoard(app: INestApplication, accessToken: string) {
   const title = '테스트 게시글';
 
-  const response = await request(app.getHttpServer())
-    .post('/boards')
-    .send({ title, content, tags, category, tempBoardId: 'temp-board-id' })
-    .set({ Authorization: `Bearer ${accessToken}` })
-    .expect(201);
+  for (let i = 1; i < 10; i++) {
+    await request(app.getHttpServer())
+      .post('/boards')
+      .send({
+        title: '공지사항' + i,
+        content,
+        tags,
+        category: 'notice',
+        tempBoardId: 'temp-board-id',
+      })
+      .set({ Authorization: `Bearer ${accessToken}` })
+      .expect(201);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
 
-  return response.body.boardId;
+  for (let i = 1; i < 10; i++) {
+    await request(app.getHttpServer())
+      .post('/boards')
+      .send({
+        title: '지식공유' + i,
+        content,
+        tags,
+        category: 'knowledge',
+        tempBoardId: 'temp-board-id',
+      })
+      .set({ Authorization: `Bearer ${accessToken}` })
+      .expect(201);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+
+  for (let i = 1; i < 10; i++) {
+    await request(app.getHttpServer())
+      .post('/boards')
+      .send({ title: '질문답변' + i, content, tags, category: 'qna', tempBoardId: 'temp-board-id' })
+      .set({ Authorization: `Bearer ${accessToken}` })
+      .expect(201);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+
+  for (let i = 1; i < 10; i++) {
+    await request(app.getHttpServer())
+      .post('/boards')
+      .send({
+        title: '구인구직' + i,
+        content,
+        tags,
+        category: 'recruitment',
+        tempBoardId: 'temp-board-id',
+      })
+      .set({ Authorization: `Bearer ${accessToken}` })
+      .expect(201);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
 }
 
 export async function createComment(

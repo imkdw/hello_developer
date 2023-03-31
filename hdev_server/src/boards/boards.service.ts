@@ -183,4 +183,19 @@ export class BoardsService {
     const imageUrl = await this.awsService.imageUploadToS3(fileName, file);
     return { imageUrl };
   }
+
+  async recent() {
+    /**
+     * 카테고리 ID (고정값)
+     * 공지사항 : 1
+     * 지식공유 : 4
+     * 질문답변 : 7
+     * 구인구직 : 10
+     */
+    const notice = await this.boardRepository.recent(1);
+    const qna = await this.boardRepository.recent(7);
+    const knowledge = await this.boardRepository.recent(4);
+    const recruitment = await this.boardRepository.recent(10);
+    return { notice, qna, knowledge, recruitment };
+  }
 }

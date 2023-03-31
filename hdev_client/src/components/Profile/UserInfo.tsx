@@ -8,6 +8,7 @@ import UserProfileImage from "./UserProfileImage";
 import UpdateProfile from "./Update/UpdateProfile";
 import UpdatePassword from "./Update/UpdatePassword";
 import ExitUser from "./ExitUser";
+import { useNavigate } from "react-router-dom";
 
 const StyledUserInfo = styled.div`
   width: 45%;
@@ -62,6 +63,7 @@ interface UserInfoProps {
 const UserInfo = ({ userId }: UserInfoProps) => {
   const setUserInfo = useSetRecoilState(userInfoState);
   const loggedInUser = useRecoilValue(loggedInUserState);
+  const navigator = useNavigate();
 
   const [enableTab, setEnableTag] = useState({
     profile: true,
@@ -75,11 +77,9 @@ const UserInfo = ({ userId }: UserInfoProps) => {
         const res = await getProfile(userId);
         setUserInfo(res.data);
       } catch (err: any) {
-        let errMessage = "서버 오류입니다. 다시 시도해주세요.";
         if (err.response.status === 404) {
-          errMessage = "사용자를 찾을수 없습니다.";
+          navigator("/404");
         }
-        alert(errMessage);
       }
     };
 
