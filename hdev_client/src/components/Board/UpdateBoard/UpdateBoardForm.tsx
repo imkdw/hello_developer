@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { loggedInUserState } from "../../../recoil";
+import { updateBoardDataState } from "../../../recoil/board";
 import { getBoard, updateBoard } from "../../../services/BoardService";
 import { categoryValidation, contentValidation, tagsValidation, titleValidation } from "../../../utils/Board";
 import TextEditor from "./TextEditor";
@@ -125,13 +126,14 @@ const InputWrapper = styled.div`
 `;
 
 const UpdateBoardForm = () => {
+  const [updateBoardData, setUpdateBoardData] = useRecoilState(updateBoardDataState);
   const boardId = useParams().boardId as string;
 
   useEffect(() => {
     const loadBoard = async () => {
       const res = await getBoard(boardId);
 
-      setBoardData((prevState) => {
+      setUpdateBoardData((prevState) => {
         const category = res.data.category2
           ? `${res.data.category1.name}-${res.data.category2.name}`
           : res.data.category1.name;
@@ -147,13 +149,6 @@ const UpdateBoardForm = () => {
 
     loadBoard();
   }, [boardId]);
-
-  const [boardData, setBoardData] = useState({
-    category: "none",
-    title: "",
-    tags: [{ name: "" }, { name: "" }, { name: "" }],
-    content: "",
-  });
 
   interface IsBoardDataValid {
     [key: string]: null | boolean;
@@ -171,7 +166,7 @@ const UpdateBoardForm = () => {
   const changeCategory = (event: ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.currentTarget;
 
-    setBoardData((prevState) => {
+    setUpdateBoardData((prevState) => {
       return { ...prevState, category: value };
     });
 
@@ -182,7 +177,7 @@ const UpdateBoardForm = () => {
 
   const changeTitle = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
-    setBoardData((prevState) => {
+    setUpdateBoardData((prevState) => {
       return { ...prevState, title: value };
     });
 
@@ -202,18 +197,18 @@ const UpdateBoardForm = () => {
 
     switch (name) {
       case "tag1":
-        setBoardData((prevState) => {
-          return { ...prevState, tags: [{ name: value }, ...boardData.tags.slice(1)] };
+        setUpdateBoardData((prevState) => {
+          return { ...prevState, tags: [{ name: value }, ...updateBoardData.tags.slice(1)] };
         });
         break;
       case "tag2":
-        setBoardData((prevState) => {
-          return { ...prevState, tags: [boardData.tags[0], { name: value }, ...boardData.tags.slice(2)] };
+        setUpdateBoardData((prevState) => {
+          return { ...prevState, tags: [updateBoardData.tags[0], { name: value }, ...updateBoardData.tags.slice(2)] };
         });
         break;
       case "tag3":
-        setBoardData((prevState) => {
-          return { ...prevState, tags: [boardData.tags[0], boardData.tags[1], { name: value }] };
+        setUpdateBoardData((prevState) => {
+          return { ...prevState, tags: [updateBoardData.tags[0], updateBoardData.tags[1], { name: value }] };
         });
         break;
       default:
@@ -227,7 +222,7 @@ const UpdateBoardForm = () => {
       return;
     }
 
-    setBoardData((prevState) => {
+    setUpdateBoardData((prevState) => {
       return { ...prevState, content: markdown };
     });
 
@@ -242,7 +237,7 @@ const UpdateBoardForm = () => {
 
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const { title, category, tags, content } = boardData;
+    const { title, category, tags, content } = updateBoardData;
 
     let isDupTag = tagsValidation(tags);
     if (isDupTag) {
@@ -299,17 +294,37 @@ const UpdateBoardForm = () => {
         <Message>헬로디벨로퍼 - 글작성</Message>
         <FormControl>
           <Label>카테고리</Label>
-          <Select onChange={changeCategory} value={boardData.category}>
-            <option value="none">카테고리를 선택해주세요</option>
-            <option value="suggestion">건의사항</option>
-            <option value="free">자유주제</option>
-            <option value="knowledge-tips">지식공유 - 꿀팁</option>
-            <option value="knowledge-review">지식공유 - 리뷰</option>
-            <option value="qna-career">질문답변 - 커리어</option>
-            <option value="qna-tech">질문답변 - 기술</option>
-            <option value="recruitment-project">인원모집 - 프로젝트</option>
-            <option value="recruitment-study">인원모집 - 스터디</option>
-            <option value="recruitment-company">인원모집 - 채용공고</option>
+          <Select onChange={changeCategory} value={updateBoardData.category}>
+            <option value="none" selected={updateBoardData.category === "none"}>
+              카테고리를 선택해주세요
+            </option>
+            <option value="suggestion" selected={updateBoardData.category === "suggestion"}>
+              건의사항
+            </option>
+            <option value="free" selected={updateBoardData.category === "free"}>
+              자유주제
+            </option>
+            <option value="knowledge-tips" selected={updateBoardData.category === "knowledge-tips"}>
+              지식공유 - 꿀팁
+            </option>
+            <option value="knowledge-review" selected={updateBoardData.category === "knowledge-review"}>
+              지식공유 - 리뷰
+            </option>
+            <option value="qna-career" selected={updateBoardData.category === "qna-career"}>
+              질문답변 - 커리어
+            </option>
+            <option value="qna-tech" selected={updateBoardData.category === "qna-tech"}>
+              질문답변 - 기술
+            </option>
+            <option value="recruitment-project" selected={updateBoardData.category === "recruitment-project"}>
+              인원모집 - 프로젝트
+            </option>
+            <option value="recruitment-study" selected={updateBoardData.category === "recruitment-study"}>
+              인원모집 - 스터디
+            </option>
+            <option value="recruitment-company" selected={updateBoardData.category === "recruitment-company"}>
+              인원모집 - 채용공고
+            </option>
           </Select>
         </FormControl>
         <FormControl>
@@ -318,7 +333,7 @@ const UpdateBoardForm = () => {
             type="text"
             placeholder="제목은 1~50자 사이로 입력해주세요"
             onChange={changeTitle}
-            value={boardData.title}
+            value={updateBoardData.title}
           />
         </FormControl>
         <FormControl>
@@ -333,7 +348,7 @@ const UpdateBoardForm = () => {
               style={{ flex: 1 }}
               name="tag1"
               onChange={changeTags}
-              value={boardData.tags[0]?.name}
+              value={updateBoardData.tags[0]?.name}
             />
             <Input
               type="text"
@@ -341,7 +356,7 @@ const UpdateBoardForm = () => {
               style={{ flex: 1 }}
               name="tag2"
               onChange={changeTags}
-              value={boardData.tags[1]?.name}
+              value={updateBoardData.tags[1]?.name}
             />
             <Input
               type="text"
@@ -349,13 +364,13 @@ const UpdateBoardForm = () => {
               style={{ flex: 1 }}
               name="tag3"
               onChange={changeTags}
-              value={boardData.tags[2]?.name}
+              value={updateBoardData.tags[2]?.name}
             />
           </InputWrapper>
         </FormControl>
         <FormControl>
           <Label>내용</Label>
-          {boardData.content && <TextEditor onChange={changeContent} value={boardData.content} boardId={boardId} />}
+          <TextEditor boardId={boardId} />
         </FormControl>
         <Buttons>
           <CancelButton type="button" onClick={cancelHandler}>

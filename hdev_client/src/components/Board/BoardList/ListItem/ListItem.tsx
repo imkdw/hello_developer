@@ -183,9 +183,7 @@ const ListItem = ({ board }: ListItemProps) => {
       </Writer>
       <Content>
         <Title>{board.title}</Title>
-        <Paragraph>
-          <MarkdownViewer content={board.content.slice(0, 100)} />
-        </Paragraph>
+        <Paragraph>{board.content.slice(0, 100)}</Paragraph>
       </Content>
       <Tag>
         {board.category2 && <Category>{koreanCategory[board.category2.name]}</Category>}

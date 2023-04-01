@@ -2,20 +2,20 @@ import Editor from "@toast-ui/editor";
 import { HookCallback } from "@toast-ui/editor/types/editor";
 import "@toast-ui/editor/dist/toastui-editor.css";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { uploadBoardImage } from "../../../services/BoardService";
 import { useRecoilState } from "recoil";
 import { loggedInUserState } from "../../../recoil";
+import { updateBoardDataState } from "../../../recoil/board";
 
 interface TextEditorProps {
-  onChange(markdown: string): void;
-  value: string;
   boardId: string;
 }
 
-const TextEditor = ({ onChange, value, boardId }: TextEditorProps) => {
-  const editorRef = useRef(null);
+const TextEditor = ({ boardId }: TextEditorProps) => {
+  const editorRef = useRef<HTMLDivElement>(null as unknown as HTMLDivElement);
   const [loggedInUser, setLoggedInUser] = useRecoilState(loggedInUserState);
+  const [updateBoardData, setUpdateBoardData] = useRecoilState(updateBoardDataState);
 
   const addImageBlobHook = useCallback(
     async (blob: Blob, callback: HookCallback) => {
@@ -41,24 +41,24 @@ const TextEditor = ({ onChange, value, boardId }: TextEditorProps) => {
   );
 
   useEffect(() => {
-    if (editorRef.current && value) {
-      const editor = new Editor({
-        usageStatistics: true,
-        el: editorRef.current,
-        height: "700px",
-        initialEditType: "markdown",
-        previewStyle: "vertical",
-        hideModeSwitch: true,
-        initialValue: value,
-        hooks: { addImageBlobHook },
-      });
+    const editor = new Editor({
+      usageStatistics: true,
+      el: editorRef.current,
+      height: "700px",
+      initialEditType: "markdown",
+      previewStyle: "vertical",
+      hideModeSwitch: true,
+      initialValue: updateBoardData.content,
+      hooks: { addImageBlobHook },
+    });
 
-      editor.on("change", () => {
-        const markdown = editor.getMarkdown();
-        onChange(markdown);
+    editor.on("change", () => {
+      const markdown = editor.getMarkdown();
+      setUpdateBoardData((prevState) => {
+        return { ...prevState, content: markdown };
       });
-    }
-  }, [onChange, value, addImageBlobHook]);
+    });
+  }, [addImageBlobHook]);
 
   return <div ref={editorRef}></div>;
 };

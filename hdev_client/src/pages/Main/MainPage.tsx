@@ -12,9 +12,7 @@ const StyledMain = styled.div`
   display: flex;
 
   @media screen and (max-width: 767px) {
-    height: auto;
     flex-direction: column;
-    gap: 20px;
   }
 `;
 

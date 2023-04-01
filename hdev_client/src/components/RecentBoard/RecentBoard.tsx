@@ -9,6 +9,12 @@ const StyledRecentBoard = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media screen and (max-width: 767px) {
+    align-items: flex-start;
+    height: auto;
+    overflow-y: scroll;
+  }
 `;
 
 const Wrapper = styled.div`
@@ -18,10 +24,9 @@ const Wrapper = styled.div`
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-evenly;
+  margin-top: 20px;
 
   @media screen and (max-width: 767px) {
-    width: 100%;
-    flex-direction: column;
     gap: 20px;
   }
 `;
@@ -33,12 +38,6 @@ const BoardWrapper = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
-
-  @media screen and (max-width: 767px) {
-    width: 100%;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
 `;
 
 const SortationTitle = styled.div`
@@ -48,10 +47,6 @@ const SortationTitle = styled.div`
   border-radius: 20px;
   display: flex;
   align-items: center;
-
-  @media screen and (max-width: 767px) {
-    height: 45px;
-  }
 `;
 
 const TitleText = styled.p`

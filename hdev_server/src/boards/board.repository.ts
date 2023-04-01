@@ -44,7 +44,7 @@ export class BoardRepository {
         'category.name',
       ])
       .where('board.category1 = :category1', { category1 })
-      .orderBy('board.createdAt');
+      .orderBy('board.createdAt', 'DESC');
 
     if (category2) {
       boards = boards

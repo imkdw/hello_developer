@@ -70,6 +70,16 @@ const UserProfileImage = ({ userId }: UserProfileImageProps) => {
     const files = event.currentTarget.files;
 
     if (files) {
+      if (!files[0].type.match("image/*")) {
+        alert("이미지 형식의 파일만 업로드가 가능합니다.");
+        return;
+      }
+
+      if (files.length > 1) {
+        alert("이미지는 1개만 업로드 가능합니다.");
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (e: ProgressEvent<FileReader>) => {
         setUserInfo((prevState) => {
@@ -78,7 +88,6 @@ const UserProfileImage = ({ userId }: UserProfileImageProps) => {
       };
       reader.readAsDataURL(files[0]);
 
-      /** 실제 이미지 업로드 요청 */
       submitHandler(event as unknown as FormEvent<HTMLFormElement>, files[0]);
     }
   };

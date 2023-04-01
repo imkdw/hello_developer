@@ -156,3 +156,13 @@ export const searchKeywordState = atom({
   key: "searchKeywordState",
   default: "",
 });
+
+export const updateBoardDataState = atom({
+  key: "updateBoardData",
+  default: {
+    category: "none",
+    title: "",
+    tags: [{ name: "" }, { name: "" }, { name: "" }],
+    content: "",
+  },
+});

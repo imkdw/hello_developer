@@ -5,16 +5,17 @@ import { dateFormater } from "../../utils/Common";
 
 const StyledRecentItem = styled(Link)`
   width: 100%;
-  height: 23%;
+  height: 25%;
   display: flex;
   flex-direction: column;
   border-bottom: 1px solid #e5e6e8;
   align-items: center;
-  justify-content: space-around;
   cursor: pointer;
+  justify-content: flex-end;
+  gap: 5px;
 
   @media screen and (max-width: 767px) {
-    gap: 5px;
+    gap: 10px;
   }
 
   &:hover {
@@ -36,6 +37,11 @@ const ProfileImage = styled.img`
   height: 35px;
   border-radius: 50%;
   border: 1px solid #dbdbdb;
+
+  @media screen and (max-width: 767px) {
+    width: 30px;
+    height: 30px;
+  }
 `;
 
 const Username = styled.div`
@@ -72,12 +78,14 @@ const Bottom = styled.div`
   height: auto;
   display: flex;
   position: relative;
+  margin-bottom: 5px;
 `;
 
 const Title = styled.div`
   font-size: 19px;
+
   @media screen and (max-width: 767px) {
-    font-size: 17px;
+    font-size: 15px;
   }
 `;
 
@@ -98,7 +106,7 @@ interface RecentItemProps {
 
 const RecentItem = ({ data }: RecentItemProps) => {
   return (
-    <StyledRecentItem to="">
+    <StyledRecentItem to={`/boards/${data.boardId}`}>
       <Top>
         <ProfileImage src={data.user.profileImg} />
         <Username>{data.user.nickname}</Username>
