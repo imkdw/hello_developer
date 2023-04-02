@@ -1,9 +1,9 @@
 import { Route, Routes } from "react-router-dom";
 import GlobalStyles from "./GlobalStyles";
 import AuthPage from "./pages/Auth/AuthPage";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { Loading } from "./components/Common";
-import { isLoadingState } from "./recoil";
+import { isLoadingState, loggedInUserState } from "./recoil";
 import MainPage from "./pages/Main/MainPage";
 import NotFound from "./pages/Error/NotFound";
 import VerifyPage from "./pages/Auth/VerifyPage";
@@ -14,12 +14,40 @@ import UpdateBoardPage from "./pages/Board/UpdateBoardPage";
 import ProfilePage from "./pages/User/ProfilePage";
 import { useEffect } from "react";
 import SearchPage from "./pages/Search/SearchPage";
+import { checkLoggedIn } from "./services/AuthService";
 
 function App() {
   const isLoading = useRecoilValue(isLoadingState);
+  const [loggedInUser, setLoggedInUser] = useRecoilState(loggedInUserState);
 
   useEffect(() => {
-    // TODO: access token으로 사용자 인증로직 구현필여
+    const checkLoggedInUser = async () => {
+      const storageUser = localStorage.getItem("loggedInUser");
+      if (!storageUser) {
+        return;
+      }
+      const { accessToken, userId, profileImg, nickname } = JSON.parse(storageUser);
+
+      try {
+        await checkLoggedIn(userId, accessToken);
+        setLoggedInUser({
+          accessToken,
+          userId,
+          profileImg,
+          nickname,
+        });
+      } catch (err: any) {
+        alert("인증이 만료되었습니다. 다시 로그인해주세요");
+        setLoggedInUser({
+          userId: "",
+          accessToken: "",
+          profileImg: "",
+          nickname: "",
+        });
+      }
+    };
+
+    checkLoggedInUser();
   }, []);
 
   return (

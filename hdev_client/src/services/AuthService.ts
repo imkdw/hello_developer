@@ -44,3 +44,27 @@ export const token = async () => {
     throw err;
   }
 };
+
+export const checkLoggedIn = async (userId: string, accessToken: string) => {
+  try {
+    return await api.get(`/auth/check/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (err: any) {
+    console.log("에러발생", err.response);
+    if (err.response.status === 401 && err.response.data.message !== "not_logged_in") {
+      const tokenRes = await token();
+      const res = await api.get(`/auth/check/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${tokenRes.data.accessToken}`,
+        },
+      });
+      res.data.accessToken = tokenRes.data.accessToken;
+      return res;
+    }
+
+    throw err;
+  }
+};

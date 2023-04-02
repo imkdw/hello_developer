@@ -45,6 +45,8 @@ const MenuUtil = () => {
         userId: "",
       });
 
+      localStorage.removeItem("loggedInUser");
+
       setEnableMenu(false);
       navigator("/");
     }

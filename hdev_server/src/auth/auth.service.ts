@@ -117,4 +117,15 @@ export class AuthService {
   async verfiyRefreshToken(refreshToken: string) {
     return this.jwtService.verify(refreshToken);
   }
+
+  async check(tokenUserId: string, userId: string) {
+    if (tokenUserId !== userId) {
+      return new BadRequestException('user_mismatch');
+    }
+
+    const user = await this.userRepository.findById(userId);
+    if (!user.refreshToken) {
+      return new UnauthorizedException('not_logged_in');
+    }
+  }
 }

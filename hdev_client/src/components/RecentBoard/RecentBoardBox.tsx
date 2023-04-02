@@ -28,7 +28,7 @@ const RecentBoardBox = ({ boardData }: RecentBoardBoxProps) => {
   return (
     <StyledRecentBoardBox>
       {boardData.map((data) => (
-        <RecentItem data={data} />
+        <RecentItem data={data} key={data.boardId} />
       ))}
     </StyledRecentBoardBox>
   );

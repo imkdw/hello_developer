@@ -189,7 +189,6 @@ const UpdatePassword = ({ userId }: UpdatePasswordProps) => {
           placeholder="영문, 숫자, 특수문자를 포함하여 10자리 이상"
         />
       </FormControl>
-      {/* TODO: disabled 처리 안되는거 해결필요 */}
       {loggedInUser.userId === userId && (
         <Buttons>
           {isValidUpdateData.rePassword ? (

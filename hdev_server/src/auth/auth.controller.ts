@@ -76,4 +76,10 @@ export class AuthController {
   async verify(@Param('verifyToken') verifyToken: string) {
     await this.authService.verify(verifyToken);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('check/:userId')
+  async check(@Req() req, @Param('userId') userId: string) {
+    await this.authService.check(req.user.userId, userId);
+  }
 }

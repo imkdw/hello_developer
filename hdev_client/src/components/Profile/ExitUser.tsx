@@ -163,7 +163,6 @@ const ExitUser = ({ userId }: ExitUSerProps) => {
           <WarningMessage>2. 회원탈퇴시 작성한 글, 댓글 등 모든 데이터가 사라집니다.</WarningMessage>
         </Warnings>
       </FormControl>
-      {/* TODO: disabled 처리 안되는거 해결필요 */}
       {loggedInUser.userId === userId && (
         <Buttons>
           {password ? (

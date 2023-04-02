@@ -102,6 +102,16 @@ const LoginForm = () => {
         return { ...prevState, accessToken, profileImg, nickname, userId };
       });
 
+      localStorage.setItem(
+        "loggedInUser",
+        JSON.stringify({
+          accessToken,
+          userId,
+          profileImg,
+          nickname,
+        })
+      );
+
       navigator("/main");
     } catch (err: any) {
       let errMessage = "서버 오류입니다. 다시 시도해주세요.";
