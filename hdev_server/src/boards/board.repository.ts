@@ -201,4 +201,29 @@ export class BoardRepository {
 
     return board;
   }
+
+  async search(text: string) {
+    let boards = this.boardRepository
+      .createQueryBuilder('board')
+      .leftJoinAndSelect('board.user', 'user')
+      .leftJoinAndSelect('board.view', 'view')
+      .leftJoinAndSelect('board.tags', 'tags')
+      .leftJoinAndSelect('board.category2', 'category')
+      .select([
+        'board.boardId',
+        'board.title',
+        'board.content',
+        'board.createdAt',
+        'user.userId',
+        'user.nickname',
+        'user.profileImg',
+        'view.viewCnt',
+        'tags.name',
+        'category.name',
+      ])
+      .where('board.title like :text', { text: `%${text}%` })
+      .orderBy('board.createdAt', 'DESC');
+
+    return await boards.getMany();
+  }
 }

@@ -79,6 +79,7 @@ const Bottom = styled.div`
   display: flex;
   position: relative;
   margin-bottom: 5px;
+  align-items: flex-end;
 `;
 
 const Title = styled.div`

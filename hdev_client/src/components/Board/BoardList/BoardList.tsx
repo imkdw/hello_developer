@@ -7,7 +7,6 @@ import { currentBoardState } from "../../../recoil";
 import { getBoards } from "../../../services/BoardService";
 import ListItem from "./ListItem/ListItem";
 import { IBoardItem } from "../../../types/board";
-import "./BoardList.css";
 
 const StyledBoardList = styled.div`
   width: 100%;

@@ -13,6 +13,7 @@ import CreateBoardPage from "./pages/Board/CreateBoardPage";
 import UpdateBoardPage from "./pages/Board/UpdateBoardPage";
 import ProfilePage from "./pages/User/ProfilePage";
 import { useEffect } from "react";
+import SearchPage from "./pages/Search/SearchPage";
 
 function App() {
   const isLoading = useRecoilValue(isLoadingState);
@@ -41,7 +42,7 @@ function App() {
         <Route path="/boards/:boardId/update" element={<UpdateBoardPage />} />
         <Route path="/boards/:boardId" element={<BoardDetailPage />} />
         <Route path="/users/:userId" element={<ProfilePage />} />
-        <Route path="/404" element={<NotFound />} />
+        <Route path="/search" element={<SearchPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

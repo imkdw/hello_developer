@@ -148,3 +148,11 @@ export const getRecentBoards = async () => {
     throw err;
   }
 };
+
+export const searchBoards = async (text: string) => {
+  try {
+    return await api.get(`/boards/search?text=${text}`);
+  } catch (err: any) {
+    throw err;
+  }
+};

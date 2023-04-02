@@ -25,7 +25,6 @@ interface RecentBoardBoxProps {
 }
 
 const RecentBoardBox = ({ boardData }: RecentBoardBoxProps) => {
-  console.log(boardData);
   return (
     <StyledRecentBoardBox>
       {boardData.map((data) => (

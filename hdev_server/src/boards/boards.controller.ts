@@ -9,7 +9,6 @@ import {
   UsePipes,
   HttpCode,
   Patch,
-  Header,
   Body,
   Query,
 } from '@nestjs/common';
@@ -38,12 +37,6 @@ export class BoardsController {
     return { boardId };
   }
 
-  /**
-   * 특정 카테고리 게시글 목록 가져오기
-   * @param category1 - 첫번쨰 카테고리
-   * @param category2 - 두번째 카테고리
-   * @returns
-   */
   @Get()
   async findAll(@Query('category1') category1: string, @Query('category2') category2: string) {
     const boards = await this.boardsService.findAll(category1, category2);
@@ -56,20 +49,18 @@ export class BoardsController {
     return { ...recentBoards };
   }
 
-  /**
-   * 게시글 상세보기
-   * @param boardId - 게시글 아이디
-   */
+  @Get('search')
+  async search(@Query('text') text: string) {
+    const result = await this.boardsService.search(text);
+    return result;
+  }
+
   @Get(':boardId')
   async findOne(@Param('boardId') boardId: string) {
     const board = await this.boardsService.findOne(boardId);
     return board;
   }
 
-  /**
-   * 게시글 삭제
-   * @param boardId - 삭제 요청한 게시글 아이디
-   */
   @HttpCode(204)
   @UseGuards(JwtAuthGuard)
   @Delete(':boardId')
@@ -77,11 +68,6 @@ export class BoardsController {
     await this.boardsService.remove(req.user.userId, boardId);
   }
 
-  /**
-   * 게시글 수정
-   * @param updateBoardDto - 게시글을 수정한 데이터
-   * @param boardId - 수정요청한 게시글 아이디
-   */
   @UseGuards(JwtAuthGuard)
   @Patch(':boardId')
   async update(

@@ -1,7 +1,9 @@
+import { ChangeEvent, FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { SearchIcon } from "../../assets/icon";
 
-const StyledMenuSearch = styled.div`
+const StyledMenuSearch = styled.form`
   width: 100%;
   height: 15%;
   max-height: 100px;
@@ -30,11 +32,21 @@ const Input = styled.input`
 `;
 
 const MenuSearch = () => {
+  const [searchText, setSearchText] = useState("");
+  const navigator = useNavigate();
+
+  const submitHandler = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    navigator(`/search?text=${searchText}`);
+  };
+
+  const changeHandler = (event: ChangeEvent<HTMLInputElement>) => [setSearchText(event.currentTarget.value)];
+
   return (
-    <StyledMenuSearch>
+    <StyledMenuSearch onSubmit={submitHandler}>
       <InputWrapper>
         <SearchIcon />
-        <Input placeholder="검색어를 입력해주세요" />
+        <Input placeholder="검색어를 입력해주세요" onChange={changeHandler} value={searchText} />
       </InputWrapper>
     </StyledMenuSearch>
   );

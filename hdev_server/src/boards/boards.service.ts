@@ -198,4 +198,9 @@ export class BoardsService {
     const recruitment = await this.boardRepository.recent(10);
     return { notice, qna, knowledge, recruitment };
   }
+
+  async search(text: string) {
+    const result = await this.boardRepository.search(text);
+    return result;
+  }
 }

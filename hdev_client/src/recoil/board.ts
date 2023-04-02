@@ -166,3 +166,5 @@ export const updateBoardDataState = atom({
     content: "",
   },
 });
+
+export interface SearchData {}

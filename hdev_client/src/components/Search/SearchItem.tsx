@@ -1,13 +1,11 @@
 import { Link } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { EyeIcon } from "../../../../assets/icon/BoardIcon";
-import { searchKeywordState } from "../../../../recoil/board";
-import { IBoardItem } from "../../../../types/board";
-import { dateFormater } from "../../../../utils/Common";
-import { MarkdownViewer } from "../../../Common";
+import { EyeIcon } from "../../assets/icon/BoardIcon";
+import { dateFormater } from "../../utils/Common";
+import { SearchData } from "../../recoil/board";
 
-const StyledListItem = styled(Link)`
+const StyledSearchItem = styled(Link)`
   width: 30%;
   min-height: 300px;
   border: 1px solid #e7e7e7;
@@ -158,13 +156,25 @@ const ViewCnt = styled.p`
   color: #7c7c7c;
 `;
 
-interface ListItemProps {
-  board: IBoardItem;
+interface SearchItemProps {
+  board: {
+    boardId: string;
+    title: string;
+    content: string;
+    createdAt: string;
+    user: {
+      userId: string;
+      nickname: string;
+      profileImg: string;
+    };
+    view: {
+      viewCnt: number;
+    };
+    tags: [{ name: number }];
+    category2: { name: string } | null;
+  };
 }
-
-const ListItem = ({ board }: ListItemProps) => {
-  const searchKeyword = useRecoilValue(searchKeywordState);
-
+const SearchItem = ({ board }: SearchItemProps) => {
   const koreanCategory: { [key: string]: string } = {
     tips: "꿀팁",
     review: "리뷰",
@@ -175,8 +185,8 @@ const ListItem = ({ board }: ListItemProps) => {
     company: "채용공고",
   };
 
-  return board.title.includes(searchKeyword) ? (
-    <StyledListItem to={"/boards/" + board.boardId}>
+  return (
+    <StyledSearchItem to={"/boards/" + board.boardId}>
       <Writer>
         <Profile src={board.user.profileImg} />
         <ProfileData>
@@ -200,8 +210,8 @@ const ListItem = ({ board }: ListItemProps) => {
           ))}
         </Hashtag>
       </Tag>
-    </StyledListItem>
-  ) : null;
+    </StyledSearchItem>
+  );
 };
 
-export default ListItem;
+export default SearchItem;
