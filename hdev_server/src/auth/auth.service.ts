@@ -96,7 +96,6 @@ export class AuthService {
       { secret: 'jwtSecret12345!@@!', expiresIn: '1h' },
     );
 
-    console.log(`refreshToken: ${token}`);
     return token;
   }
 

@@ -60,6 +60,12 @@ const TitleText = styled.p`
   }
 `;
 
+const NoContent = styled.p`
+  color: #838383;
+  font-size: 22px;
+  margin-top: 20px;
+`;
+
 interface RecentBoardResponse {
   [key: string]: {
     boardId: string;
@@ -80,8 +86,10 @@ const RecentBoard = () => {
 
   useEffect(() => {
     const loadRecentBoard = async () => {
-      const res = await getRecentBoards();
-      setBoards(res.data);
+      try {
+        const res = await getRecentBoards();
+        setBoards(res.data);
+      } catch (err: any) {}
     };
 
     loadRecentBoard();
@@ -89,34 +97,64 @@ const RecentBoard = () => {
 
   return (
     <StyledRecentBoard>
-      {boards && (
-        <Wrapper>
-          <BoardWrapper>
-            <SortationTitle>
-              <TitleText>공지사항</TitleText>
-            </SortationTitle>
-            <RecentBoardBox boardData={boards["notice"]} />
-          </BoardWrapper>{" "}
-          <BoardWrapper>
-            <SortationTitle>
-              <TitleText>질문답변</TitleText>
-            </SortationTitle>
-            <RecentBoardBox boardData={boards["qna"]} />
-          </BoardWrapper>{" "}
-          <BoardWrapper>
-            <SortationTitle>
-              <TitleText>지식공유</TitleText>
-            </SortationTitle>
-            <RecentBoardBox boardData={boards["knowledge"]} />
-          </BoardWrapper>{" "}
-          <BoardWrapper>
-            <SortationTitle>
-              <TitleText>인원모집</TitleText>
-            </SortationTitle>
-            <RecentBoardBox boardData={boards["recruitment"]} />
-          </BoardWrapper>
-        </Wrapper>
-      )}
+      <Wrapper>
+        <BoardWrapper>
+          <SortationTitle>
+            <TitleText>공지사항</TitleText>
+          </SortationTitle>
+          {boards ? (
+            boards["notice"] ? (
+              <RecentBoardBox boardData={boards["notice"]} />
+            ) : (
+              <NoContent>최근 게시글이 없습니다</NoContent>
+            )
+          ) : (
+            <NoContent>최근 게시글이 없습니다</NoContent>
+          )}
+        </BoardWrapper>{" "}
+        <BoardWrapper>
+          <SortationTitle>
+            <TitleText>질문답변</TitleText>
+          </SortationTitle>
+          {boards ? (
+            boards["qna"] ? (
+              <RecentBoardBox boardData={boards["qna"]} />
+            ) : (
+              <NoContent>최근 게시글이 없습니다</NoContent>
+            )
+          ) : (
+            <NoContent>최근 게시글이 없습니다</NoContent>
+          )}
+        </BoardWrapper>{" "}
+        <BoardWrapper>
+          <SortationTitle>
+            <TitleText>지식공유</TitleText>
+          </SortationTitle>
+          {boards ? (
+            boards["knowledge"] ? (
+              <RecentBoardBox boardData={boards["knowledge"]} />
+            ) : (
+              <NoContent>최근 게시글이 없습니다</NoContent>
+            )
+          ) : (
+            <NoContent>최근 게시글이 없습니다</NoContent>
+          )}
+        </BoardWrapper>{" "}
+        <BoardWrapper>
+          <SortationTitle>
+            <TitleText>인원모집</TitleText>
+          </SortationTitle>
+          {boards ? (
+            boards["recruitment"] ? (
+              <RecentBoardBox boardData={boards["recruitment"]} />
+            ) : (
+              <NoContent>최근 게시글이 없습니다</NoContent>
+            )
+          ) : (
+            <NoContent>최근 게시글이 없습니다</NoContent>
+          )}
+        </BoardWrapper>
+      </Wrapper>
     </StyledRecentBoard>
   );
 };

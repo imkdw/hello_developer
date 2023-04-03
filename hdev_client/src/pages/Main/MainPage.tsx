@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import { Menu } from "../../components/Menu";
-import { RecentBoard } from "../../components/RecentBoard";
 import { useMediaQuery } from "react-responsive";
 import { useRecoilValue } from "recoil";
 import { enableMenuState } from "../../recoil";
 import MobileHeader from "../../components/Mobile/Header/MobileHeader";
+import RecentBoard from "../../components/RecentBoard/RecentBoard";
 
 const StyledMain = styled.div`
   width: 100%;

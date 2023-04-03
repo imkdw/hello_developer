@@ -56,10 +56,10 @@ function App() {
       {isLoading && <Loading />}
       <Routes>
         <Route path="/" element={<MainPage />} />
+        <Route path="/main" element={<MainPage />} />
         <Route path="/login" element={<AuthPage type="login" />} />
         <Route path="/register" element={<AuthPage type="register" />} />
         <Route path="/verify/:verifyToken" element={<VerifyPage />} />
-        <Route path="/main" element={<MainPage />} />
         <Route path="/notice" element={<BoardListPage currentBoard="notice" />} />
         <Route path="/suggestion" element={<BoardListPage currentBoard="suggestion" />} />
         <Route path="/free" element={<BoardListPage currentBoard="free" />} />
