@@ -13,6 +13,7 @@ import { Response } from 'express';
 import { EmailService } from 'src/email/email.service';
 import { UtilsService } from 'src/utils/utils.service';
 import { ConfigService } from '@nestjs/config';
+
 /**
  * 인증 관련 컨트롤러 테스트코드
  */
@@ -24,21 +25,41 @@ describe('[Controller] AuthController', () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [PassportModule],
       controllers: [AuthController],
       providers: [
-        AuthService,
-        JwtService,
-        ConfigService,
-        EmailService,
-        UtilsService,
-        UserRepository,
         {
           provide: getRepositoryToken(User),
           useValue: {
             findOne: jest.fn(),
             save: jest.fn(),
             update: jest.fn(),
+          },
+        },
+        {
+          provide: AuthService,
+          useValue: {
+            register: jest.fn(),
+            login: jest.fn(),
+            logout: jest.fn(),
+            validateUser: jest.fn(),
+            generateAccessToken: jest.fn(),
+            verify: jest.fn(),
+            check: jest.fn(),
+            createAccessToken: jest.fn(),
+            createRefreshToken: jest.fn(),
+          },
+        },
+        {
+          provide: JwtService,
+          useValue: {
+            sign: jest.fn(),
+            decode: jest.fn(),
+          },
+        },
+        {
+          provide: UserRepository,
+          useValue: {
+            findById: jest.fn(),
           },
         },
       ],
@@ -68,7 +89,7 @@ describe('[Controller] AuthController', () => {
   });
 
   describe('[로그인] AuthController.login()', () => {
-    it('authService.login이 호출되고 데이터가 반환되었는지 확인', async () => {
+    it('authService.login이 호출되고 데이터반환 및 쿠키가 설정되었는지 확인', async () => {
       // given
       const loginData = new LoginDto();
       loginData.email = 'test@test.com';
@@ -106,11 +127,10 @@ describe('[Controller] AuthController', () => {
       const userId = 'userId';
 
       // then
-      const spyLogout = jest.spyOn(authService, 'logout');
       await authController.logout(req, userId);
 
       // then
-      expect(spyLogout).toBeCalledWith(req.user.userId, userId);
+      expect(authService.logout).toBeCalledWith(req.user.userId, userId);
     });
   });
 
@@ -124,8 +144,8 @@ describe('[Controller] AuthController', () => {
       };
 
       // when
-      jest.spyOn(authService, 'createAccessToken').mockResolvedValue('accessToken' as never);
-      jest.spyOn(jwtService, 'decode').mockResolvedValue({ userId: 'userId' } as never);
+      jest.spyOn(authService, 'createAccessToken').mockReturnValue('accessToken');
+      jest.spyOn(jwtService, 'decode').mockReturnValue({ userId: 'userId' });
       const result = await authController.token(req);
 
       // then

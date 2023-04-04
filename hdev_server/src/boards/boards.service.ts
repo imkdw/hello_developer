@@ -97,8 +97,8 @@ export class BoardsService {
    * 특정 게시글 가져오기
    * @param boardid - 특정 게시글 아이디
    */
-  async findOne(boardId: string) {
-    const board = await this.boardRepository.findOne(boardId);
+  async detail(boardId: string) {
+    const board = await this.boardRepository.detail(boardId);
 
     if (!board) {
       throw new NotFoundException('board_not_found');
@@ -113,14 +113,14 @@ export class BoardsService {
    * @param boardId - 게시글 ID
    */
   async remove(userId: string, boardId: string) {
-    const board = await this.boardRepository.findOne(boardId);
+    const board = await this.boardRepository.findById(boardId);
 
     if (!board) {
       throw new NotFoundException('board_not_found');
     }
 
     /** 작성자와 삭제요청 유저가 일치할때만 글 삭제 */
-    if (board.user.userId === userId) {
+    if (board.userId === userId) {
       await this.boardRepository.remove(userId, boardId);
     } else {
       throw new UnauthorizedException('unauthorized_user');

@@ -27,13 +27,11 @@ describe('[Service] AuthService', () => {
       imports: [
         ConfigModule.forRoot({
           load: [configuration],
+          isGlobal: true,
         }),
       ],
       providers: [
         AuthService,
-        UtilsService,
-        EmailService,
-        UserRepository,
         {
           provide: getRepositoryToken(User),
           useValue: {
@@ -47,6 +45,30 @@ describe('[Service] AuthService', () => {
           useValue: {
             decode: jest.fn(),
             sign: jest.fn(),
+          },
+        },
+        {
+          provide: UtilsService,
+          useValue: {
+            getUUID: jest.fn(),
+            encrypt: jest.fn(),
+            compare: jest.fn(),
+          },
+        },
+        {
+          provide: EmailService,
+          useValue: {},
+        },
+        {
+          provide: UserRepository,
+          useValue: {
+            findUserByEmail: jest.fn(),
+            findUserByNickname: jest.fn(),
+            register: jest.fn(),
+            saveRefreshToken: jest.fn(),
+            removeRefreshToken: jest.fn(),
+            verify: jest.fn(),
+            findById: jest.fn(),
           },
         },
       ],

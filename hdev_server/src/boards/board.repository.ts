@@ -55,7 +55,7 @@ export class BoardRepository {
     return await boards.getMany();
   }
 
-  async findOne(boardId: string) {
+  async detail(boardId: string) {
     const _board = await this.boardRepository.findOne({ where: { boardId }, select: ['boardId'] });
 
     if (!_board) {
@@ -166,7 +166,7 @@ export class BoardRepository {
   }
 
   async addRecommend(boardId: string) {
-    const board = await this.findOne(boardId);
+    const board = await this.findById(boardId);
 
     if (board) {
       await this.boardRepository.update(boardId, { recommendCnt: board.recommendCnt + 1 });
@@ -174,7 +174,7 @@ export class BoardRepository {
   }
 
   async removeRecommend(boardId: string) {
-    const board = await this.findOne(boardId);
+    const board = await this.findById(boardId);
 
     if (board) {
       await this.boardRepository.update(boardId, { recommendCnt: board.recommendCnt - 1 });
@@ -225,5 +225,9 @@ export class BoardRepository {
       .orderBy('board.createdAt', 'DESC');
 
     return await boards.getMany();
+  }
+
+  async findById(boardId: string) {
+    return this.boardRepository.findOne({ where: { boardId } });
   }
 }
