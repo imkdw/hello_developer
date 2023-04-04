@@ -13,15 +13,16 @@ import { Response } from 'express';
 import { EmailService } from 'src/email/email.service';
 import { UtilsService } from 'src/utils/utils.service';
 import { ConfigService } from '@nestjs/config';
-
 /**
  * 인증 관련 컨트롤러 테스트코드
  */
 describe('[Controller] AuthController', () => {
   let authController: AuthController;
   let authService: AuthService;
+  let userRepository: UserRepository;
+  let jwtService: JwtService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [PassportModule],
       controllers: [AuthController],
@@ -37,6 +38,7 @@ describe('[Controller] AuthController', () => {
           useValue: {
             findOne: jest.fn(),
             save: jest.fn(),
+            update: jest.fn(),
           },
         },
       ],
@@ -44,50 +46,37 @@ describe('[Controller] AuthController', () => {
 
     authController = module.get<AuthController>(AuthController);
     authService = module.get<AuthService>(AuthService);
+    jwtService = module.get<JwtService>(JwtService);
+    userRepository = module.get<UserRepository>(UserRepository);
   });
 
   describe('[회원가입] AuthController.register()', () => {
     it('authService.register가 호출되었는지 확인', async () => {
-      /**
-       * -- given
-       * 회원가입시 사용되는 request.body.registerDto 생성
-       */
+      // given
       const registerData = new RegisterDto();
       registerData.email = 'test@test.com';
       registerData.password = 'asdf1234!@';
       registerData.nickname = 'testuser';
 
-      /**
-       * -- when
-       */
-      const spyRegister = jest.spyOn(authService, 'register');
-      await authController.register(registerData);
+      // when
+      jest.spyOn(authService, 'register').mockResolvedValue('userId');
+      const result = await authController.register(registerData);
 
-      /**
-       * -- then
-       * authService.register 메소드가 registerDto로 호출되었는지 확인
-       */
-      expect(spyRegister).toHaveBeenCalledWith(registerData);
+      // then
+      expect(result).toEqual({ userId: 'userId' });
     });
   });
 
   describe('[로그인] AuthController.login()', () => {
     it('authService.login이 호출되고 데이터가 반환되었는지 확인', async () => {
-      /**
-       * -- given
-       * 1. 로그인시 사용되는 request.body.loginDto 생성
-       * 2. express.response 모킹
-       */
+      // given
       const loginData = new LoginDto();
       loginData.email = 'test@test.com';
       loginData.password = 'asdf1234!@';
 
       const response = { cookie: jest.fn() } as unknown as Response;
 
-      /**
-       * -- when
-       * 1. authService.login은 서비스로직 처리후 아래 데이터 반환
-       */
+      // when
       jest.spyOn(authService, 'login').mockResolvedValue({
         userId: 'userId',
         profileImg: 'profileImg',
@@ -98,11 +87,7 @@ describe('[Controller] AuthController', () => {
 
       const result = await authController.login(response, loginData);
 
-      /**
-       * -- then
-       * 1. login 메소드의 반환값에 아래 데이터가 있는지 확인
-       * 2. response.cookie가 refresh 토큰으로 호출되었는지 확인
-       */
+      // then
       expect(result).toHaveProperty('userId');
       expect(result).toHaveProperty('profileImg');
       expect(result).toHaveProperty('nickname');
@@ -115,16 +100,17 @@ describe('[Controller] AuthController', () => {
   });
 
   describe('[로그아웃] AuthController.logout()', () => {
-    it('authService.logout이 호출되었는지 확인', () => {
+    it('authService.logout이 호출되었는지 확인', async () => {
       // given
       const req = { user: { userId: 'userId' } };
       const userId = 'userId';
 
       // then
       const spyLogout = jest.spyOn(authService, 'logout');
+      await authController.logout(req, userId);
 
       // then
-      expect(spyLogout).toBeCalledWith(req, userId);
+      expect(spyLogout).toBeCalledWith(req.user.userId, userId);
     });
   });
 
@@ -139,10 +125,43 @@ describe('[Controller] AuthController', () => {
 
       // when
       jest.spyOn(authService, 'createAccessToken').mockResolvedValue('accessToken' as never);
+      jest.spyOn(jwtService, 'decode').mockResolvedValue({ userId: 'userId' } as never);
       const result = await authController.token(req);
 
       // then
       expect(result).toHaveProperty('accessToken');
+    });
+  });
+
+  describe('[이메일인증 토큰검증] AuthController.verify()', () => {
+    it('authService.verify를 호출하는지 확인', async () => {
+      // given
+      const verifyToken = 'verifyToken';
+
+      // when
+      const spyVerify = jest.spyOn(authService, 'verify');
+      await authController.verify(verifyToken);
+
+      // then
+      expect(spyVerify).toBeCalledWith(verifyToken);
+    });
+  });
+
+  describe('[로그인여부 검증] AuthController.check()', () => {
+    it('authService.check가 호출되는지 확인', async () => {
+      // given
+      const req = { user: { userId: 'userId' } };
+      const userId = 'userId';
+      const user = new User();
+      user.refreshToken = 'refreshToken';
+
+      // when
+      const spyCheck = jest.spyOn(authService, 'check').mockResolvedValue(undefined);
+      jest.spyOn(userRepository, 'findById').mockResolvedValue(user);
+      await authController.check(req, userId);
+
+      // then
+      expect(spyCheck).toBeCalledWith(req.user.userId, userId);
     });
   });
 });

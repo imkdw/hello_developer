@@ -74,7 +74,7 @@ export class AuthController {
   @Get('token')
   async token(@Req() req) {
     const refreshToken = req.cookies['refreshToken'];
-    const accessToken = this.authService.createAccessToken(refreshToken);
+    const accessToken = this.authService.generateAccessToken(refreshToken);
     return { accessToken };
   }
 

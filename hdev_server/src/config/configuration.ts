@@ -11,8 +11,8 @@ export default () => ({
   },
   jwt: {
     jwtSecret: process.env.JWT_SECRET,
-    accessTokenExpiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRES_IN,
-    refreshTokenExpiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN,
+    atkExpiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRES_IN,
+    rtkExpiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN,
   },
   bcrypt: {
     salt: process.env.BCRYPT_SALT,

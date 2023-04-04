@@ -42,8 +42,7 @@ export class User {
   @UpdateDateColumn({ type: 'datetime', nullable: true, name: 'update_at_date' })
   updatedAt: Date;
 
-  // TODO: 인증여부 false로 변경필요
-  @Column('boolean', { nullable: true, default: true, name: 'is_verified_flag' })
+  @Column('boolean', { nullable: true, default: false, name: 'is_verified_flag' })
   isVerified: boolean;
 
   @Column('varchar', { length: 255, nullable: false, name: 'verify_token' })
