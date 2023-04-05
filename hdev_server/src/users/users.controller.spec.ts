@@ -14,39 +14,42 @@ import { User } from './user.entity';
 import { UsersController } from './users.controller';
 import { UsersModule } from './users.module';
 import { UsersService } from './users.service';
+import configuration from 'src/config/configuration';
+import { UserRepository } from './user.repository';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import { ExitUserVerifyDto } from './dto/exit-user-verify.dto';
+import { exit } from 'process';
 
 describe('[Controller] UsersController', () => {
   let usersController: UsersController;
   let usersService: UsersService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [
-        BoardsModule,
-        CommentsModule,
-        UsersModule,
-        TypeOrmModule.forRoot({
-          type: 'sqlite',
-          database: ':memory:',
-          entities: [User, Board, Category, View, Tag, Comment],
-          synchronize: true,
+        ConfigModule.forRoot({
+          load: [configuration],
         }),
-        ConfigModule.forRoot(),
       ],
       controllers: [UsersController],
       providers: [
-        UsersService,
         {
-          provide: getRepositoryToken(User),
-          useValue: {},
+          provide: UsersService,
+          useValue: {
+            profile: jest.fn(),
+            update: jest.fn(),
+            remove: jest.fn(),
+            history: jest.fn(),
+            profileImage: jest.fn(),
+            password: jest.fn(),
+            exitUserVerify: jest.fn(),
+          },
         },
         {
-          provide: getRepositoryToken(Board),
-          useValue: {},
-        },
-        {
-          provide: getRepositoryToken(Comment),
-          useValue: {},
+          provide: UserRepository,
+          useValue: {
+            profile: jest.fn(),
+          },
         },
       ],
     }).compile();
@@ -80,8 +83,8 @@ describe('[Controller] UsersController', () => {
   describe('[프로필 수정] UsersController.update()', () => {
     it('프로필 수정시 UsersSerivce.update 호출', async () => {
       // given
-      const req = { user: { userId: 'user-id-1' } };
-      const userId = 'user-id-1';
+      const req = { user: { userId: 'userId' } };
+      const userId = 'userId';
       const updateProfileDto: UpdateProfileDto = {
         nickname: 'nickname',
         introduce: 'intrudoce',
@@ -99,8 +102,8 @@ describe('[Controller] UsersController', () => {
   describe('[회원탈퇴] UsersController.remove()', () => {
     it('회원탈퇴 요청시 UsersSerivce.remove 호출', async () => {
       // given
-      const req = { user: { userId: 'user-id-1' } };
-      const userId = 'user-id-1';
+      const req = { user: { userId: 'userId' } };
+      const userId = 'userId';
 
       // when
       const removeSpy = jest.spyOn(usersService, 'remove');
@@ -114,7 +117,7 @@ describe('[Controller] UsersController', () => {
   describe('[활동내역 조회] UsersController.history()', () => {
     it('활동내역 조회 요청시 UsersSerivce.history 호출', async () => {
       // given
-      const userId = 'user-id-1';
+      const userId = 'userId';
 
       // when
       const historySpy = jest.spyOn(usersService, 'history');
@@ -122,6 +125,65 @@ describe('[Controller] UsersController', () => {
 
       // then
       expect(historySpy).toBeCalledWith(userId, 'board');
+    });
+  });
+
+  describe('[비밀번호 변경] UsersController.password()', () => {
+    it('usersService.password 호출 확인', async () => {
+      // given
+      const req = { user: { userId: 'userId' } };
+      const updatePasswordDto: UpdatePasswordDto = {
+        password: 'asdf1234!@',
+        rePassword: 'asdf1234!@#',
+      };
+      const userId = 'userId';
+
+      // when
+      await usersController.password(req, updatePasswordDto, userId);
+
+      // then
+      expect(usersService.password).toBeCalledWith(req.user.userId, userId, updatePasswordDto);
+    });
+  });
+
+  describe('[유저 인증] UsersController.exitUserVerify()', () => {
+    it('usersService.exitUserVerify 호출 확인', async () => {
+      // given
+      const req = { user: { userId: 'userId' } };
+      const exitUserVerifyDto: ExitUserVerifyDto = {
+        password: 'asdf1234!@',
+      };
+      const userId = 'userId';
+
+      // when
+      await usersController.exitUserVerify(req, exitUserVerifyDto, userId);
+
+      // then
+      expect(usersService.exitUserVerify).toBeCalledWith(
+        req.user.userId,
+        userId,
+        exitUserVerifyDto,
+      );
+    });
+  });
+
+  describe('[프로필사진 변경] UsersController.profileImage', () => {
+    it('업데이트된 프로필사진이 반환되는지 확인', async () => {
+      // given
+      const req = { user: { userId: 'userId' } };
+      const file = {
+        originalname: 'test.jpg',
+        mimetype: 'image/jpg',
+        buffer: Buffer.from('test'),
+      } as Express.Multer.File;
+      const userId = 'userId';
+
+      // when
+      jest.spyOn(usersService, 'profileImage').mockResolvedValue('imageUrl');
+      const result = await usersController.profileImage(req, file, userId);
+
+      // then
+      expect(result).toEqual({ profileImg: 'imageUrl' });
     });
   });
 });

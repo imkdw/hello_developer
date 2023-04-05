@@ -36,7 +36,7 @@ export class CommentsController {
   }
 
   /**
-   * [PATCH] /comments/:commentId - 댓글 수정
+   * [PATCH] /comments/:commentId - 댓글 수정 API
    * @param commentId - 댓글 아이디
    * @param updateCommentDto - 수정한 댓글 데이터
    */
@@ -53,7 +53,7 @@ export class CommentsController {
   }
 
   /**
-   * [DELETE] /comments/:commentId - 댓글 삭제
+   * [DELETE] /comments/:commentId - 댓글 삭제 API
    */
   @HttpCode(204)
   @UseGuards(JwtAuthGuard)

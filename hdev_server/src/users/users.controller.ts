@@ -28,7 +28,7 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   /**
-   * [GET] /users/:userId - 유저의 프로필 가져오기
+   * [GET] /users/:userId - 유저의 프로필 조회 API
    * @param userId - 프로필을 조회할 유저의 아이디
    */
   @Get('/:userId')
@@ -38,7 +38,7 @@ export class UsersController {
   }
 
   /**
-   * [PATCH] /users/:userId - 유저의 프로필 수정하기
+   * [PATCH] /users/:userId - 유저의 프로필 수정 API
    * @param updateProfileDto - 수정할 프로필 데이터
    * @param userId - 프로필을 수정할 유저의 아이디
    */
@@ -54,7 +54,7 @@ export class UsersController {
   }
 
   /**
-   * [DELETE] /users/:userId - 회원 탈퇴
+   * [DELETE] /users/:userId - 회원 탈퇴 API
    * @param userId - 탈퇴할 유저의 아이디
    */
   @HttpCode(204)
@@ -65,7 +65,7 @@ export class UsersController {
   }
 
   /**
-   * [GET] /users/:userId/history - 유저의 히스토리(활동내역) 가져오기
+   * [GET] /users/:userId/history?item= - 유저의 히스토리(활동내역) 조회 API
    * @param userId - 히스토리(활동내역)를 가져올 유저의 아이디
    */
   @Get('/:userId/history')
@@ -75,7 +75,7 @@ export class UsersController {
   }
 
   /**
-   * [POST] /users/:userId/image - 유저의 프로필사진 변경
+   * [POST] /users/:userId/image - 유저의 프로필사진 변경 API
    * @param file - 클라이언트에서 업로드된 파일
    * @param userId - 업로드를 요청한 유저의 아이디
    */
@@ -91,6 +91,12 @@ export class UsersController {
     return { profileImg: imageUrl };
   }
 
+  /**
+   * [PATCH] /users/:userId/password - 비밀번호 변경 API
+   * @param req
+   * @param updatePasswordDto - 기존 비밀번호화 변경할 비밀번호
+   * @param userId - 변경을 요청한 사용자 아이디
+   */
   @HttpCode(204)
   @UseGuards(JwtAuthGuard)
   @Patch(':userId/password')
@@ -102,6 +108,13 @@ export class UsersController {
     await this.usersService.password(req.user.userId, userId, updatePasswordDto);
   }
 
+  /**
+   * [PATCH] /users/:userId/verify - 비밀번호 변경 전 유저검증 API
+   * @param req
+   * @param exitUserVerifyDto - 비밀번호
+   * @param userId - 유저의 아이디
+   * @returns
+   */
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   @Patch(':userId/verify')
