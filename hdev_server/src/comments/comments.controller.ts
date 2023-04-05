@@ -22,8 +22,9 @@ import { ApiTags } from '@nestjs/swagger/dist/decorators/api-use-tags.decorator'
 @ApiTags('댓글 API')
 export class CommentsController {
   constructor(private commentsService: CommentsService) {}
+
   /**
-   * [POST] /comments - 댓글 생성
+   * [POST] /comments - 댓글 작성 API
    * @param createCommentDto - 작성한 댓글 데이터
    */
   @UseGuards(JwtAuthGuard)
