@@ -25,6 +25,12 @@ export class BoardsService {
     private awsService: AwsService,
   ) {}
 
+  /**
+   * 게시글 생성
+   * @param userId - 작성자 아이디
+   * @param createBoardDto - 게시글 작성 데이터
+   * @returns
+   */
   async create(userId: string, createBoardDto: CreateBoardDto) {
     const { title, content, category, tags, tempBoardId } = createBoardDto;
 

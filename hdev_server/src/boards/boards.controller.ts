@@ -29,7 +29,6 @@ export class BoardsController {
 
   /**
    * [POST] /boards - 게시글 생성 API
-   * 유저가 새로운 게시글을 작성할때 사용
    * @param req
    * @param createBoardDto - 게시글 생성시 입력되는 데이터
    * @returns
@@ -46,7 +45,6 @@ export class BoardsController {
 
   /**
    * [GET] /boards?category1=&category2= - 특정 카테고리의 게시글을 모두 조회하는 API
-   * 특정 카테고리의 게시글을 모두 조회할때 사용
    * @param category1 - 첫번째 카테고리
    * @param category2 - 두번째 카테고리
    * @returns
@@ -59,7 +57,6 @@ export class BoardsController {
 
   /**
    * [GET] /boards/recent - 메인페이지에 표시되는 최근게시글을 가져오는 API
-   * 메인페이지에 출력되는 최근게시글을 가져올때 사용
    * @returns
    */
   @Get('recent')
@@ -70,7 +67,6 @@ export class BoardsController {
 
   /**
    * [GET] /boards/search?text= - 게시글을 검색할때 사용하는 API
-   * 제목을 기준으로 게시글을 검색할때 사용할때 사용
    * @param text - 검색어
    * @returns
    */
@@ -82,7 +78,6 @@ export class BoardsController {
 
   /**
    * [GET] /boards/:boardId - 게시글을 상세정보 조회 API
-   * 게시글을 클릭했을때 상세내용을 확인하기위해 사용
    * @param boardId - 게시글 아이디
    * @returns
    */
@@ -94,7 +89,6 @@ export class BoardsController {
 
   /**
    * [DELETE] /boards/:boardId - 게시글 삭제 API
-   * 게시글을 삭제할때 사용
    * @param req
    * @param boardId - 게시글 아이디
    */
@@ -107,7 +101,6 @@ export class BoardsController {
 
   /**
    * [PATCH] /boards/:boardId - 게시글 수정 API
-   * 게시글을 수정할 때 사용
    * @param req
    * @param boardId - 게시글 아이디
    * @param updateBoardDto - 게시글 수정 데이터
@@ -122,17 +115,32 @@ export class BoardsController {
     await this.boardsService.update(req.user.userId, updateBoardDto, boardId);
   }
 
+  /**
+   * [GET] /boards/:boardId/recommend - 게시글 추천 추가/삭제 API
+   * @param req
+   * @param boardId - 추천을 요청한 게시글 아이디
+   */
   @UseGuards(JwtAuthGuard)
   @Get('/:boardId/recommend')
   async recommend(@Req() req, @Param('boardId') boardId: string) {
     await this.boardsService.recommend(req.user.userId, boardId);
   }
 
+  /**
+   * [GET] /boards/:boardId/views - 게시글 조회수 API
+   * @param boardId - 조회한 게시글의 아이디
+   */
   @Get(':boardId/views')
   async views(@Param('boardId') boardId: string) {
     await this.boardsService.views(boardId);
   }
 
+  /**
+   * [POST] /boards/image - 게시글 작성/수정시 이미지 업로드 API
+   * @param file - 업로드한 이미지 파일
+   * @param imageUploadDto - 사진 업로드시 포함된 게시글 아이디
+   * @returns 업로드된 이미지의 URL 반환
+   */
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('image'))
   @Post('image')

@@ -1,26 +1,19 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
-import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
-import { AppModule } from 'src/app.module';
-import { Comment } from '../comments/comment.entity';
-import { User } from '../users/user.entity';
 import { Board } from './board.entity';
 import { BoardRepository } from './board.repository';
 import { BoardsController } from './boards.controller';
 import { BoardsModule } from './boards.module';
 import { BoardsService } from './boards.service';
-import { Category } from './category/category.entity';
 import { CategoryRepository } from './category/category.repository';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
-import { Tag } from './tag/tag.entity';
 import { TagRepository } from './tag/tag.repository';
-import { View } from './view/view.entity';
 import { ViewRepository } from './view/view.repository';
 import { Recommend } from './recommend/recommend.entity';
-import { AwsService } from 'src/aws/aws.service';
 import configuration from 'src/config/configuration';
-import { UtilsService } from 'src/utils/utils.service';
+import { RecommendRepository } from './recommend/recommend.repository';
+import { ImageUploadDto } from './dto/image-upload.dto';
 
 describe('[Controller] BoardsController', () => {
   let boardsController: BoardsController;
@@ -28,6 +21,7 @@ describe('[Controller] BoardsController', () => {
   let boardRepository: BoardRepository;
   let categortRepository: CategoryRepository;
   let tagRepository: TagRepository;
+  let recommendRepository: RecommendRepository;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -36,13 +30,6 @@ describe('[Controller] BoardsController', () => {
           load: [configuration],
           isGlobal: true,
         }),
-        TypeOrmModule.forRoot({
-          type: 'sqlite',
-          database: ':memory:',
-          entities: [User, Board, Category, View, Tag, Comment, Recommend],
-          synchronize: true,
-        }),
-        BoardsModule,
       ],
       controllers: [BoardsController],
       providers: [
@@ -55,12 +42,43 @@ describe('[Controller] BoardsController', () => {
             search: jest.fn(),
             detail: jest.fn(),
             remove: jest.fn(),
+            update: jest.fn(),
+            recommend: jest.fn(),
+            views: jest.fn(),
+            imageUpload: jest.fn(),
           },
         },
         {
           provide: BoardRepository,
           useValue: {
             findById: jest.fn(),
+            remove: jest.fn(),
+            update: jest.fn(),
+          },
+        },
+        {
+          provide: TagRepository,
+          useValue: {
+            findByName: jest.fn(),
+            create: jest.fn(),
+          },
+        },
+        {
+          provide: CategoryRepository,
+          useValue: {
+            findIdByName: jest.fn(),
+          },
+        },
+        {
+          provide: ViewRepository,
+          useValue: {
+            add: jest.fn(),
+          },
+        },
+        {
+          provide: RecommendRepository,
+          useValue: {
+            findByUserAndBoard: jest.fn(),
           },
         },
       ],
@@ -70,6 +88,8 @@ describe('[Controller] BoardsController', () => {
     boardsService = module.get<BoardsService>(BoardsService);
     boardRepository = module.get<BoardRepository>(BoardRepository);
     categortRepository = module.get<CategoryRepository>(CategoryRepository);
+    recommendRepository = module.get<RecommendRepository>(RecommendRepository);
+    tagRepository = module.get<TagRepository>(TagRepository);
   });
 
   describe('[글작성] BoardsController.create()', () => {
@@ -169,35 +189,82 @@ describe('[Controller] BoardsController', () => {
 
       // when
       jest.spyOn(boardRepository, 'findById').mockResolvedValue(board);
+      const spyRemove = jest.spyOn(boardsService, 'remove');
       await boardsController.remove(req, boardId);
 
       // then
-      expect(boardsService.remove).toBeCalledWith(req.user.userId, boardId);
+      expect(spyRemove).toBeCalledWith(req.user.userId, boardId);
     });
   });
 
-  // describe('[글수정] BoardsController.update()', () => {
-  //   it('boardsService.update가 호출되었는지 확인', async () => {
-  //     // given
-  //     const req = { user: { userId: 'userId' } };
-  //     const boardId = 'boardId';
+  describe('[글수정] BoardsController.update()', () => {
+    it('boardsService.update가 호출되었는지 확인', async () => {
+      // given
+      const req = { user: { userId: 'userId' } };
+      const boardId = 'boardId';
 
-  //     const updatedBoard = new UpdateBoardDto();
-  //     updatedBoard.title = 'title';
-  //     updatedBoard.tags = [{ name: 'tags' }];
-  //     updatedBoard.category = 'qna-tech';
+      const updatedBoard = new UpdateBoardDto();
+      updatedBoard.title = 'title';
+      updatedBoard.tags = [{ name: 'tags' }];
+      updatedBoard.category = 'qna-tech';
 
-  //     const tag = new Tag();
-  //     tag.name = 'tags';
+      // when
+      const spyServiceUpdate = jest.spyOn(boardsService, 'update');
+      jest.spyOn(categortRepository, 'findIdByName').mockResolvedValue([2]);
+      jest.spyOn(tagRepository, 'findByName').mockResolvedValue(null);
+      jest.spyOn(tagRepository, 'create');
+      await boardsController.update(req, boardId, updatedBoard);
 
-  //     // when
-  //     const spyUpdate = jest.spyOn(boardsService, 'update');
-  //     jest.spyOn(categortRepository, 'findIdByName').mockResolvedValue([2]);
-  //     jest.spyOn(tagRepository, 'findByName').mockResolvedValue(tag);
-  //     await boardsController.update(req, boardId, updatedBoard);
+      // then
+      expect(spyServiceUpdate).toBeCalledWith(req.user.userId, updatedBoard, boardId);
+    });
+  });
 
-  //     // then
-  //     expect(spyUpdate).toBeCalledWith(req.user.userId, updatedBoard, boardId);
-  //   });
-  // });
+  describe('[글 추천] BoardsController.recommend()', () => {
+    it('boardService.recommend 호출 확인', async () => {
+      // given
+      const req = { user: { userId: 'userId' } };
+      const boardId = 'boardId';
+
+      const recommend = new Recommend();
+
+      // when
+      await boardsController.recommend(req, boardId);
+      jest.spyOn(recommendRepository, 'findByUserAndBoard').mockResolvedValue(recommend);
+
+      // then
+      expect(boardsService.recommend).toBeCalledWith(req.user.userId, boardId);
+    });
+  });
+
+  describe('[글 조회수추가] BoardsController.views', () => {
+    it('boardService.views 호출 확인', async () => {
+      // given
+      const boardId = 'boardId';
+
+      // when
+      await boardsController.views(boardId);
+
+      // then
+      expect(boardsService.views).toBeCalledWith(boardId);
+    });
+  });
+
+  describe('[게시글 사진 업로드] BoardsController.image()', () => {
+    it('사진이 업로드되면 boardsService.imageUpload 호출 확인', async () => {
+      // given
+      const imageuploadDto: ImageUploadDto = { tempBoardId: 'tempBoardId' };
+      const file = {
+        originalname: 'test.jpg',
+        mimetype: 'image/jpg',
+        buffer: Buffer.from('test'),
+      } as Express.Multer.File;
+
+      // when
+      await boardsController.imageUpload(file, imageuploadDto);
+
+      // then
+      expect(boardsService.imageUpload).toBeCalledWith(file, imageuploadDto);
+    });
+  });
 });

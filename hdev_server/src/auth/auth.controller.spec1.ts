@@ -1,5 +1,4 @@
 import { JwtService } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
@@ -10,9 +9,6 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { Response } from 'express';
-import { EmailService } from 'src/email/email.service';
-import { UtilsService } from 'src/utils/utils.service';
-import { ConfigService } from '@nestjs/config';
 
 /**
  * 인증 관련 컨트롤러 테스트코드
