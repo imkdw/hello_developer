@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  BadRequestException,
-  UnauthorizedException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt/dist';
@@ -11,7 +6,6 @@ import { UserRepository } from '../users/user.repository';
 import { User } from '../users/user.entity';
 import { UtilsService } from '../utils/utils.service';
 import { ConfigService } from '@nestjs/config';
-import { JwtConfig } from './auth.interface';
 import { EmailService } from '../email/email.service';
 
 @Injectable()
