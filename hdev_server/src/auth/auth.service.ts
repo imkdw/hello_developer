@@ -126,12 +126,12 @@ export class AuthService {
    */
   async check(tokenUserId: string, userId: string) {
     if (tokenUserId !== userId) {
-      return new BadRequestException('user_mismatch');
+      throw new BadRequestException('user_mismatch');
     }
 
     const user = await this.userRepository.findById(userId);
     if (!user.refreshToken) {
-      return new UnauthorizedException('not_logged_in');
+      throw new UnauthorizedException('not_logged_in');
     }
   }
 

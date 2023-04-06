@@ -17,7 +17,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --detectOpenHandles --verbose --forceExit --config ./test/jest-e2e.json"
+    "test:e2e": "set NODE_ENV=test && jest --detectOpenHandles --verbose --forceExit --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.298.0",
