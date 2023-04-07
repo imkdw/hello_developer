@@ -43,8 +43,6 @@ export class CommentRepository {
   }
 
   async findHistoryByUserId(userId: string) {
-    console.log(userId);
-    console.log(await this.commentRepository.findOne({ where: { userId } }));
     const comments = await this.commentRepository
       .createQueryBuilder('comment')
       .leftJoinAndSelect('comment.board', 'board')

@@ -47,6 +47,7 @@ describe('Auth Module (e2e)', () => {
         }),
       ],
       providers: [
+        UtilsService,
         {
           provide: APP_FILTER,
           useClass: HttpExceptionFilter,
@@ -57,6 +58,7 @@ describe('Auth Module (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.use(cookieParser());
     await app.init();
+
     dataSource = moduleFixture.get<DataSource>(DataSource);
     utilsService = moduleFixture.get<UtilsService>(UtilsService);
 

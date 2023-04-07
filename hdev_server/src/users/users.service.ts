@@ -162,8 +162,8 @@ export class UsersService {
     if (tokenUserId !== userId) {
       throw new UnauthorizedException('unauthorized_user');
     }
-    const user = await this.userRepository.findById(userId);
 
+    const user = await this.userRepository.findById(userId);
     if (!user) {
       throw new NotFoundException('user_not_found');
     }

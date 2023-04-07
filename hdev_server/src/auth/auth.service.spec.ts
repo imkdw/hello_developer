@@ -294,7 +294,7 @@ describe('[Service] AuthService', () => {
       } catch (err: any) {
         // then
         expect(err.message).toEqual('user_mismatch');
-        expect(err).toBeInstanceOf(UnauthorizedException);
+        expect(err).toBeInstanceOf(BadRequestException);
       }
     });
 
