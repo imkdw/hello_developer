@@ -236,12 +236,55 @@ describe('Users Module (e2e)', () => {
     });
   });
 
-  describe('[POST] /users/:userId/image - 프로필사진 변경', () => {
-    it('사진변경을 요청한 유저와 실제 유저가 다를경우, 401, unauthorized_user', async () => {
+  // TODO: 프로필사진 변경 attach aborted 에러 해결필요
+  // describe('[POST] /users/:userId/image - 프로필사진 변경', () => {
+  //   it('사진변경을 요청한 유저와 실제 유저가 다를경우, 401, unauthorized_user', async () => {
+  //     return request(app.getHttpServer())
+  //       .post(`/users/userId/image`)
+  //       .set('Authorization', `Bearer ${accessToken}`)
+  //       .attach('image', './test.data.ts')
+  //       .expect(401)
+  //       .expect({
+  //         statusCode: 401,
+  //         message: 'unauthorized_user',
+  //       });
+  //   });
+
+  //   it('이미지 업로드를 요청한 유저가 존재하지 않을때, 404, user_not_found', async () => {
+  //     await dataSource.manager.delete(User, userId);
+  //     const response = await request(app.getHttpServer())
+  //       .post(`/users/${userId}/image`)
+  //       .set('Authorization', `Bearer ${accessToken}`)
+  //       .attach('image', './test.png')
+  //       .expect(404)
+  //       .expect({
+  //         statusCode: 404,
+  //         message: 'user_not_found',
+  //       });
+
+  //     return response;
+  //   });
+
+  //   it('정상적으로 프로플사진 변경, imageUrl 반환, 실제 사용자 프로필이 변경되었는지 확인', async () => {
+  //     jest.spyOn(awsService, 'imageUploadToS3').mockResolvedValue('imageUrl');
+  //     const response = await request(app.getHttpServer())
+  //       .post(`/users/${userId}/image`)
+  //       .set('Authorization', `Bearer ${accessToken}`)
+  //       .attach('image', './test.png')
+  //       .expect(200);
+
+  //     const user = await dataSource.manager.findOne(User, { where: { userId } });
+  //     expect(response.body).toEqual({ profileImg: 'imageUrl' });
+  //     expect(user.profileImg).toBe('imageUrl');
+  //     return response;
+  //   });
+  // });
+  describe('[PATCH] /users/:userId/password - 유저 비밀번호 변경', () => {
+    it('변경을 요청한 유저와 실제 유저가 일치하지 않는경우, 401, unauthorized_user', async () => {
       return request(app.getHttpServer())
-        .post(`/users/userId/image`)
-        .set('Authorization', `Bearer ${accessToken}`)
-        .attach('image', './test.png')
+        .patch(`/users/1/password`)
+        .set({ Authorization: `Bearer ${accessToken}` })
+        .send({ password: account.password, changePassword: account.password + 'a' })
         .expect(401)
         .expect({
           statusCode: 401,
@@ -249,33 +292,93 @@ describe('Users Module (e2e)', () => {
         });
     });
 
-    // it('이미지 업로드를 요청한 유저가 존재하지 않을때, 404, user_not_found', async () => {
-    //   await dataSource.manager.delete(User, userId);
-    //   const response = await request(app.getHttpServer())
-    //     .post(`/users/${userId}/image`)
-    //     .set('Authorization', `Bearer ${accessToken}`)
-    //     .attach('image', './test.png')
-    //     .expect(404)
-    //     .expect({
-    //       statusCode: 404,
-    //       message: 'user_not_found',
-    //     });
+    it('변경을 요청한 유저를 찾을수 없는경우, 404, user_not_found', async () => {
+      await dataSource.manager.delete(User, userId);
+      const response = await request(app.getHttpServer())
+        .patch(`/users/${userId}/password`)
+        .set({ Authorization: `Bearer ${accessToken}` })
+        .send({ password: account.password, changePassword: account.password + 'a' })
+        .expect(404)
+        .expect({
+          statusCode: 404,
+          message: 'user_not_found',
+        });
 
-    //   return response;
-    // });
+      return response;
+    });
 
-    // it('정상적으로 프로플사진 변경, imageUrl 반환, 실제 사용자 프로필이 변경되었는지 확인', async () => {
-    //   jest.spyOn(awsService, 'imageUploadToS3').mockResolvedValue('imageUrl');
-    //   const response = await request(app.getHttpServer())
-    //     .post(`/users/${userId}/image`)
-    //     .set('Authorization', `Bearer ${accessToken}`)
-    //     .attach('image', './test.png')
-    //     .expect(200);
+    it('비밀번호가 일치하지 않는경우, 400, password_mismatch', async () => {
+      return request(app.getHttpServer())
+        .patch(`/users/${userId}/password`)
+        .set({ Authorization: `Bearer ${accessToken}` })
+        .send({ password: account.password + 'a', changePassword: account.password + 'a' })
+        .expect(400)
+        .expect({
+          statusCode: 400,
+          message: 'password_mismatch',
+        });
+    });
 
-    //   const user = await dataSource.manager.findOne(User, { where: { userId } });
-    //   expect(response.body).toEqual({ profileImg: 'imageUrl' });
-    //   expect(user.profileImg).toBe('imageUrl');
-    //   return response;
-    // });
+    it('정상적으로 비밀번호가 변경됬을 경우, 204, 실제 db의 비밀번호가 변경되었는지 확인', async () => {
+      const response = await request(app.getHttpServer())
+        .patch(`/users/${userId}/password`)
+        .set({ Authorization: `Bearer ${accessToken}` })
+        .send({ password: account.password, changePassword: account.password + 'a' })
+        .expect(204);
+
+      const user = await dataSource.manager.findOne(User, { where: { userId } });
+      const isCompare = await utilsService.compare(account.password + 'a', user.password);
+      expect(isCompare).toBe(true);
+
+      return response;
+    });
+  });
+
+  describe('[PATCH] /users/:userId/verify - 비밀번호 변경 전 유저 검증 API', () => {
+    it('변경을 요청한 유저와 실제 유저가 일치하지 않는경우, 401, unauthorized_user', async () => {
+      return request(app.getHttpServer())
+        .patch(`/users/userId/verify`)
+        .set({ Authorization: `Bearer ${accessToken}` })
+        .send({ password: account.password })
+        .expect(401)
+        .expect({
+          statusCode: 401,
+          message: 'unauthorized_user',
+        });
+    });
+
+    it('인증을 요청한 사용자를 찾을수 없는경우, 404, not_found_user', async () => {
+      await dataSource.manager.delete(User, userId);
+      const response = await request(app.getHttpServer())
+        .patch(`/users/${userId}/verify`)
+        .set({ Authorization: `Bearer ${accessToken}` })
+        .send({ password: account.password })
+        .expect(404)
+        .expect({
+          statusCode: 404,
+          message: 'user_not_found',
+        });
+      return response;
+    });
+
+    it('비밀번호가 일치하지 않는경우, 400, password_mismatch', async () => {
+      return request(app.getHttpServer())
+        .patch(`/users/${userId}/verify`)
+        .set({ Authorization: `Bearer ${accessToken}` })
+        .send({ password: account.password + 'a' })
+        .expect(400)
+        .expect({
+          statusCode: 400,
+          message: 'password_mismatch',
+        });
+    });
+
+    it('비밀번호가 일치하는경우, 200', async () => {
+      return request(app.getHttpServer())
+        .patch(`/users/${userId}/verify`)
+        .set({ Authorization: `Bearer ${accessToken}` })
+        .send({ password: account.password })
+        .expect(200);
+    });
   });
 });

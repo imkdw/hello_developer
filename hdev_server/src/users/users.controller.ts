@@ -79,6 +79,7 @@ export class UsersController {
    * @param file - 클라이언트에서 업로드된 파일
    * @param userId - 업로드를 요청한 유저의 아이디
    */
+  @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('image'))
   @Post(':userId/image')

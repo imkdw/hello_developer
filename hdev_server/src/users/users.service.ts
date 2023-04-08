@@ -104,7 +104,7 @@ export class UsersService {
       throw new UnauthorizedException('unauthorized_user');
     }
 
-    const { password, rePassword } = updatePasswordDto;
+    const { password, changePassword } = updatePasswordDto;
     const user = await this.userRepository.findById(userId);
 
     if (!user) {
@@ -116,7 +116,7 @@ export class UsersService {
       throw new BadRequestException('password_mismatch');
     }
 
-    const hashedPassword = await this.utilsService.encrypt(rePassword);
+    const hashedPassword = await this.utilsService.encrypt(changePassword);
     await this.userRepository.updatePassword(userId, hashedPassword);
   }
 

@@ -7,5 +7,5 @@ export class UpdatePasswordDto {
 
   @MinLength(10)
   @Matches(/[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g)
-  rePassword: string;
+  changePassword: string;
 }
