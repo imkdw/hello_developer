@@ -10,6 +10,7 @@ export class CreateBoardDto {
     description: 'temp_board_id',
     required: true,
   })
+  @IsNotEmpty()
   tempBoardId: string;
 
   /**

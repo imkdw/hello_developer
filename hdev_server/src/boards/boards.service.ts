@@ -75,9 +75,7 @@ export class BoardsService {
 
     const oldPath = `boards_image/${tempBoardId}`;
     const newPath = `boards_image/${boardId}`;
-    if (tempBoardId !== 'temp-board-id') {
-      await this.awsService.changeFolderName(oldPath, newPath);
-    }
+    await this.awsService.changeFolderName(oldPath, newPath);
 
     return boardId;
   }

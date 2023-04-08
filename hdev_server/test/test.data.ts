@@ -77,11 +77,11 @@ export async function login2(app: INestApplication) {
   return { accessToken: response.body.accessToken, refreshToken };
 }
 
-export async function createBoard(app: INestApplication, accessToken: string) {
+export async function createBoard(app: INestApplication, tempBoardId: string, accessToken: string) {
   const response = await request(app.getHttpServer())
     .post('/boards')
     .set('Authorization', `Bearer ${accessToken}`)
-    .send({ title, content, category, tags })
+    .send({ tempBoardId, title, content, category, tags })
     .expect(201);
 
   return response.body.boardId;

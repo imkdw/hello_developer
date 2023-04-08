@@ -43,6 +43,7 @@ describe('Users Module (e2e)', () => {
   let utilsService: UtilsService;
   let categoryRepository: CategoryRepository;
   let awsService: AwsService;
+  let tempBoardId: string;
 
   const { nickname } = account;
 
@@ -87,6 +88,7 @@ describe('Users Module (e2e)', () => {
     utilsService = moduleFixture.get<UtilsService>(UtilsService);
     categoryRepository = moduleFixture.get<CategoryRepository>(CategoryRepository);
     awsService = moduleFixture.get<AwsService>(AwsService);
+    tempBoardId = utilsService.getUUID();
 
     // 카테고리 데이터 저장
     await categoryRepository.createDefaultCategorys();
@@ -99,7 +101,7 @@ describe('Users Module (e2e)', () => {
     user2AccessToken = (await login2(app)).accessToken;
 
     // 게시글 작성
-    boardId = await createBoard(app, accessToken);
+    boardId = await createBoard(app, tempBoardId, accessToken);
 
     // 댓글 작성
     commentId = await createComment(app, accessToken, boardId);

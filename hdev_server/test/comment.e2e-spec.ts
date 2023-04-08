@@ -32,6 +32,7 @@ describe('Comment Module (e2e)', () => {
   let user2AccessToken: string;
   let utilsService: UtilsService;
   let categoryRepository: CategoryRepository;
+  let tempBoardId: string;
 
   describe('[POST] /comments', () => {
     beforeEach(async () => {
@@ -68,6 +69,7 @@ describe('Comment Module (e2e)', () => {
       dataSource = moduleFixture.get<DataSource>(DataSource);
       utilsService = moduleFixture.get<UtilsService>(UtilsService);
       categoryRepository = moduleFixture.get<CategoryRepository>(CategoryRepository);
+      tempBoardId = utilsService.getUUID();
 
       // 카테고리 데이터 저장
       await categoryRepository.createDefaultCategorys();
@@ -80,7 +82,7 @@ describe('Comment Module (e2e)', () => {
       user2AccessToken = (await login2(app)).accessToken;
 
       // 게시글 작성
-      boardId = await createBoard(app, accessToken);
+      boardId = await createBoard(app, tempBoardId, accessToken);
 
       // 댓글 작성
       commentId = await createComment(app, accessToken, boardId);

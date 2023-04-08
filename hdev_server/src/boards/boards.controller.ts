@@ -105,6 +105,7 @@ export class BoardsController {
    * @param boardId - 게시글 아이디
    * @param updateBoardDto - 게시글 수정 데이터
    */
+  @HttpCode(204)
   @UseGuards(JwtAuthGuard)
   @Patch(':boardId')
   async update(

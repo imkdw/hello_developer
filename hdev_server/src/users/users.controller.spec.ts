@@ -134,7 +134,7 @@ describe('[Controller] UsersController', () => {
       const req = { user: { userId: 'userId' } };
       const updatePasswordDto: UpdatePasswordDto = {
         password: 'asdf1234!@',
-        rePassword: 'asdf1234!@#',
+        changePassword: 'asdf1234!@#',
       };
       const userId = 'userId';
 

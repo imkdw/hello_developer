@@ -243,7 +243,7 @@ describe('[Service] UsersService', () => {
       const userId = 'userId2';
       const updatePasswordDto: UpdatePasswordDto = {
         password: 'asdf1234!@',
-        rePassword: 'asdf1234!@',
+        changePassword: 'asdf1234!@',
       };
 
       // when
@@ -262,7 +262,7 @@ describe('[Service] UsersService', () => {
       const userId = 'userId';
       const updatePasswordDto: UpdatePasswordDto = {
         password: 'asdf1234!@',
-        rePassword: 'asdf1234!@',
+        changePassword: 'asdf1234!@',
       };
 
       // when
@@ -281,7 +281,7 @@ describe('[Service] UsersService', () => {
       const userId = 'userId';
       const updatePasswordDto: UpdatePasswordDto = {
         password: 'asdf1234!@',
-        rePassword: 'asdf1234!@#',
+        changePassword: 'asdf1234!@#',
       };
       const user = new User();
 
@@ -302,7 +302,7 @@ describe('[Service] UsersService', () => {
       const userId = 'userId';
       const updatePasswordDto: UpdatePasswordDto = {
         password: 'asdf1234!@',
-        rePassword: 'asdf1234!@#',
+        changePassword: 'asdf1234!@#',
       };
       const user = new User();
 

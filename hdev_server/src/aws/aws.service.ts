@@ -47,6 +47,11 @@ export class AwsService {
     const listCommand = new ListObjectsV2Command(listParams);
     const listObject = await this.s3Client.send(listCommand);
 
+    // 기존 폴더에 데이터가 없으면 폴더면 변경 취소
+    if (!listObject) {
+      return;
+    }
+
     // 가져온 데이터를 새로운 경로로 복사하고, 기존 데이터는 삭제처리진행
     const contents = listObject.Contents || [];
     for (const object of contents) {
