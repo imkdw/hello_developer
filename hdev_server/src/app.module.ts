@@ -7,7 +7,6 @@ import { EmailModule } from './email/email.module';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { join } from 'path';
 import { User } from './users/user.entity';
 import { Board } from './boards/board.entity';
 import { Category } from './boards/category/category.entity';
@@ -21,6 +20,7 @@ import { CategoryRepository } from './boards/category/category.repository';
 import configuration from './config/configuration';
 import { MorganModule, MorganInterceptor } from 'nest-morgan';
 import { AwsModule } from './aws/aws.module';
+import { AppController } from './app.controller';
 
 function setEnv(nodeEnv: string) {
   switch (nodeEnv) {
@@ -71,6 +71,7 @@ function setEnv(nodeEnv: string) {
       useClass: HttpExceptionFilter,
     },
   ],
+  controllers: [AppController],
 })
 export class AppModule implements OnModuleInit {
   constructor(private categoryRepository: CategoryRepository) {}
