@@ -36,7 +36,7 @@ function setEnv(nodeEnv: string) {
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: setEnv(process.env.NODE_ENV),
+      envFilePath: ['.env.development'],
       load: [configuration],
       isGlobal: true,
     }),
