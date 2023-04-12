@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Board } from '../board.entity';
 
-@Entity('Tag')
+@Entity({ name: 'tag' })
 export class Tag {
   @PrimaryGeneratedColumn({ name: 'tag_id' })
   tagId: number;

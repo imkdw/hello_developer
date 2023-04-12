@@ -19,7 +19,7 @@ import { View } from './view/view.entity';
 import { Comment } from '../comments/comment.entity';
 import { Recommend } from './recommend/recommend.entity';
 
-@Entity('Board')
+@Entity({ name: 'board' })
 export class Board {
   @PrimaryColumn({ type: 'varchar', length: 255, name: 'board_id' })
   boardId: string;

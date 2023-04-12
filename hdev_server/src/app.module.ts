@@ -51,6 +51,7 @@ function setEnv(nodeEnv: string) {
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.name'),
         entities: [User, Board, Category, Tag, Recommend, Comment, View],
+        synchronize: true,
       }),
     }),
     TypeOrmModule.forFeature([Board, Category, Tag]),

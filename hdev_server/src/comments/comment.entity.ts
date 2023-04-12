@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('Comment')
+@Entity({ name: 'comment' })
 export class Comment {
   @PrimaryGeneratedColumn({ name: 'comment_id' })
   commentId: number;
