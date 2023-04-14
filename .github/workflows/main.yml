@@ -29,13 +29,13 @@ jobs:
       - name: 도커 이미지 빌드
         id: build-docker-image
         run: |
-          docker build -t test-app ./test-app
+          docker build -t hdev_server ./hdev_server
 
       - name: 도커 이미지를 ECR에 업로드
         id: push-image
         run: |
-          docker tag test-app 280926337264.dkr.ecr.ap-northeast-2.amazonaws.com/hellodeveloper
-          docker push 280926337264.dkr.ecr.ap-northeast-2.amazonaws.com/hellodeveloper
+          docker tag hdev_server ${{ secrets.ECR_URI }}
+          docker push ${{ secrets.ECR_URI }}
 
       - name: EC2에서 ECR에 로그인하기
         uses: appleboy/ssh-action@master
@@ -44,7 +44,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            aws ecr get-login-password --profile dongwoo --region ap-northeast-2 | sudo docker login --username AWS --password-stdin 280926337264.dkr.ecr.ap-northeast-2.amazonaws.com/hellodeveloper
+            aws ecr get-login-password --profile dongwoo --region ap-northeast-2 | sudo docker login --username AWS --password-stdin ${{ secrets.ECR_URI }}
 
       - name: EC2에서 도커 이미지를 가져오기
         uses: appleboy/ssh-action@master
@@ -53,7 +53,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            sudo docker pull 280926337264.dkr.ecr.ap-northeast-2.amazonaws.com/hellodeveloper
+            sudo docker pull ${{ secrets.ECR_URI }}
 
       - name: ECR에서 불러온 이미지를 도커에서 실행
         uses: appleboy/ssh-action@master
@@ -62,6 +62,6 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            sudo docker stop test-app || true
-            sudo docker rm test-app || true
-            sudo docker run -d --name test-app -p 5000:5000 280926337264.dkr.ecr.ap-northeast-2.amazonaws.com/hellodeveloper
+            sudo docker stop hdev_server || true
+            sudo docker rm hdev_server || true
+            sudo docker run -d --name hdev_server -p 5000:5000 ${{ secrets.ECR_URI }}
