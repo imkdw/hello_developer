@@ -26,8 +26,11 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: 기존 ECR에 업로드된 lastest 태그 이미지 삭제
+        run: |
+          aws ecr batch-delete-image --profile ${{ secrets.IAM_PROFILE_USERNAME }} --repository-name hellodeveloper --image-ids imageTag=latest
+
       - name: 도커 이미지 빌드
-        id: build-docker-image
         run: |
           docker build -t hdev_server ./hdev_server
 
@@ -44,7 +47,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            aws ecr get-login-password --profile dongwoo --region ap-northeast-2 | sudo docker login --username AWS --password-stdin ${{ secrets.ECR_URI }}
+            aws ecr get-login-password --profile ${{ secrets.IAM_PROFILE_USERNAME }} --region ap-northeast-2 | sudo docker login --username AWS --password-stdin ${{ secrets.ECR_URI }}
 
       - name: EC2에서 도커 이미지를 가져오기
         uses: appleboy/ssh-action@master
