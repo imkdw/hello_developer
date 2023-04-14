@@ -124,24 +124,26 @@ const RegisterForm = () => {
       }
     } catch (err: any) {
       let errMessage = "서버 오류입니다. 다시 시도해주세요.";
-      switch (err.response.data.message) {
-        case "invalid_email":
-          errMessage = "이메일 형식이 올바르지 않습니다.";
-          break;
-        case "invalid_password":
-          errMessage = "비밀번호 형식이 올바르지 않습니다.";
-          break;
-        case "invalid_nickname":
-          errMessage = "닉네임 형식이 올바르지 않습니다.";
-          break;
-        case "exist_email":
-          errMessage = "중복된 이메일 입니다.";
-          break;
-        case "exist_nickname":
-          errMessage = "중복된 닉네임 입니다.";
-          break;
-        default:
-          errMessage = "서버 오류입니다. 다시 시도해주세요";
+      if (err.response.status !== 500) {
+        switch (err.response.data.message) {
+          case "invalid_email":
+            errMessage = "이메일 형식이 올바르지 않습니다.";
+            break;
+          case "invalid_password":
+            errMessage = "비밀번호 형식이 올바르지 않습니다.";
+            break;
+          case "invalid_nickname":
+            errMessage = "닉네임 형식이 올바르지 않습니다.";
+            break;
+          case "exist_email":
+            errMessage = "중복된 이메일 입니다.";
+            break;
+          case "exist_nickname":
+            errMessage = "중복된 닉네임 입니다.";
+            break;
+          default:
+            errMessage = "서버 오류입니다. 다시 시도해주세요";
+        }
       }
       alert(errMessage);
     } finally {

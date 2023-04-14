@@ -54,7 +54,7 @@ describe('Board Module (e2e)', () => {
         BoardsModule,
         AuthModule,
         ConfigModule.forRoot({
-          envFilePath: ['.env.test'],
+          envFilePath: ['.env.development'],
           load: [configuration],
         }),
       ],

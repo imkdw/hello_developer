@@ -50,7 +50,7 @@ describe('Comment Module (e2e)', () => {
           CommentsModule,
           AuthModule,
           ConfigModule.forRoot({
-            envFilePath: ['.env.test'],
+            envFilePath: ['.env.development'],
             load: [configuration],
           }),
         ],

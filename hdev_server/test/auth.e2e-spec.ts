@@ -42,7 +42,7 @@ describe('Auth Module (e2e)', () => {
         }),
         AuthModule,
         ConfigModule.forRoot({
-          envFilePath: ['.env.test'],
+          envFilePath: ['.env.development'],
           load: [configuration],
         }),
       ],

@@ -62,7 +62,7 @@ describe('Users Module (e2e)', () => {
         UsersModule,
         AuthModule,
         ConfigModule.forRoot({
-          envFilePath: ['.env.test'],
+          envFilePath: ['.env.development'],
           load: [configuration],
         }),
       ],

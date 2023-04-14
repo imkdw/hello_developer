@@ -24,7 +24,7 @@ export class EmailService {
   }
 
   async sendVerifyEmail(email: string, verifyToken: string) {
-    const url = `http://localhost:3000/verify/${verifyToken}`;
+    const url = `https://hdev.site/verify/${verifyToken}`;
 
     const mailOptions = {
       from: '헬로디벨로퍼 <hdev.manager@gmail.com>',

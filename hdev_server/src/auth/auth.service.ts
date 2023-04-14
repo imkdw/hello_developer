@@ -42,8 +42,7 @@ export class AuthService {
 
     const createdUser = await this.userRepository.register(user);
 
-    // TODO: 인증메일 발송 활성화 필요
-    // await this.emailService.sendVerifyEmail(email, verifyToken);
+    await this.emailService.sendVerifyEmail(email, verifyToken);
 
     return createdUser.userId;
   }
