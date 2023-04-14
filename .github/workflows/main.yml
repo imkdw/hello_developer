@@ -1,4 +1,4 @@
-name: Deploy hdev_server to AWS EC2
+name: CI/CD hdev_server to AWS EC2
 
 on:
   push:
