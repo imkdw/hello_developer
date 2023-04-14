@@ -58,7 +58,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            sudo docker rmi $(sudo docker images -aq)
+            sudo docker images -q | xargs docker rmi
 
       - name: 기존 EC2에서 실행중인 컨테이너 종료
         uses: appleboy/ssh-action@master
@@ -67,7 +67,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            sudo docker stop $(sudo docker ps -q)
+            sudo docker ps -q | xargs docker stop
 
       - name: 기존 EC2에 존재하는 모든 컨테이너 삭제
         uses: appleboy/ssh-action@master
@@ -76,7 +76,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            sudo docker rm $(sudo docker ps -aq)
+            sudo docker ps -sq | xargs docker rm
 
       - name: EC2에서 도커 이미지를 가져오기
         uses: appleboy/ssh-action@master
