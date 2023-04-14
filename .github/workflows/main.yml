@@ -64,4 +64,4 @@ jobs:
           script: |
             sudo docker stop hdev_server || true
             sudo docker rm hdev_server || true
-            sudo docker run -d --name hdev_server -p 5000:5000 ${{ secrets.ECR_URI }}
+            sudo docker run -d -p 5000:5000 ${{ secrets.ECR_URI }}
