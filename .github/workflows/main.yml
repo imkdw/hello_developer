@@ -58,7 +58,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            sudo docker rmi ${{ secrets.ECR_URI }}
+            sudo docker rmi $(docker images -aq)
 
       - name: EC2에서 도커 이미지를 가져오기
         uses: appleboy/ssh-action@master
