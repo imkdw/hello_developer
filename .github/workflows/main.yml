@@ -51,15 +51,6 @@ jobs:
           script: |
             aws ecr get-login-password --profile ${{ secrets.IAM_PROFILE_USERNAME }} --region ap-northeast-2 | sudo docker login --username AWS --password-stdin ${{ secrets.ECR_URI }}
 
-      - name: 기존 EC2에 저장되어있는 이미지 삭제
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_IP }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            sudo docker images -q | xargs -r docker rmi
-
       - name: 기존 EC2에서 실행중인 컨테이너 종료
         uses: appleboy/ssh-action@master
         with:
@@ -77,6 +68,15 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             sudo docker ps -sq | xargs -r docker rm
+
+      - name: 기존 EC2에 저장되어있는 이미지 삭제
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo docker images -q | xargs -r docker rmi
 
       - name: EC2에서 도커 이미지를 가져오기
         uses: appleboy/ssh-action@master
