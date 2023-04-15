@@ -79,7 +79,7 @@ jobs:
             sudo docker images -q | xargs -r docker rmi
 
       - name: EC2에서 도커에서 사용하지 않는 자원 삭제처리
-        uses: appleboy/ssh-action@v0.2.1
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_IP }}
           username: ${{ secrets.EC2_USERNAME }}
