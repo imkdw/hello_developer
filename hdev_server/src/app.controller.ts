@@ -4,6 +4,6 @@ import { Controller, Get } from '@nestjs/common';
 export class AppController {
   @Get('/')
   ping() {
-    return 'success';
+    return 'health check success';
   }
 }
