@@ -26,7 +26,7 @@ jobs:
 
       - name: 도커 이미지 빌드
         run: |
-          docker build -t hdev_server ./hdev_server
+          docker build -t hdev_server .
 
       - name: 기존 ECR에 업로드된 lastest 태그 이미지 삭제
         uses: appleboy/ssh-action@master
