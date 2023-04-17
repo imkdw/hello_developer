@@ -98,18 +98,6 @@ export class AuthService {
   }
 
   /**
-   * refreshToken을 활용한 accessToken 재발급에 사용되는 로직
-   * @param refreshToken req.cookie에 포함된 refreshToken
-   * @returns accessToken 반환
-   */
-  generateAccessToken(refreshToken: string) {
-    const decodedToken = this.jwtService.decode(refreshToken);
-    const userId = decodedToken['userId'];
-
-    return this.createAccessToken(userId);
-  }
-
-  /**
    * 회원가입시 이메일인증에서 사용되는 verifyToken을 활용한 인증여부 업데이트 로직
    * @param verifyToken - 회원가입시 발급되는 토큰
    */
@@ -132,6 +120,18 @@ export class AuthService {
     if (!user.refreshToken) {
       throw new UnauthorizedException('not_logged_in');
     }
+  }
+
+  /**
+   * refreshToken을 활용한 accessToken 재발급에 사용되는 로직
+   * @param refreshToken req.cookie에 포함된 refreshToken
+   * @returns accessToken 반환
+   */
+  generateAccessToken(refreshToken: string) {
+    const decodedToken = this.jwtService.decode(refreshToken);
+    const userId = decodedToken['userId'];
+
+    return this.createAccessToken(userId);
   }
 
   /** 엑세스토큰 발급 */

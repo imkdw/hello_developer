@@ -49,7 +49,7 @@ export class AuthController {
     const loginData = await this.authService.login(loginDto);
     const { userId, profileImg, nickname, accessToken, refreshToken } = loginData;
 
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, path: '/' });
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, path: '/', secure: true });
 
     return { userId, profileImg, nickname, accessToken };
   }
@@ -73,6 +73,7 @@ export class AuthController {
    */
   @Get('token')
   async token(@Req() req) {
+    console.log(req.cookies);
     const refreshToken = req.cookies['refreshToken'];
     const accessToken = this.authService.generateAccessToken(refreshToken);
     return { accessToken };
