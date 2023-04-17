@@ -93,7 +93,7 @@
 
 # 🌐 System Architecture
 
-<img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/client+architecture.png">
-<img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/server+architecture.png">
+<img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/client+infra.png">
+<img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/server+infra.png">
 
 # 작성진행중.. 23.04.17
