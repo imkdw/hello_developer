@@ -96,4 +96,4 @@
 <img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/client+architecture.png">
 <img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/server+architecture.png">
 
-# 작성진행중..
+# 작성진행중.. 23.04.17
