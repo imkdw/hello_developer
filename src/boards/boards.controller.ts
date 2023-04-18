@@ -20,7 +20,17 @@ import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageUploadDto } from './dto/image-upload.dto';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger/dist';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger/dist';
 
 @Controller('boards')
 @ApiTags('게시글 API')
@@ -36,8 +46,39 @@ export class BoardsController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(ValidationPipe)
   @Post()
-  @ApiOperation({ summary: '게시글 생성 API', description: '새로운 게시글을 생성' })
-  @ApiCreatedResponse({ description: '새로운 게시글을 생성', type: '게시글 아이디' })
+  @ApiOperation({
+    summary: '게시글 생성 API',
+    description: `
+  새로운 게시글을 생성하는 API\n
+  게시글 정상 생성 : 생성된 게시글의 ID를 반환\n
+  입력값 검증 실패 : 검증 실패한 데이터에 해당하는 에러코드를 반환
+  `,
+  })
+  @ApiCreatedResponse({
+    description: '새로운 게시글을 생성하고, 생성된 게시글의 ID를 반환',
+    schema: {
+      type: 'object',
+      properties: {
+        boardId: { type: 'string' },
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: `
+    게시글 제목이 올바르지 않을경우 - invalid_title
+    게시글 내용이 올바르지 않을경우 - invalid_content
+    게시글 카테고리가 올바르지 않을경우 - invalid_category
+    게시글 태그가 올바르지 않는경우 - invalid_tags`,
+    schema: {
+      type: 'object',
+      properties: {
+        statusCode: { example: 400 },
+        message: {
+          example: 'invalid_title, invalid_content, invalid_category, invalid_tags',
+        },
+      },
+    },
+  })
   async create(@Req() req, @Body() createBoardDto: CreateBoardDto) {
     const boardId = await this.boardsService.create(req.user.userId, createBoardDto);
     return { boardId };
@@ -49,6 +90,50 @@ export class BoardsController {
    * @param category2 - 두번째 카테고리
    * @returns
    */
+  @ApiOperation({
+    summary: '특정 카테고리 게시글 조회 API',
+    description: `
+    특정 카테고리의 게시글을 가져오는 API\n
+    조회성공 : 배열 형태의 게시글의 목록을 반환
+  `,
+  })
+  @ApiOkResponse({
+    description: '게시글 목록 반환',
+    schema: {
+      properties: {
+        boardId: { type: 'string' },
+        title: { type: 'string' },
+        content: { type: 'string' },
+        createdAt: { type: 'string' },
+        user: {
+          properties: {
+            userId: { type: 'string' },
+            nickname: { type: 'string' },
+            profileImg: { type: 'string' },
+          },
+        },
+        view: {
+          properties: {
+            viewCnt: { type: 'number' },
+          },
+        },
+        tags: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+            },
+          },
+        },
+        category2: {
+          properties: {
+            name: { type: 'string' },
+          },
+        },
+      },
+    },
+  })
   @Get()
   async findAll(@Query('category1') category1: string, @Query('category2') category2: string) {
     const boards = await this.boardsService.findAll(category1, category2);
@@ -59,6 +144,36 @@ export class BoardsController {
    * [GET] /boards/recent - 메인페이지에 표시되는 최근게시글을 가져오는 API
    * @returns
    */
+  @ApiOperation({
+    summary: '최근 게시글 조회 API',
+    description: `
+    최근 게시글(공지사항, 질문답변, 지식공유, 인원모집)을 가져오는 API\n
+    최대 5개까지 가져온다\n
+    조회성공 : 4가지 카테고리의 최근 5개의 게시글을 반환
+  `,
+  })
+  @ApiOkResponse({
+    description: '최근 게시글 목록 반환',
+    schema: {
+      properties: {
+        notice: {
+          type: 'array',
+          example: [
+            {
+              boardId: 'string',
+              title: 'string',
+              createdAt: 'string',
+              user: { nickname: 'string', profileImg: 'string' },
+              view: { viewCnt: 0 },
+            },
+          ],
+        },
+        qna: { type: 'array', example: [] },
+        knowledge: { type: 'array', example: [] },
+        recruitment: { type: 'array', example: [] },
+      },
+    },
+  })
   @Get('recent')
   async recent() {
     const recentBoards = await this.boardsService.recent();
@@ -70,6 +185,31 @@ export class BoardsController {
    * @param text - 검색어
    * @returns
    */
+  @ApiOperation({
+    summary: '게시글 검색 API',
+    description: `
+    제목을 기준으로 게시글을 검색하는 API    
+    조회성공 : 검색결과 게시글을 반환
+  `,
+  })
+  @ApiOkResponse({
+    description: '검색결과 게시글 목록 반환',
+    schema: {
+      type: 'array',
+      example: [
+        {
+          boardId: 'string',
+          title: 'string',
+          content: 'string',
+          createdAt: 'string',
+          user: { userId: 'string', nickname: 'string', profileImg: 'string' },
+          view: { viewCnt: 0 },
+          tags: [{ name: 'string' }],
+          category2: { name: 'string' },
+        },
+      ],
+    },
+  })
   @Get('search')
   async search(@Query('text') text: string) {
     const result = await this.boardsService.search(text);
@@ -81,6 +221,78 @@ export class BoardsController {
    * @param boardId - 게시글 아이디
    * @returns
    */
+  @ApiOperation({
+    summary: '특정 게시글 조회 API',
+    description: `
+    특정 카테고리의 게시글을 가져오는 API\n
+    조회성공 : 객체 형식의 게시글의 상세정보를 반환
+  `,
+  })
+  @ApiOkResponse({
+    description: '게시글 조회 성공시 객체 형식의 상세보기 데이터를 반환',
+    schema: {
+      properties: {
+        boardId: { type: 'string' },
+        title: { type: 'string' },
+        content: { type: 'string' },
+        createdAt: { type: 'string' },
+        recommendCnt: { type: 'number' },
+        user: {
+          properties: {
+            userId: { type: 'string' },
+            nickname: { type: 'string' },
+            profileImg: { type: 'string' },
+          },
+        },
+        comments: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              commentId: { type: 'number' },
+              comment: { type: 'string' },
+              createdAt: { type: 'string' },
+              user: {
+                properties: {
+                  userId: { type: 'string' },
+                  nickname: { type: 'string' },
+                  profileImg: { type: 'string' },
+                },
+              },
+            },
+          },
+        },
+        view: {
+          properties: {
+            viewCnt: { type: 'number' },
+          },
+        },
+        tags: {
+          type: 'array',
+          items: { type: 'object', properties: { name: { type: 'string' } } },
+        },
+        category1: { properties: { name: { type: 'string' } } },
+        category2: { properties: { name: { type: 'string' } } },
+        recommends: {
+          type: 'array',
+          items: { type: 'object', properties: { userId: { type: 'string' } } },
+        },
+      },
+    },
+  })
+  @ApiNotFoundResponse({
+    description: '게시글을 찾을수 없는경우 HTTP 404 - board_not_found',
+    schema: {
+      properties: {
+        statusCode: {
+          example: 404,
+        },
+        message: {
+          example: 'board_not_found',
+        },
+      },
+    },
+  })
   @Get(':boardId')
   async detail(@Param('boardId') boardId: string) {
     const board = await this.boardsService.detail(boardId);
@@ -92,6 +304,40 @@ export class BoardsController {
    * @param req
    * @param boardId - 게시글 아이디
    */
+  @ApiOperation({
+    summary: '게시글 삭제 API',
+    description: `
+    특정 게시글을 삭제하는 API
+    수정 성공 : HTTP 204 반환
+  `,
+  })
+  @ApiUnauthorizedResponse({
+    description:
+      '삭제를 요청한 유저와 실제 게시글의 유저가 일치하지 않는경우 HTTP 401 - unauthorized_user 반환',
+    schema: {
+      properties: {
+        statusCode: {
+          example: 401,
+        },
+        message: {
+          example: 'unauthorized_user',
+        },
+      },
+    },
+  })
+  @ApiNotFoundResponse({
+    description: '삭제를 요청한 게시글을 찾을 수 없는경우 HTTP 404 - board_not_found 반환',
+    schema: {
+      properties: {
+        statusCode: {
+          example: 404,
+        },
+        message: {
+          example: 'board_not_found',
+        },
+      },
+    },
+  })
   @HttpCode(204)
   @UseGuards(JwtAuthGuard)
   @Delete(':boardId')
@@ -105,6 +351,16 @@ export class BoardsController {
    * @param boardId - 게시글 아이디
    * @param updateBoardDto - 게시글 수정 데이터
    */
+  @ApiOperation({
+    summary: '게시글 수정 API',
+    description: `
+    특정 게시글을 수정하는 API\n
+    수정 성공 : HTTP 204 반환
+  `,
+  })
+  @ApiNoContentResponse({
+    description: '수정에 성공하는 경우 HTTP 204 반환',
+  })
   @HttpCode(204)
   @UseGuards(JwtAuthGuard)
   @Patch(':boardId')
@@ -121,6 +377,16 @@ export class BoardsController {
    * @param req
    * @param boardId - 추천을 요청한 게시글 아이디
    */
+  @ApiOperation({
+    summary: '게시글 추천 API',
+    description: `
+    특정 게시글을 추천/추천취소 하는 API\n
+    추천 성공 : HTTP 200 반환
+  `,
+  })
+  @ApiOkResponse({
+    description: '게시글 추천 추가/삭제 성공시 HTTP 200 반환',
+  })
   @UseGuards(JwtAuthGuard)
   @Get('/:boardId/recommend')
   async recommend(@Req() req, @Param('boardId') boardId: string) {
@@ -131,6 +397,16 @@ export class BoardsController {
    * [GET] /boards/:boardId/views - 게시글 조회수 API
    * @param boardId - 조회한 게시글의 아이디
    */
+  @ApiOperation({
+    summary: '게시글 조회수 API',
+    description: `
+    특정 게시글의 조회수를 증가시키는 API\n
+    추천 성공 : HTTP 200 반환
+  `,
+  })
+  @ApiOkResponse({
+    description: '게시글 조회수 증가 성공시 HTTP 200 반환',
+  })
   @Get(':boardId/views')
   async views(@Param('boardId') boardId: string) {
     await this.boardsService.views(boardId);
@@ -142,6 +418,25 @@ export class BoardsController {
    * @param imageUploadDto - 사진 업로드시 포함된 게시글 아이디
    * @returns 업로드된 이미지의 URL 반환
    */
+  @ApiOperation({
+    summary: '게시글 작성/수정시 이미지 업로드 API',
+    description: `
+    게시글 작성/수정시 이미지를 업로드하는 API\n
+    이미지는 AWS S3에 업로드된다.\n
+    이미지 업로드 성공: HTTP 200코드와 업로드된 이미지의 URL 반환
+  `,
+  })
+  @ApiOkResponse({
+    description: '이미지 업로드에 성공하면 imageUrl 반환',
+    schema: {
+      properties: {
+        imageUrl: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('image'))
   @Post('image')

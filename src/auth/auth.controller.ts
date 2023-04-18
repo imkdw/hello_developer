@@ -37,9 +37,20 @@ export class AuthController {
    * 신규 유저가 회원가입시 사용되는 API
    * @param registerDto - 회원가입시 사용되는 유저 입력값
    */
-  @ApiOperation({ summary: '회원가입 API' })
+  @ApiOperation({
+    summary: '회원가입 API',
+    description: `
+  새로운 유저의 회원가입 API\n
+  회원가입 성공 : 생성된 유저의 ID를 반환\n
+  입력값 검증 실패 : 검증에 실패한 입력값에 해당하는 에러메세지 반환
+  `,
+  })
   @ApiCreatedResponse({
     description: `회원가입 성공시 201 코드와 생성된 사용자의 아이디 반환`,
+    schema: {
+      type: 'object',
+      properties: { userId: { type: 'string' } },
+    },
   })
   @ApiBadRequestResponse({
     description: `
@@ -51,12 +62,8 @@ export class AuthController {
     schema: {
       type: 'object',
       properties: {
-        statusCode: {
-          type: 'number',
-          example: 400,
-        },
+        statusCode: { type: 'number' },
         message: {
-          type: 'string',
           example: 'invalid_email, invalid_password, invalid_nickname, exist_email, exist_nickname',
         },
       },
@@ -75,35 +82,29 @@ export class AuthController {
    * @param loginDto - 로그인시 사용되는 유저의 데이터
    * @returns 토큰 반환
    */
-  @ApiOperation({ summary: '로그인 API' })
+  @ApiOperation({
+    summary: '로그인 API',
+    description: `
+  회원가입 되어있는 유저의 로그인을 처리하는 API\n
+  로그인 성공 : 로그인 성공시 userId, profileImg, nickname, accessToken을 반환하고 httpOnly secure 쿠키로 refreshToken 설정\n
+  중복되거나 비밀번호를 틀릴경우 : invalid_email_or_password 에러 메세지 반환
+  `,
+  })
   @ApiOkResponse({
     description: `로그인 성공시 200코드와 userId, profileImg, nickname, accessToken을 반환하고 refreshToken 쿠기 설정`,
     schema: {
       type: 'object',
       properties: {
-        userId: {
-          type: 'string',
-          example: 'userId',
-        },
-        profileImg: {
-          type: 'string',
-          example: 'profileImg Url',
-        },
-        nickname: {
-          type: 'nickname',
-          example: 'nickname',
-        },
-        accessToken: {
-          type: 'string',
-          example: 'jwt.access.token',
-        },
+        userId: { type: 'string' },
+        profileImg: { type: 'string' },
+        nickname: { type: 'nickname' },
+        accessToken: { type: 'string' },
       },
     },
     headers: {
       'Set-Cookie': {
         description: '로그인에 성공하면 설정되는 refreshToken 쿠키',
         schema: {
-          type: 'string',
           example: `refreshToken=jwt.refresh.token httpOnly path=/ secure`,
         },
       },
@@ -115,14 +116,8 @@ export class AuthController {
     schema: {
       type: 'object',
       properties: {
-        statusCode: {
-          type: 'number',
-          example: 400,
-        },
-        message: {
-          type: 'string',
-          example: 'invalid_email_or_password',
-        },
+        statusCode: { example: 400 },
+        message: { example: 'invalid_email_or_password' },
       },
     },
   })
@@ -131,14 +126,8 @@ export class AuthController {
     schema: {
       type: 'object',
       properties: {
-        statusCode: {
-          type: 'number',
-          example: 401,
-        },
-        message: {
-          type: 'string',
-          example: 'unauthorized_user',
-        },
+        statusCode: { example: 401 },
+        message: { example: 'unauthorized_user' },
       },
     },
   })
@@ -159,7 +148,14 @@ export class AuthController {
    * 로그인된 유저를 로그아웃 처리하는 API
    * @param userId - 로그아웃을 요청하는 유저의 아이디
    */
-  @ApiOperation({ summary: '로그아웃 API' })
+  @ApiOperation({
+    summary: '로그아웃 API',
+    description: `
+  로그인된 사용자의 로그아웃을 처리하는 API\n
+  로그아웃 성공시 : 데이터베이스에 저장되어있는 특정 유저의 refreshToken 삭제\n
+  로그아웃 실패(아이디 불일치) : 401, unauthorized_user 에러코드 반환
+  `,
+  })
   @ApiOkResponse({
     description: `로그아웃 성공시 200을 반환하고, 데이터베이스에 존재하는 refreshToken을 삭제`,
   })
@@ -169,14 +165,8 @@ export class AuthController {
     schema: {
       type: 'object',
       properties: {
-        statusCode: {
-          type: 'number',
-          example: 401,
-        },
-        message: {
-          type: 'string',
-          example: 'unauthorized_user',
-        },
+        statusCode: { example: 401 },
+        message: { example: 'unauthorized_user' },
       },
     },
   })
@@ -192,11 +182,17 @@ export class AuthController {
    * accessToken 만료시 refreshToken을 활용한 accessToken 재발급 API
    * @returns 엑세스 토큰 반환
    */
-  @ApiOperation({ summary: 'Access Token 재발급 API' })
+  @ApiOperation({
+    summary: 'Access Token 재발급 API',
+    description: `
+  accessToken 만료시 refreshToken을 활용하여 토큰을 재발급하는 API\n
+  `,
+  })
   @ApiCookieAuth('refreshToken')
   @Get('token')
   @ApiOkResponse({
     description: '정상적인 refreshToken으로 accessToken 재발급 성공시 토큰값 반환',
+    schema: { properties: { accessToken: { type: 'string' } } },
   })
   async token(@Req() req) {
     const refreshToken = req.cookies['refreshToken'];
@@ -209,7 +205,13 @@ export class AuthController {
    * 회원가입 진행시 이메일 인증을 위한 토큰검증 API
    * @param verifyToken
    */
-  @ApiOperation({ summary: '이메일인증 API' })
+  @ApiOperation({
+    summary: '이메일인증 API',
+    description: `
+  회원가입시 발급된 토큰으로 이메일인증을 진행하는 API
+  인증 성공시 : 유저 정보 데이터베이스에 인증여부 컬럼 업데이트
+  `,
+  })
   @ApiOkResponse({
     description:
       '이메일인증 성공시 HTTP 200을 반환하고, 데이터베이스 유저 정보의 인증여부필드 변경',
@@ -225,7 +227,12 @@ export class AuthController {
    * @param req
    * @param userId
    */
-  @ApiOperation({ summary: '로그인여부 체크 API' })
+  @ApiOperation({
+    summary: '로그인여부 체크 API',
+    description: `
+  로그인 여부를 체크하는 API
+  `,
+  })
   @ApiOkResponse({
     description: '로그인여부 체크에 성공시 HTTP 200코드를 반환',
   })
@@ -234,14 +241,8 @@ export class AuthController {
     schema: {
       type: 'object',
       properties: {
-        statusCode: {
-          type: 'number',
-          example: 400,
-        },
-        message: {
-          type: 'string',
-          example: 'user_mismatch',
-        },
+        statusCode: { example: 401 },
+        message: { example: 'user_mismatch' },
       },
     },
   })
@@ -250,14 +251,8 @@ export class AuthController {
     schema: {
       type: 'object',
       properties: {
-        statusCode: {
-          type: 'number',
-          example: 401,
-        },
-        message: {
-          type: 'string',
-          example: 'not_logged_in',
-        },
+        statusCode: { example: 401 },
+        message: { example: 'not_logged_in' },
       },
     },
   })

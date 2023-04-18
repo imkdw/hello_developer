@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   MinLength,
   MaxLength,
@@ -12,8 +13,14 @@ export class UpdateBoardDto {
   /**
    * 1. 제목은 1~50자로 설정 필요
    */
+
   @IsNotEmpty()
   @Length(1, 50)
+  @ApiProperty({
+    example: '수정된 게시글 제목입니다',
+    description: '수정할 게시글 제목',
+    required: true,
+  })
   title: string;
 
   /**
@@ -21,6 +28,11 @@ export class UpdateBoardDto {
    */
   @IsNotEmpty()
   @Length(1, 100000)
+  @ApiProperty({
+    example: '수정된 게시글 본문(내용)입니다',
+    description: '수정할 게시글 내용',
+    required: true,
+  })
   content: string;
 
   /**
@@ -28,6 +40,11 @@ export class UpdateBoardDto {
    */
   @IsNotEmpty()
   @NotEquals('none')
+  @ApiProperty({
+    example: 'qna-tech',
+    description: '수정된 게시글 카테고리',
+    required: true,
+  })
   category: string;
 
   /**
@@ -35,6 +52,11 @@ export class UpdateBoardDto {
    */
   @IsArray()
   @ArrayMaxSize(3)
+  @ApiProperty({
+    example: [{ name: '태그' }],
+    description: '수정된 게시글 태그',
+    required: true,
+  })
   tags: {
     name: string;
   }[];
