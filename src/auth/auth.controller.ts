@@ -18,6 +18,14 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import {
+  ApiBadRequestResponse,
+  ApiCookieAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
 @Controller('auth')
 @ApiTags('인증 API')
@@ -29,6 +37,31 @@ export class AuthController {
    * 신규 유저가 회원가입시 사용되는 API
    * @param registerDto - 회원가입시 사용되는 유저 입력값
    */
+  @ApiOperation({ summary: '회원가입 API' })
+  @ApiCreatedResponse({
+    description: `회원가입 성공시 201 코드와 생성된 사용자의 아이디 반환`,
+  })
+  @ApiBadRequestResponse({
+    description: `
+      이메일 형식이 올바르지 않을경우 - invalid_email
+      비밀번호 형식이 올바르지 않을경우 - invalid_password
+      닉네임 형식이 올바르지 않을경우 - invalid_nickname
+      중복된 이메일인 경우 - exist_email
+      중복된 닉네임인 경우 - exist_nickname`,
+    schema: {
+      type: 'object',
+      properties: {
+        statusCode: {
+          type: 'number',
+          example: 400,
+        },
+        message: {
+          type: 'string',
+          example: 'invalid_email, invalid_password, invalid_nickname, exist_email, exist_nickname',
+        },
+      },
+    },
+  })
   @UsePipes(ValidationPipe)
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
@@ -42,6 +75,73 @@ export class AuthController {
    * @param loginDto - 로그인시 사용되는 유저의 데이터
    * @returns 토큰 반환
    */
+  @ApiOperation({ summary: '로그인 API' })
+  @ApiOkResponse({
+    description: `로그인 성공시 200코드와 userId, profileImg, nickname, accessToken을 반환하고 refreshToken 쿠기 설정`,
+    schema: {
+      type: 'object',
+      properties: {
+        userId: {
+          type: 'string',
+          example: 'userId',
+        },
+        profileImg: {
+          type: 'string',
+          example: 'profileImg Url',
+        },
+        nickname: {
+          type: 'nickname',
+          example: 'nickname',
+        },
+        accessToken: {
+          type: 'string',
+          example: 'jwt.access.token',
+        },
+      },
+    },
+    headers: {
+      'Set-Cookie': {
+        description: '로그인에 성공하면 설정되는 refreshToken 쿠키',
+        schema: {
+          type: 'string',
+          example: `refreshToken=jwt.refresh.token httpOnly path=/ secure`,
+        },
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description:
+      '이메일이 존재하지 않거나 비밀번호가 올바르지 않은경우 - invalid_email_or_password',
+    schema: {
+      type: 'object',
+      properties: {
+        statusCode: {
+          type: 'number',
+          example: 400,
+        },
+        message: {
+          type: 'string',
+          example: 'invalid_email_or_password',
+        },
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: '이메일인증을 수행하지 않은 유저가 로그인을 시도하는 경우 - unauthorized_user',
+    schema: {
+      type: 'object',
+      properties: {
+        statusCode: {
+          type: 'number',
+          example: 401,
+        },
+        message: {
+          type: 'string',
+          example: 'unauthorized_user',
+        },
+      },
+    },
+  })
   @HttpCode(200)
   @UseGuards(LocalAuthGuard)
   @Post('login')
@@ -59,6 +159,27 @@ export class AuthController {
    * 로그인된 유저를 로그아웃 처리하는 API
    * @param userId - 로그아웃을 요청하는 유저의 아이디
    */
+  @ApiOperation({ summary: '로그아웃 API' })
+  @ApiOkResponse({
+    description: `로그아웃 성공시 200을 반환하고, 데이터베이스에 존재하는 refreshToken을 삭제`,
+  })
+  @ApiUnauthorizedResponse({
+    description:
+      '로그아웃을 요청한 유저와 토큰 내부에 유저가 일치하지 않는경우 - unauthorized_user',
+    schema: {
+      type: 'object',
+      properties: {
+        statusCode: {
+          type: 'number',
+          example: 401,
+        },
+        message: {
+          type: 'string',
+          example: 'unauthorized_user',
+        },
+      },
+    },
+  })
   @HttpCode(204)
   @UseGuards(JwtAuthGuard)
   @Get('logout/:userId')
@@ -71,9 +192,13 @@ export class AuthController {
    * accessToken 만료시 refreshToken을 활용한 accessToken 재발급 API
    * @returns 엑세스 토큰 반환
    */
+  @ApiOperation({ summary: 'Access Token 재발급 API' })
+  @ApiCookieAuth('refreshToken')
   @Get('token')
+  @ApiOkResponse({
+    description: '정상적인 refreshToken으로 accessToken 재발급 성공시 토큰값 반환',
+  })
   async token(@Req() req) {
-    console.log(req.cookies);
     const refreshToken = req.cookies['refreshToken'];
     const accessToken = this.authService.generateAccessToken(refreshToken);
     return { accessToken };
@@ -84,6 +209,11 @@ export class AuthController {
    * 회원가입 진행시 이메일 인증을 위한 토큰검증 API
    * @param verifyToken
    */
+  @ApiOperation({ summary: '이메일인증 API' })
+  @ApiOkResponse({
+    description:
+      '이메일인증 성공시 HTTP 200을 반환하고, 데이터베이스 유저 정보의 인증여부필드 변경',
+  })
   @Get('verify/:verifyToken')
   async verify(@Param('verifyToken') verifyToken: string) {
     await this.authService.verify(verifyToken);
@@ -95,6 +225,42 @@ export class AuthController {
    * @param req
    * @param userId
    */
+  @ApiOperation({ summary: '로그인여부 체크 API' })
+  @ApiOkResponse({
+    description: '로그인여부 체크에 성공시 HTTP 200코드를 반환',
+  })
+  @ApiBadRequestResponse({
+    description: '토큰의 유저와 실제 유저가 일치하지 않는경우 - user_mismatch',
+    schema: {
+      type: 'object',
+      properties: {
+        statusCode: {
+          type: 'number',
+          example: 400,
+        },
+        message: {
+          type: 'string',
+          example: 'user_mismatch',
+        },
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: '유저의 refreshToken이 서버에 존재하지 않을때 - not_logged_in',
+    schema: {
+      type: 'object',
+      properties: {
+        statusCode: {
+          type: 'number',
+          example: 401,
+        },
+        message: {
+          type: 'string',
+          example: 'not_logged_in',
+        },
+      },
+    },
+  })
   @UseGuards(JwtAuthGuard)
   @Get('check/:userId')
   async check(@Req() req, @Param('userId') userId: string) {

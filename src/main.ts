@@ -17,7 +17,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, swaggerDocument);
   app.use(cookieParser());
   app.enableCors({
-    origin: 'https://hdev.site',
+    origin: ['https://hdev.site', 'http://localhost:3000'],
     credentials: true,
   });
   await app.listen(5000);
