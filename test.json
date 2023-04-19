@@ -2,15 +2,8 @@
   {
     "boardId": "03aafd20-b15d-4ca4-9e07-ca9cb34379f5",
     "title": "ㅇ11",
-    "content": "### 내용은 최소 10자부터 100,000자 까지 입력이 가능합니다.ㅇ",
     "createdAt": "2023-04-16T04:13:34.185Z",
-    "user": {
-      "userId": "3af1023a-f58b-4fde-a305-60f9d709afb6",
-      "nickname": "김동우",
-      "profileImg": "https://hellodeveloper.s3.ap-northeast-1.amazonaws.com/user_profile/3af1023a-f58b-4fde-a305-60f9d709afb6.i015583922298,gif"
-    },
-    "view": { "viewCnt": 1 },
-    "tags": [{ "name": "ㅇ" }],
+    "category1": { "name": "recruitment" },
     "category2": { "name": "project" }
   }
 ]

@@ -46,14 +46,7 @@ export class BoardsController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(ValidationPipe)
   @Post()
-  @ApiOperation({
-    summary: '게시글 생성 API',
-    description: `
-  새로운 게시글을 생성하는 API\n
-  게시글 정상 생성 : 생성된 게시글의 ID를 반환\n
-  입력값 검증 실패 : 검증 실패한 데이터에 해당하는 에러코드를 반환
-  `,
-  })
+  @ApiOperation({ summary: '게시글 생성 API' })
   @ApiCreatedResponse({
     description: '새로운 게시글을 생성하고, 생성된 게시글의 ID를 반환',
     schema: {
@@ -90,13 +83,7 @@ export class BoardsController {
    * @param category2 - 두번째 카테고리
    * @returns
    */
-  @ApiOperation({
-    summary: '특정 카테고리 게시글 조회 API',
-    description: `
-    특정 카테고리의 게시글을 가져오는 API\n
-    조회성공 : 배열 형태의 게시글의 목록을 반환
-  `,
-  })
+  @ApiOperation({ summary: '특정 카테고리 게시글 조회 API' })
   @ApiOkResponse({
     description: '게시글 목록 반환',
     schema: {
@@ -144,14 +131,7 @@ export class BoardsController {
    * [GET] /boards/recent - 메인페이지에 표시되는 최근게시글을 가져오는 API
    * @returns
    */
-  @ApiOperation({
-    summary: '최근 게시글 조회 API',
-    description: `
-    최근 게시글(공지사항, 질문답변, 지식공유, 인원모집)을 가져오는 API\n
-    최대 5개까지 가져온다\n
-    조회성공 : 4가지 카테고리의 최근 5개의 게시글을 반환
-  `,
-  })
+  @ApiOperation({ summary: '최근 게시글 조회 API' })
   @ApiOkResponse({
     description: '최근 게시글 목록 반환',
     schema: {
@@ -185,13 +165,7 @@ export class BoardsController {
    * @param text - 검색어
    * @returns
    */
-  @ApiOperation({
-    summary: '게시글 검색 API',
-    description: `
-    제목을 기준으로 게시글을 검색하는 API    
-    조회성공 : 검색결과 게시글을 반환
-  `,
-  })
+  @ApiOperation({ summary: '게시글 검색 API' })
   @ApiOkResponse({
     description: '검색결과 게시글 목록 반환',
     schema: {
@@ -221,13 +195,7 @@ export class BoardsController {
    * @param boardId - 게시글 아이디
    * @returns
    */
-  @ApiOperation({
-    summary: '특정 게시글 조회 API',
-    description: `
-    특정 카테고리의 게시글을 가져오는 API\n
-    조회성공 : 객체 형식의 게시글의 상세정보를 반환
-  `,
-  })
+  @ApiOperation({ summary: '특정 게시글 조회 API' })
   @ApiOkResponse({
     description: '게시글 조회 성공시 객체 형식의 상세보기 데이터를 반환',
     schema: {
@@ -304,13 +272,7 @@ export class BoardsController {
    * @param req
    * @param boardId - 게시글 아이디
    */
-  @ApiOperation({
-    summary: '게시글 삭제 API',
-    description: `
-    특정 게시글을 삭제하는 API
-    수정 성공 : HTTP 204 반환
-  `,
-  })
+  @ApiOperation({ summary: '게시글 삭제 API' })
   @ApiUnauthorizedResponse({
     description:
       '삭제를 요청한 유저와 실제 게시글의 유저가 일치하지 않는경우 HTTP 401 - unauthorized_user 반환',
@@ -351,13 +313,7 @@ export class BoardsController {
    * @param boardId - 게시글 아이디
    * @param updateBoardDto - 게시글 수정 데이터
    */
-  @ApiOperation({
-    summary: '게시글 수정 API',
-    description: `
-    특정 게시글을 수정하는 API\n
-    수정 성공 : HTTP 204 반환
-  `,
-  })
+  @ApiOperation({ summary: '게시글 수정 API' })
   @ApiNoContentResponse({
     description: '수정에 성공하는 경우 HTTP 204 반환',
   })
@@ -397,13 +353,7 @@ export class BoardsController {
    * [GET] /boards/:boardId/views - 게시글 조회수 API
    * @param boardId - 조회한 게시글의 아이디
    */
-  @ApiOperation({
-    summary: '게시글 조회수 API',
-    description: `
-    특정 게시글의 조회수를 증가시키는 API\n
-    추천 성공 : HTTP 200 반환
-  `,
-  })
+  @ApiOperation({ summary: '게시글 조회수 API' })
   @ApiOkResponse({
     description: '게시글 조회수 증가 성공시 HTTP 200 반환',
   })
@@ -418,14 +368,7 @@ export class BoardsController {
    * @param imageUploadDto - 사진 업로드시 포함된 게시글 아이디
    * @returns 업로드된 이미지의 URL 반환
    */
-  @ApiOperation({
-    summary: '게시글 작성/수정시 이미지 업로드 API',
-    description: `
-    게시글 작성/수정시 이미지를 업로드하는 API\n
-    이미지는 AWS S3에 업로드된다.\n
-    이미지 업로드 성공: HTTP 200코드와 업로드된 이미지의 URL 반환
-  `,
-  })
+  @ApiOperation({ summary: '게시글 작성/수정시 이미지 업로드 API' })
   @ApiOkResponse({
     description: '이미지 업로드에 성공하면 imageUrl 반환',
     schema: {

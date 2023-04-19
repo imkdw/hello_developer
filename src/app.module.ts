@@ -22,17 +22,6 @@ import { MorganModule, MorganInterceptor } from 'nest-morgan';
 import { AwsModule } from './aws/aws.module';
 import { AppController } from './app.controller';
 
-function setEnv(nodeEnv: string) {
-  switch (nodeEnv) {
-    case 'development':
-      return ['.env.development'];
-    case 'test':
-      return ['.env.test'];
-    case 'production':
-      return ['.env.production'];
-  }
-}
-
 @Module({
   imports: [
     ConfigModule.forRoot({

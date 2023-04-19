@@ -68,7 +68,7 @@ export class UsersService {
   }
 
   /**
-   * 회원정보 조회
+   * 회원 활동내역 조회
    * @param userId - 유저 아이디
    * @param item - 게시글 또는 댓글 아이템
    * @returns

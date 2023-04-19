@@ -37,14 +37,7 @@ export class AuthController {
    * 신규 유저가 회원가입시 사용되는 API
    * @param registerDto - 회원가입시 사용되는 유저 입력값
    */
-  @ApiOperation({
-    summary: '회원가입 API',
-    description: `
-  새로운 유저의 회원가입 API\n
-  회원가입 성공 : 생성된 유저의 ID를 반환\n
-  입력값 검증 실패 : 검증에 실패한 입력값에 해당하는 에러메세지 반환
-  `,
-  })
+  @ApiOperation({ summary: '회원가입 API' })
   @ApiCreatedResponse({
     description: `회원가입 성공시 201 코드와 생성된 사용자의 아이디 반환`,
     schema: {
@@ -82,14 +75,7 @@ export class AuthController {
    * @param loginDto - 로그인시 사용되는 유저의 데이터
    * @returns 토큰 반환
    */
-  @ApiOperation({
-    summary: '로그인 API',
-    description: `
-  회원가입 되어있는 유저의 로그인을 처리하는 API\n
-  로그인 성공 : 로그인 성공시 userId, profileImg, nickname, accessToken을 반환하고 httpOnly secure 쿠키로 refreshToken 설정\n
-  중복되거나 비밀번호를 틀릴경우 : invalid_email_or_password 에러 메세지 반환
-  `,
-  })
+  @ApiOperation({ summary: '로그인 API' })
   @ApiOkResponse({
     description: `로그인 성공시 200코드와 userId, profileImg, nickname, accessToken을 반환하고 refreshToken 쿠기 설정`,
     schema: {
@@ -148,14 +134,7 @@ export class AuthController {
    * 로그인된 유저를 로그아웃 처리하는 API
    * @param userId - 로그아웃을 요청하는 유저의 아이디
    */
-  @ApiOperation({
-    summary: '로그아웃 API',
-    description: `
-  로그인된 사용자의 로그아웃을 처리하는 API\n
-  로그아웃 성공시 : 데이터베이스에 저장되어있는 특정 유저의 refreshToken 삭제\n
-  로그아웃 실패(아이디 불일치) : 401, unauthorized_user 에러코드 반환
-  `,
-  })
+  @ApiOperation({ summary: '로그아웃 API' })
   @ApiOkResponse({
     description: `로그아웃 성공시 200을 반환하고, 데이터베이스에 존재하는 refreshToken을 삭제`,
   })
@@ -182,12 +161,7 @@ export class AuthController {
    * accessToken 만료시 refreshToken을 활용한 accessToken 재발급 API
    * @returns 엑세스 토큰 반환
    */
-  @ApiOperation({
-    summary: 'Access Token 재발급 API',
-    description: `
-  accessToken 만료시 refreshToken을 활용하여 토큰을 재발급하는 API\n
-  `,
-  })
+  @ApiOperation({ summary: 'Access Token 재발급 API' })
   @ApiCookieAuth('refreshToken')
   @Get('token')
   @ApiOkResponse({
@@ -205,13 +179,7 @@ export class AuthController {
    * 회원가입 진행시 이메일 인증을 위한 토큰검증 API
    * @param verifyToken
    */
-  @ApiOperation({
-    summary: '이메일인증 API',
-    description: `
-  회원가입시 발급된 토큰으로 이메일인증을 진행하는 API
-  인증 성공시 : 유저 정보 데이터베이스에 인증여부 컬럼 업데이트
-  `,
-  })
+  @ApiOperation({ summary: '이메일인증 API' })
   @ApiOkResponse({
     description:
       '이메일인증 성공시 HTTP 200을 반환하고, 데이터베이스 유저 정보의 인증여부필드 변경',
@@ -227,12 +195,7 @@ export class AuthController {
    * @param req
    * @param userId
    */
-  @ApiOperation({
-    summary: '로그인여부 체크 API',
-    description: `
-  로그인 여부를 체크하는 API
-  `,
-  })
+  @ApiOperation({ summary: '로그인여부 체크 API' })
   @ApiOkResponse({
     description: '로그인여부 체크에 성공시 HTTP 200코드를 반환',
   })
