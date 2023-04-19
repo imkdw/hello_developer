@@ -112,6 +112,7 @@ describe('[Controller] AuthController', () => {
       expect(response.cookie).toHaveBeenCalledWith('refreshToken', 'refreshToken', {
         httpOnly: true,
         path: '/',
+        secure: true,
       });
     });
   });

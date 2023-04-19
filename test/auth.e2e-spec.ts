@@ -18,6 +18,7 @@ import { DataSource } from 'typeorm';
 import { UtilsService } from '../src/utils/utils.service';
 import { account, login, register } from './test.data';
 import * as cookieParser from 'cookie-parser';
+import { EmailService } from '../src/email/email.service';
 
 describe('Auth Module (e2e)', () => {
   let app: INestApplication;
@@ -48,6 +49,12 @@ describe('Auth Module (e2e)', () => {
       ],
       providers: [
         UtilsService,
+        {
+          provide: EmailService,
+          useValue: {
+            sendVerifyEmail: jest.fn(),
+          },
+        },
         {
           provide: APP_FILTER,
           useClass: HttpExceptionFilter,

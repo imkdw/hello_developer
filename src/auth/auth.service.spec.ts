@@ -57,7 +57,9 @@ describe('[Service] AuthService', () => {
         },
         {
           provide: EmailService,
-          useValue: {},
+          useValue: {
+            sendVerifyEmail: jest.fn(),
+          },
         },
         {
           provide: UserRepository,
