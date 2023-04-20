@@ -100,9 +100,9 @@
 
 ## 배포 방식
 
-### EC2에서 Docker를 활용하여 배포하였습니다.
+#### EC2에서 Docker를 활용하여 배포하였습니다.
 
-### AWS ACM에서 발급받은 SSL인증서를 사용하여 ELB(ALB)를 통해 HTTPS를 적용했습니다.
+#### AWS ACM에서 발급받은 SSL인증서를 사용하여 ELB(ALB)를 통해 HTTPS를 적용했습니다.
 
 <br/>
 
@@ -115,9 +115,9 @@
 
 ## CI/CD
 
-### Github Actions를 사용하여 Docker Image를 빌드하고 ECR에 업로드 합니다.
+#### Github Actions를 사용하여 Docker Image를 빌드하고 ECR에 업로드 합니다.
 
-### EC2에서는 ECR에 업로드된 이미지를 받아오고 Docker Image를 실행하여 배포합니다.
+#### EC2에서는 ECR에 업로드된 이미지를 받아오고 Docker Image를 실행하여 배포합니다.
 
 <br/>
 
@@ -134,9 +134,9 @@
 
 ## 배포 방식
 
-### S3의 정적 웹 호스팅을 사용하여 CloudFront로 배포했습니다.
+#### S3의 정적 웹 호스팅을 사용하여 CloudFront로 배포했습니다.
 
-### AWS ACM에서 SSL인증서를 발급받아 HTTPS를 적용했습니다.
+#### AWS ACM에서 SSL인증서를 발급받아 HTTPS를 적용했습니다.
 
 <br/>
 
@@ -151,9 +151,9 @@
 
 ## CI/CD
 
-### Github Actions를 사용하여 리액트 프로젝트 빌드이후 S3에 업로드됩니다.
+#### Github Actions를 사용하여 리액트 프로젝트 빌드이후 S3에 업로드됩니다.
 
-### S3의 변경사항이 바로 적용될 수 있도록 CloudFront에서 Invalidate Cache를 적용했습니다.
+#### S3의 변경사항이 바로 적용될 수 있도록 CloudFront에서 Invalidate Cache를 적용했습니다.
 
 <br/>
 
@@ -237,15 +237,17 @@
 - 게시글이 저장되는 시점에 게시글 DTO에 UUID 문자열을 ID로 추가
 - 게시글이 저장되는 동시에 S3에 존재하는 temp-board-id를 실제 게시글 ID로 치환
 
+```mermaid
 sequenceDiagram
-participant Client
-participant Server
-participant AWS
-Client->>Server: Image Upload Req
-Server->>AWS: Image Upload in S3
-Server->>Client: Return Image URL
-Client->>Server: Save Board Req
-Server->>AWS: Change Folder Name
+  participant Client
+  participant Server
+  participant AWS
+  Client->>Server: Image Upload Req
+  Server->>AWS: Image Upload in S3
+  Server->>Client: Return Image URL
+  Client->>Server: Save Board Req
+  Server->>AWS: Change Folder Name
+```
 
 ## 회원가입시 이메일 인증 구현하기
 
