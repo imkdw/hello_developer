@@ -19,6 +19,9 @@
 ### 디자인
 
 - Figma
+  <br/>
+
+<img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/client-design.png">
 
 ### ETC
 
@@ -135,6 +138,8 @@
 
 ### AWS ACM에서 SSL인증서를 발급받아 HTTPS를 적용했습니다.
 
+<br/>
+
 ### 배포과정은 아래 블로그에 정리했습니다.
 
 - [1. S3 웹호스팅](https://iamiet.tistory.com/entry/AWS%EC%97%90-React-%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0-1-S3-%EC%9B%B9%ED%98%B8%EC%8A%A4%ED%8C%85-%EC%84%A4%EC%A0%95)
@@ -201,7 +206,7 @@
 <br/>
 <br/>
 
-# ❗ 해결했던 문제들..
+# ❗ 해결했던 문제들...
 
 ## 이미지 업로드 최적화하기
 
@@ -211,11 +216,36 @@
 - 약 4kb의 이미지 삽입시 약 5100자의 문자열이 삽입
 - 본문의 길이가 늘어날수록 DB에서 차지하는 공간이 커지게되며, 삽입/삭제 등 데이터의 크기가 늘어날수록 더 많은양의 네트워크 트래픽을 요구
 
+<img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fp9l3Z%2Fbtr5TpVWU4o%2F98uWhZbasIFmVEdsAWk7fk%2Fimg.png">
+
 이미지 업로드 이벤트를 커스텀하여 AWS S3에 업로드 및 이미지 URL을 반환하여 업로드를 최적화 했습니다.
 
 해결과정은 [Tistory 블로그](https://iamiet.tistory.com/entry/toast-ui-editor-v3-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EC%97%85%EB%A1%9C%EB%93%9C-%EC%B5%9C%EC%A0%81%ED%99%94%EC%BB%A4%EC%8A%A4%ED%84%B0%EB%A7%88%EC%9D%B4%EC%A7%95%ED%95%98%EA%B8%B0)에 정리했습니다.
 <br/>
 <br/>
+
+## 이미지 업로드시 게시글 ID 생성관련 이슈
+
+기존 게시글을 작성하는 DB Column 생성시 UUID 형식의 랜덤한 게시글 ID가 생성되는 형식  
+하지만 이미지 업로드시에 게시글이 DB에 저장되는 시점보다 이전에 업로드 이벤트가 발생
+<br/>
+
+위와 같은 문제점을 아래와 같이 방법으로 개선하였습니다.
+
+- 게시글 생성시 클라이언트에서 임시 게시글 ID 생성
+- 임시 게시글 ID를 기준으로 S3에 /temp-board-id/image.png 형식으로 업로드
+- 게시글이 저장되는 시점에 게시글 DTO에 UUID 문자열을 ID로 추가
+- 게시글이 저장되는 동시에 S3에 존재하는 temp-board-id를 실제 게시글 ID로 치환
+
+sequenceDiagram
+participant Client
+participant Server
+participant AWS
+Client->>Server: Image Upload Req
+Server->>AWS: Image Upload in S3
+Server->>Client: Return Image URL
+Client->>Server: Save Board Req
+Server->>AWS: Change Folder Name
 
 ## 회원가입시 이메일 인증 구현하기
 
@@ -226,6 +256,10 @@ nodemailer + gmail을 사용하여 이메일 인증을 구현중 아래 문제�
 
 위 제약사항으로 인해 Gmail API의 OAuth와 nodemailer를 사용하여 인증메일 발송기능을 구현했습니다.
 
+<img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/email-verify.png">
+
 해결과정은 [Tistory 블로그](https://iamiet.tistory.com/entry/Nodemailer-Gmail-OAuth20%EC%9C%BC%EB%A1%9C-%EC%9D%B4%EB%A9%94%EC%9D%BC-%EB%B0%9C%EC%86%A1%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0)에 정리했습니다.
 <br/>
 <br/>
+
+# 🚫 개선이 필요한 문제들
