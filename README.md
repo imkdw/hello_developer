@@ -103,6 +103,11 @@
 
 <br/>
 
+### 배포과정은 아래 블로그에 정리했습니다.
+
+- [1. EC2 + Docker로 Nestjs App 배포하기](https://iamiet.tistory.com/entry/EC2-Docker-ECR%EB%A1%9C-Nestjs-%EC%96%B4%ED%94%8C%EB%A6%AC%EC%BC%80%EC%9D%B4%EC%85%98-%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0)
+- [2. ACM + ALB로 HTTPS 적용하기](https://iamiet.tistory.com/entry/AWC-ACM-ELBALB%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%95%98%EC%97%AC-EC2%EC%97%90-HTTPS-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0)
+
 <br/>
 
 ## CI/CD
@@ -110,6 +115,14 @@
 ### Github Actions를 사용하여 Docker Image를 빌드하고 ECR에 업로드 합니다.
 
 ### EC2에서는 ECR에 업로드된 이미지를 받아오고 Docker Image를 실행하여 배포합니다.
+
+<br/>
+
+### CI/CD 구축과정은 아래 블로그에 정리했습니다.
+
+- [Nestjs + Docker CI/CD 구축과정](https://iamiet.tistory.com/entry/EC2-ECR-Docker%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-CICD-%EA%B5%AC%EC%B6%95-with-Github-Actions)
+
+<br/>
 
 <br/>
 <br/>
