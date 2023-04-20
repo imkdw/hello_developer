@@ -119,8 +119,6 @@
 
 #### EC2에서는 ECR에 업로드된 이미지를 받아오고 Docker Image를 실행하여 배포합니다.
 
-<br/>
-
 ### CI/CD 구축과정은 아래 블로그에 정리했습니다.
 
 - [Nestjs + Docker CI/CD 구축과정](https://iamiet.tistory.com/entry/EC2-ECR-Docker%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-CICD-%EA%B5%AC%EC%B6%95-with-Github-Actions)
@@ -198,6 +196,46 @@
 
 ### Restful API의 문서를 자동으로 구성해주는 Swagger 프레임워크를 사용해서 작성했습니다.
 
+### 현재는 Controller에 데코레이터를 사용하여 문서에 필요한 내용을 정의해둔 상태입니다.
+
+### 하지만 데코레이터 내부에 모든 내용을 정의할 경우 아래와 같이 코드가 매우 길어지게 됩니다.
+
+```typescript
+  @ApiOperation({ summary: '회원가입 API' })
+  @ApiCreatedResponse({
+    description: `회원가입 성공시 201 코드와 생성된 사용자의 아이디 반환`,
+    schema: {
+      type: 'object',
+      properties: { userId: { type: 'string' } },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: `
+      이메일 형식이 올바르지 않을경우 - invalid_email
+      비밀번호 형식이 올바르지 않을경우 - invalid_password
+      닉네임 형식이 올바르지 않을경우 - invalid_nickname
+      중복된 이메일인 경우 - exist_email
+      중복된 닉네임인 경우 - exist_nickname`,
+    schema: {
+      type: 'object',
+      properties: {
+        statusCode: { type: 'number' },
+        message: {
+          example: 'invalid_email, invalid_password, invalid_nickname, exist_email, exist_nickname',
+        },
+      },
+    },
+  })
+  @UsePipes(ValidationPipe)
+  @Post('register')
+  async register(@Body() registerDto: RegisterDto) {
+    const userId = await this.authService.register(registerDto);
+    return { userId };
+  }
+```
+
+### Swagger 문서에 필요한 내용은 외부파일로 분리하여 코드를 개선할 예정입니다.
+
 ### API 문서 URL : [Hello Developer API Docs.](https://api.hdev.site:5000/api)
 
 <br/>
@@ -249,6 +287,8 @@ sequenceDiagram
   Server->>AWS: Change Folder Name
 ```
 
+<br/>
+
 ## 회원가입시 이메일 인증 구현하기
 
 nodemailer + gmail을 사용하여 이메일 인증을 구현중 아래 문제가 발생했습니다.
@@ -264,4 +304,41 @@ nodemailer + gmail을 사용하여 이메일 인증을 구현중 아래 문제�
 <br/>
 <br/>
 
-# 🚫 개선이 필요한 문제들
+## JWT Access Token의 짧은 수명으로 인한 유저의 불편한 경험개선
+
+기본적으로 Access Token의 경우 localStorage등 클라이언트(브라우저)의 저장공간에서 보관합니다.  
+이에 따라서 수명이 길면 탈취당했을때 문제가 발생할 수 있습니다.  
+JWT Refresh Token을 활용하여 유저의 사용경험이 불편하지 않도록 개선했습니다.
+
+- 토큰의 유효시간의 경우 Access Token은 15분, Refresh Token은 10일로 지정
+- Refresh Token은 httpOnly, Secure 옵션으로 쿠키에 저장
+- 서버에서 401 Unauthorized 에러 반환시 Refresh Token을 활용한 재요청 및 Access Token 재발급
+
+```typescript
+res.cookie('refreshToken', refreshToken, { httpOnly: true, path: '/', secure: true });
+```
+
+<img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/cookie.png">
+
+<br/>
+
+## 조회수 증가 API의 반복적인 호출 문제해결
+
+게시글 상세보기를 누르게되면 조회수를 증가하기 위해 API를 호출하게 됩니다.  
+이때 이미 조회한 게시물도 계속 API 호출이 들어오게 됩니다.  
+사용자가 악의적으로 새로고침 테러를 하는것을 방지하기 위해 쿠키를 설정하여 해결했습니다.
+
+- 게시글 상세보기 페이지 접속시 24시간동안 유지되는 쿠키 생성
+- 게시글 상세보기 페이지 접속시 쿠키 여부에 따라 조회수 호출여부 결정
+  <br/>
+
+<img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/view-cookie.png">
+<br/>
+<br/>
+
+# 🚫 개선 및 구현이 필요한 문제들
+
+## 많은 양의 게시글 로딩시 데이터를 한번에 렌더링하는 문제
+
+게시글 목록 또는 검색기능 사용시 DB에 존재하는 모든 데이터를 한번에 응답받습니다.  
+약 1000개의 데이터가 존재할 경우 렌더링시 매우 버벅이게 되며 유저에게는 안좋은 경험으로 와닿습니다.
