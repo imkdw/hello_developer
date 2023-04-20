@@ -106,7 +106,7 @@
 
 <br/>
 
-### 배포과정은 아래 블로그에 정리했습니다.
+#### 배포과정은 아래 블로그에 정리했습니다.
 
 - [1. EC2 + Docker로 Nestjs App 배포하기](https://iamiet.tistory.com/entry/EC2-Docker-ECR%EB%A1%9C-Nestjs-%EC%96%B4%ED%94%8C%EB%A6%AC%EC%BC%80%EC%9D%B4%EC%85%98-%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0)
 - [2. ACM + ALB로 HTTPS 적용하기](https://iamiet.tistory.com/entry/AWC-ACM-ELBALB%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%95%98%EC%97%AC-EC2%EC%97%90-HTTPS-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0)
@@ -119,16 +119,13 @@
 
 #### EC2에서는 ECR에 업로드된 이미지를 받아오고 Docker Image를 실행하여 배포합니다.
 
-### CI/CD 구축과정은 아래 블로그에 정리했습니다.
+#### CI/CD 구축과정은 아래 블로그에 정리했습니다.
 
 - [Nestjs + Docker CI/CD 구축과정](https://iamiet.tistory.com/entry/EC2-ECR-Docker%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-CICD-%EA%B5%AC%EC%B6%95-with-Github-Actions)
-
-<br/>
-
-<br/>
-<br/>
+  <br/>
 
 <img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/client+infra.png">
+<br/>
 
 ## 배포 방식
 
@@ -138,7 +135,7 @@
 
 <br/>
 
-### 배포과정은 아래 블로그에 정리했습니다.
+#### 배포과정은 아래 블로그에 정리했습니다.
 
 - [1. S3 웹호스팅](https://iamiet.tistory.com/entry/AWS%EC%97%90-React-%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0-1-S3-%EC%9B%B9%ED%98%B8%EC%8A%A4%ED%8C%85-%EC%84%A4%EC%A0%95)
 - [2. Route53 및 ACM 설정](https://iamiet.tistory.com/entry/AWS%EC%97%90-React-%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0-2-Route53-%EB%8F%84%EB%A9%94%EC%9D%B8-%EC%97%B0%EA%B2%B0-%EB%B0%8F-SSL-%EC%9D%B8%EC%A6%9D%EC%84%9C-%EB%B0%9C%EA%B8%89)
@@ -155,7 +152,7 @@
 
 <br/>
 
-### CI/CD 구축과정은 아래 블로그에 정리했습니다.
+#### CI/CD 구축과정은 아래 블로그에 정리했습니다.
 
 - [React CI/CD 구축과정](https://iamiet.tistory.com/entry/S3%EB%A1%9C-%EB%B0%B0%ED%8F%AC%ED%95%9C-React%EC%97%90-CICD-%EA%B5%AC%EC%B6%95%ED%95%98%EA%B8%B0-with-Github-Actions)
 
@@ -195,46 +192,6 @@
 # 📜 API Docs with Swagger
 
 ### Restful API의 문서를 자동으로 구성해주는 Swagger 프레임워크를 사용해서 작성했습니다.
-
-### 현재는 Controller에 데코레이터를 사용하여 문서에 필요한 내용을 정의해둔 상태입니다.
-
-### 하지만 데코레이터 내부에 모든 내용을 정의할 경우 아래와 같이 코드가 매우 길어지게 됩니다.
-
-```typescript
-  @ApiOperation({ summary: '회원가입 API' })
-  @ApiCreatedResponse({
-    description: `회원가입 성공시 201 코드와 생성된 사용자의 아이디 반환`,
-    schema: {
-      type: 'object',
-      properties: { userId: { type: 'string' } },
-    },
-  })
-  @ApiBadRequestResponse({
-    description: `
-      이메일 형식이 올바르지 않을경우 - invalid_email
-      비밀번호 형식이 올바르지 않을경우 - invalid_password
-      닉네임 형식이 올바르지 않을경우 - invalid_nickname
-      중복된 이메일인 경우 - exist_email
-      중복된 닉네임인 경우 - exist_nickname`,
-    schema: {
-      type: 'object',
-      properties: {
-        statusCode: { type: 'number' },
-        message: {
-          example: 'invalid_email, invalid_password, invalid_nickname, exist_email, exist_nickname',
-        },
-      },
-    },
-  })
-  @UsePipes(ValidationPipe)
-  @Post('register')
-  async register(@Body() registerDto: RegisterDto) {
-    const userId = await this.authService.register(registerDto);
-    return { userId };
-  }
-```
-
-### Swagger 문서에 필요한 내용은 외부파일로 분리하여 코드를 개선할 예정입니다.
 
 ### API 문서 URL : [Hello Developer API Docs.](https://api.hdev.site:5000/api)
 
@@ -342,3 +299,50 @@ res.cookie('refreshToken', refreshToken, { httpOnly: true, path: '/', secure: tr
 
 게시글 목록 또는 검색기능 사용시 DB에 존재하는 모든 데이터를 한번에 응답받습니다.  
 약 1000개의 데이터가 존재할 경우 렌더링시 매우 버벅이게 되며 유저에게는 안좋은 경험으로 와닿습니다.
+<br/>
+
+## Swagger 문서 데이터로 인해 길어지는 코드
+
+### 현재는 Controller에 데코레이터를 사용하여 문서에 필요한 내용을 정의해둔 상태입니다.
+
+### 하지만 데코레이터 내부에 모든 내용을 정의할 경우 아래와 같이 코드가 매우 길어지게 됩니다.
+
+```typescript
+  @ApiOperation({ summary: '회원가입 API' })
+  @ApiCreatedResponse({
+    description: `회원가입 성공시 201 코드와 생성된 사용자의 아이디 반환`,
+    schema: {
+      type: 'object',
+      properties: { userId: { type: 'string' } },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: `
+      이메일 형식이 올바르지 않을경우 - invalid_email
+      비밀번호 형식이 올바르지 않을경우 - invalid_password
+      닉네임 형식이 올바르지 않을경우 - invalid_nickname
+      중복된 이메일인 경우 - exist_email
+      중복된 닉네임인 경우 - exist_nickname`,
+    schema: {
+      type: 'object',
+      properties: {
+        statusCode: { type: 'number' },
+        message: {
+          example: 'invalid_email, invalid_password, invalid_nickname, exist_email, exist_nickname',
+        },
+      },
+    },
+  })
+  @UsePipes(ValidationPipe)
+  @Post('register')
+  async register(@Body() registerDto: RegisterDto) {
+    const userId = await this.authService.register(registerDto);
+    return { userId };
+  }
+```
+
+### Swagger 문서에 필요한 내용은 외부파일로 분리하여 코드를 개선할 예정입니다.
+
+# ❤ 프로젝트를 진행하면서 느낀점
+
+###
