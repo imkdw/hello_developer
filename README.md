@@ -125,7 +125,6 @@
   <br/>
 
 <img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/client+infra.png">
-<br/>
 
 ## 배포 방식
 
@@ -141,8 +140,6 @@
 - [2. Route53 및 ACM 설정](https://iamiet.tistory.com/entry/AWS%EC%97%90-React-%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0-2-Route53-%EB%8F%84%EB%A9%94%EC%9D%B8-%EC%97%B0%EA%B2%B0-%EB%B0%8F-SSL-%EC%9D%B8%EC%A6%9D%EC%84%9C-%EB%B0%9C%EA%B8%89)
 - [3. CloudFront 배포](https://iamiet.tistory.com/entry/AWS%EC%97%90-React-%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0-3-CloudFront-%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0)
 - [4. Route53 레코드 매핑](https://iamiet.tistory.com/entry/AWS%EC%97%90-React-%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0-4-CloudFront-Route53-%EC%82%AC%EC%84%A4%EB%8F%84%EB%A9%94%EC%9D%B8-%EC%97%B0%EB%8F%99%ED%95%98%EA%B8%B0)
-
-<br/>
 
 ## CI/CD
 
@@ -299,13 +296,17 @@ res.cookie('refreshToken', refreshToken, { httpOnly: true, path: '/', secure: tr
 
 게시글 목록 또는 검색기능 사용시 DB에 존재하는 모든 데이터를 한번에 응답받습니다.  
 약 1000개의 데이터가 존재할 경우 렌더링시 매우 버벅이게 되며 유저에게는 안좋은 경험으로 와닿습니다.
-<br/>
+현재 생각중인 해결방안은 아래와 같습니다.
+
+- 클라이언트 : 무한스크롤을 구현하여 특정 시점에 서버에 데이터 요청
+- 서버 : 쿼리스트링을 통해 반환할 데이터의 범위를 받고, 데이터베이스 측에서 필터링을 통해 데이터 반환
+  <br/>
 
 ## Swagger 문서 데이터로 인해 길어지는 코드
 
-### 현재는 Controller에 데코레이터를 사용하여 문서에 필요한 내용을 정의해둔 상태입니다.
+#### 현재는 Controller에 데코레이터를 사용하여 문서에 필요한 내용을 정의해둔 상태입니다.
 
-### 하지만 데코레이터 내부에 모든 내용을 정의할 경우 아래와 같이 코드가 매우 길어지게 됩니다.
+#### 하지만 데코레이터 내부에 모든 내용을 정의할 경우 아래와 같이 코드가 매우 길어지게 됩니다.
 
 ```typescript
   @ApiOperation({ summary: '회원가입 API' })
