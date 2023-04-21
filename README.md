@@ -104,8 +104,6 @@
 
 #### AWS ACM에서 발급받은 SSL인증서를 사용하여 ELB(ALB)를 통해 HTTPS를 적용했습니다.
 
-<br/>
-
 #### 배포과정은 아래 블로그에 정리했습니다.
 
 - [1. EC2 + Docker로 Nestjs App 배포하기](https://iamiet.tistory.com/entry/EC2-Docker-ECR%EB%A1%9C-Nestjs-%EC%96%B4%ED%94%8C%EB%A6%AC%EC%BC%80%EC%9D%B4%EC%85%98-%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0)
@@ -132,8 +130,6 @@
 
 #### AWS ACM에서 SSL인증서를 발급받아 HTTPS를 적용했습니다.
 
-<br/>
-
 #### 배포과정은 아래 블로그에 정리했습니다.
 
 - [1. S3 웹호스팅](https://iamiet.tistory.com/entry/AWS%EC%97%90-React-%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0-1-S3-%EC%9B%B9%ED%98%B8%EC%8A%A4%ED%8C%85-%EC%84%A4%EC%A0%95)
@@ -146,8 +142,6 @@
 #### Github Actions를 사용하여 리액트 프로젝트 빌드이후 S3에 업로드됩니다.
 
 #### S3의 변경사항이 바로 적용될 수 있도록 CloudFront에서 Invalidate Cache를 적용했습니다.
-
-<br/>
 
 #### CI/CD 구축과정은 아래 블로그에 정리했습니다.
 
@@ -344,7 +338,7 @@ res.cookie('refreshToken', refreshToken, { httpOnly: true, path: '/', secure: tr
   }
 ```
 
-### Swagger 문서에 필요한 내용은 외부파일로 분리하여 코드를 개선할 예정입니다.
+#### Swagger 문서에 필요한 내용은 외부파일로 분리하여 코드를 개선할 예정입니다.
 
 <br/>
 <br/>
@@ -376,6 +370,5 @@ res.cookie('refreshToken', refreshToken, { httpOnly: true, path: '/', secure: tr
 ## 노력과 자신감
 
 처음 도입하고 경험한 기술과 개념들이 들이 매우 많았습니다.  
-Test 부터 시작해서 CI/CD, AWS, 새로운 프레임워크 등..  
-새로운걸 배울때마다 계속해서 기록하고 꾸준하게 노력했습니다.  
-처음 마주한 기술과 개념을 통해서 원하는것을 성공적으로 만들수 있었습니다.
+TDD 부터 시작해서 CI/CD, AWS, 새로운 프레임워크/라이브러리 등..  
+새로운걸 배울때마다 계속해서 기록하고 꾸준하게 노력했습니다.
