@@ -27,9 +27,4 @@ export class CategoryRepository {
 
     return categoryIds;
   }
-
-  async createDefaultCategorys() {
-    const category = this.categoryRepository.create(defaultCategorys);
-    await this.categoryRepository.save(category);
-  }
 }

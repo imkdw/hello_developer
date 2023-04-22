@@ -94,6 +94,29 @@
   <br/>
   <br/>
 
+# ⚙ Module Structure
+
+#### 루트 모듈인 Application모듈을 기준으로 총 3개의 메인모듈이 존재합니다.
+
+- Auth : 인증(로그인, 회원가입, 토큰 등) 관련 모듈
+- Boards : 게시글(작성, 삭제 등) 관련 모듈
+- User: 사용자(프로필, 활동내역 등) 관련 모듈
+
+#### 하위 모듈의 경우 Global이 아닌 상위모듈에서 필요에 의하여 사용합니다.
+
+```mermaid
+graph TD;
+    APP-->Auth;
+    APP-->Boards;
+    APP-->Users;
+		Auth-->Email
+		Auth-->Util
+		Boards-->Util
+		Boards-->AWS
+    Boards-->Comments;
+		Users-->AWS
+```
+
 # 🌐 System Architecture
 
 <img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/server+infra.png">
@@ -189,6 +212,22 @@
 <br/>
 <img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/swagger.png">
 
+<br/>
+<br/>
+
+# 📘 Logging with Sentry, Slack
+
+서버에서 치명적인 500대의 HTTP 에러가 발생한경우에 로깅하도록 처리했습니다.
+
+### Sentry 내부에 상세 로그를 저장
+
+<img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/sentry.png">
+<br/>
+<br/>
+
+### 에러 발생시 바로 확인이 가능하도록 Slack으로 메세지 푸쉬기능 구현
+
+<img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/slack.png">
 <br/>
 <br/>
 

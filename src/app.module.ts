@@ -16,7 +16,6 @@ import { Recommend } from './boards/recommend/recommend.entity';
 import { Comment } from './comments/comment.entity';
 import { HttpExceptionFilter } from './http-exception.filter';
 import { UtilsModule } from './utils/utils.module';
-import { CategoryRepository } from './boards/category/category.repository';
 import configuration from './config/configuration';
 import { MorganModule, MorganInterceptor } from 'nest-morgan';
 import { AwsModule } from './aws/aws.module';
@@ -64,7 +63,6 @@ import { AppController } from './app.controller';
     AwsModule,
   ],
   providers: [
-    CategoryRepository,
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
@@ -72,10 +70,4 @@ import { AppController } from './app.controller';
   ],
   controllers: [AppController],
 })
-export class AppModule implements OnModuleInit {
-  constructor(private categoryRepository: CategoryRepository) {}
-
-  async onModuleInit() {
-    await this.categoryRepository.createDefaultCategorys();
-  }
-}
+export class AppModule {}

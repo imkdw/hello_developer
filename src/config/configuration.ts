@@ -25,4 +25,11 @@ export default () => ({
     accessKeyId: process.env.AWS_ACCESS_KEY,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
+  sentry: {
+    dsn: process.env.SENTRY_DSN,
+  },
+  slack: {
+    token: process.env.SLACK_TOKEN,
+    logChannelId: process.env.SLACK_LOG_CHANNEL_ID,
+  },
 });

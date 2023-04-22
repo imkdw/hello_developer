@@ -8,15 +8,29 @@ import { User } from './user.entity';
 export class UserRepository {
   constructor(@InjectRepository(User) private userRepository: Repository<User>) {}
 
+  /**
+   * user 테이블에 회원정보 삽입 쿼리
+   * @param user
+   * @returns 생성된 유저정보 반환
+   */
   async register(user: User) {
-    const createdUser = await this.userRepository.save(user);
-    return createdUser;
+    return await this.userRepository.save(user);
   }
 
+  /**
+   * 이메일을 기준으로 유저를 검색하는 쿼리
+   * @param email
+   * @returns 유저정보가 있을경우 반환, 없을경우 null
+   */
   async findUserByEmail(email: string): Promise<User | null> {
     return await this.userRepository.findOne({ where: { email } });
   }
 
+  /**
+   * 닉네임을 기준으로 유저를 검색하는 쿼리
+   * @param email
+   * @returns 유저정보가 있을경우 반환, 없을경우 null
+   */
   async findUserByNickname(nickname: string): Promise<User | null> {
     return await this.userRepository.findOne({ where: { nickname } });
   }
