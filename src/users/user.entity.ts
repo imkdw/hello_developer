@@ -30,8 +30,7 @@ export class User {
   @Column('varchar', {
     length: 255,
     nullable: true,
-    default:
-      'https://item.kakaocdn.net/do/60186e0074ad046dc11b946556106b479f17e489affba0627eb1eb39695f93dd',
+    default: 'https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/2143305.png',
     name: 'profile_img',
   })
   profileImg: string;
