@@ -129,6 +129,8 @@ export class AuthService {
    */
   generateAccessToken(refreshToken: string) {
     const decodedToken = this.jwtService.decode(refreshToken);
+    // TODO: 삭제
+    console.log(`decodedToken: ${decodedToken}`);
     const userId = decodedToken['userId'];
 
     return this.createAccessToken(userId);

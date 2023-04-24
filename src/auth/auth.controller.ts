@@ -169,7 +169,10 @@ export class AuthController {
     schema: { properties: { accessToken: { type: 'string' } } },
   })
   async token(@Req() req) {
+    console.log(req.cookies);
     const refreshToken = req.cookies['refreshToken'];
+    // TODO: 삭제
+    console.log(`refreshToken: ${refreshToken}`);
     const accessToken = this.authService.generateAccessToken(refreshToken);
     return { accessToken };
   }

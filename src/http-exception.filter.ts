@@ -24,7 +24,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
   constructor(private configService: ConfigService) {
     this.webClient = new WebClient(this.configService.get<string>('slack.token'));
   }
-
   private logger = new Logger('ErrorLogger');
 
   catch(exception: HttpException, host: ArgumentsHost) {
