@@ -51,7 +51,6 @@ import { AppController } from './app.controller';
             entities: [User, Board, Category, Tag, Recommend, Comment, View],
           }),
         }),
-    TypeOrmModule.forFeature([Board, Category, Tag]),
     AuthModule,
     BoardsModule,
     CommentsModule,
