@@ -16,7 +16,15 @@ import configuration from '../src/config/configuration';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from '../src/http-exception.filter';
 import { UtilsService } from '../src/utils/utils.service';
-import { createBoard, createComment, login, login2, register, register2 } from './test.data';
+import {
+  createBoard,
+  createComment,
+  createDefaultCategorys,
+  login,
+  login2,
+  register,
+  register2,
+} from './test.data';
 import { AuthModule } from '../src/auth/auth.module';
 import { CategoryRepository } from '../src/boards/category/category.repository';
 import { comment } from './test.data';
@@ -72,7 +80,7 @@ describe('Comment Module (e2e)', () => {
       tempBoardId = utilsService.getUUID();
 
       // 카테고리 데이터 저장
-      await categoryRepository.createDefaultCategorys();
+      await createDefaultCategorys(dataSource);
 
       // 유저 생성 및 ID 저장
       userId = await register(dataSource, utilsService);
@@ -140,15 +148,15 @@ describe('Comment Module (e2e)', () => {
           });
       });
 
-      it('수정을 요청한 사용자와 실제 댓글의 작성자가 다를경우, 401, unauthorized_user', async () => {
+      it('수정을 요청한 사용자와 실제 댓글의 작성자가 다를경우, 403, user_mismatch', async () => {
         return request(app.getHttpServer())
           .patch(`/comments/${commentId}`)
           .send({ comment })
           .set({ Authorization: `Bearer ${user2AccessToken}` })
-          .expect(401)
+          .expect(403)
           .expect({
-            statusCode: 401,
-            message: 'unauthorized_user',
+            statusCode: 403,
+            message: 'user_mismatch',
           });
       });
 
@@ -177,14 +185,14 @@ describe('Comment Module (e2e)', () => {
           });
       });
 
-      it('삭제를 요청한 사용자와 실제 댓글의 작성자가 다를경우, 401, unauthorized_user', () => {
+      it('삭제를 요청한 사용자와 실제 댓글의 작성자가 다를경우, 403, user_mismatch', () => {
         return request(app.getHttpServer())
           .delete(`/comments/${commentId}`)
           .set({ Authorization: `Bearer ${user2AccessToken}` })
-          .expect(401)
+          .expect(403)
           .expect({
-            statusCode: 401,
-            message: 'unauthorized_user',
+            statusCode: 403,
+            message: 'user_mismatch',
           });
       });
 

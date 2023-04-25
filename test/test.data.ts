@@ -3,8 +3,7 @@ import { User } from '../src/users/user.entity';
 import { UtilsService } from '../src/utils/utils.service';
 import { DataSource } from 'typeorm';
 import * as request from 'supertest';
-import { Board } from '../src/boards/board.entity';
-import { Tag } from '../src/boards/tag/tag.entity';
+import { Category } from '../src/boards/category/category.entity';
 
 export const account = {
   email: 'test@test.com',
@@ -95,4 +94,31 @@ export async function createComment(app: INestApplication, accessToken: string, 
     .expect(201);
 
   return response.body.commentId;
+}
+
+export async function createDefaultCategorys(dataSource: DataSource) {
+  const defaultCategorys = [
+    { categoryId: 1, name: 'notice' },
+    { categoryId: 2, name: 'suggestion' },
+    { categoryId: 3, name: 'free' },
+    { categoryId: 4, name: 'knowledge' },
+    { categoryId: 5, name: 'tips' },
+    { categoryId: 6, name: 'review' },
+    { categoryId: 7, name: 'qna' },
+    { categoryId: 8, name: 'tech' },
+    { categoryId: 9, name: 'career' },
+    { categoryId: 10, name: 'recruitment' },
+    { categoryId: 11, name: 'project' },
+    { categoryId: 12, name: 'study' },
+    { categoryId: 13, name: 'company' },
+  ];
+
+  await Promise.all(
+    defaultCategorys.map(async (category) => {
+      const defaultCategory = new Category();
+      defaultCategory.categoryId = category.categoryId;
+      defaultCategory.name = category.name;
+      await dataSource.manager.save(defaultCategory);
+    }),
+  );
 }

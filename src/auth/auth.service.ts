@@ -1,4 +1,9 @@
-import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  UnauthorizedException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt/dist';
@@ -75,7 +80,7 @@ export class AuthService {
    */
   async logout(tokenUserId: string, userId: string) {
     if (tokenUserId !== userId) {
-      throw new UnauthorizedException('unauthorized_user');
+      throw new ForbiddenException('user_mismatch');
     }
 
     await this.userRepository.removeRefreshToken(tokenUserId);
@@ -113,7 +118,7 @@ export class AuthService {
    */
   async check(tokenUserId: string, userId: string) {
     if (tokenUserId !== userId) {
-      throw new BadRequestException('user_mismatch');
+      throw new ForbiddenException('user_mismatch');
     }
 
     const user = await this.userRepository.findById(userId);
@@ -129,8 +134,6 @@ export class AuthService {
    */
   generateAccessToken(refreshToken: string) {
     const decodedToken = this.jwtService.decode(refreshToken);
-    // TODO: 삭제
-    console.log(`decodedToken: ${decodedToken}`);
     const userId = decodedToken['userId'];
 
     return this.createAccessToken(userId);

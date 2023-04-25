@@ -23,13 +23,12 @@ import { ImageUploadDto } from './dto/image-upload.dto';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiResponse,
   ApiTags,
-  ApiUnauthorizedResponse,
 } from '@nestjs/swagger/dist';
 
 @Controller('boards')
@@ -252,12 +251,8 @@ export class BoardsController {
     description: '게시글을 찾을수 없는경우 HTTP 404 - board_not_found',
     schema: {
       properties: {
-        statusCode: {
-          example: 404,
-        },
-        message: {
-          example: 'board_not_found',
-        },
+        statusCode: { example: 404 },
+        message: { example: 'board_not_found' },
       },
     },
   })
@@ -273,31 +268,14 @@ export class BoardsController {
    * @param boardId - 게시글 아이디
    */
   @ApiOperation({ summary: '게시글 삭제 API' })
-  @ApiUnauthorizedResponse({
-    description:
-      '삭제를 요청한 유저와 실제 게시글의 유저가 일치하지 않는경우 HTTP 401 - unauthorized_user 반환',
-    schema: {
-      properties: {
-        statusCode: {
-          example: 401,
-        },
-        message: {
-          example: 'unauthorized_user',
-        },
-      },
-    },
+  @ApiForbiddenResponse({
+    description: '삭제를 요청한 유저와 실제 게시글의 유저가 일치하지 않는경우',
+    schema: { properties: { statusCode: { example: 403 }, message: { example: 'user_mismatch' } } },
   })
   @ApiNotFoundResponse({
-    description: '삭제를 요청한 게시글을 찾을 수 없는경우 HTTP 404 - board_not_found 반환',
+    description: '삭제를 요청한 게시글을 찾을 수 없는경우',
     schema: {
-      properties: {
-        statusCode: {
-          example: 404,
-        },
-        message: {
-          example: 'board_not_found',
-        },
-      },
+      properties: { statusCode: { example: 404 }, message: { example: 'board_not_found' } },
     },
   })
   @HttpCode(204)
@@ -317,6 +295,10 @@ export class BoardsController {
   @ApiNoContentResponse({
     description: '수정에 성공하는 경우 HTTP 204 반환',
   })
+  @ApiForbiddenResponse({
+    description: '수정을 요청한 유저와 실제 게시글의 유저가 일치하지 않는경우',
+    schema: { properties: { statusCode: { example: 403 }, message: { example: 'user_mismatch' } } },
+  })
   @HttpCode(204)
   @UseGuards(JwtAuthGuard)
   @Patch(':boardId')
@@ -333,16 +315,8 @@ export class BoardsController {
    * @param req
    * @param boardId - 추천을 요청한 게시글 아이디
    */
-  @ApiOperation({
-    summary: '게시글 추천 API',
-    description: `
-    특정 게시글을 추천/추천취소 하는 API\n
-    추천 성공 : HTTP 200 반환
-  `,
-  })
-  @ApiOkResponse({
-    description: '게시글 추천 추가/삭제 성공시 HTTP 200 반환',
-  })
+  @ApiOperation({ summary: '게시글 추천 API' })
+  @ApiOkResponse({ description: '게시글 추천 추가/삭제 성공시 HTTP 200 반환' })
   @UseGuards(JwtAuthGuard)
   @Get('/:boardId/recommend')
   async recommend(@Req() req, @Param('boardId') boardId: string) {
@@ -354,9 +328,7 @@ export class BoardsController {
    * @param boardId - 조회한 게시글의 아이디
    */
   @ApiOperation({ summary: '게시글 조회수 API' })
-  @ApiOkResponse({
-    description: '게시글 조회수 증가 성공시 HTTP 200 반환',
-  })
+  @ApiOkResponse({ description: '게시글 조회수 증가 성공시 HTTP 200 반환' })
   @Get(':boardId/views')
   async views(@Param('boardId') boardId: string) {
     await this.boardsService.views(boardId);

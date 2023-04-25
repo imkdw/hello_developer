@@ -3,6 +3,7 @@ import {
   NotFoundException,
   UnauthorizedException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -48,7 +49,7 @@ export class UsersService {
    */
   async update(tokenUserId: string, userId: string, updateProfileDto: UpdateProfileDto) {
     if (tokenUserId !== userId) {
-      throw new UnauthorizedException('unauthorized_user');
+      throw new ForbiddenException('user_mismatch');
     }
 
     await this.userRepository.update(userId, updateProfileDto);
@@ -61,7 +62,7 @@ export class UsersService {
    */
   async remove(tokenUserId: string, userId: string) {
     if (tokenUserId !== userId) {
-      throw new UnauthorizedException('unauthorized_user');
+      throw new ForbiddenException('user_mismatch');
     }
 
     await this.userRepository.remove(userId);
@@ -101,7 +102,7 @@ export class UsersService {
    */
   async password(tokenUserId: string, userId: string, updatePasswordDto: UpdatePasswordDto) {
     if (tokenUserId !== userId) {
-      throw new UnauthorizedException('unauthorized_user');
+      throw new ForbiddenException('user_mismatch');
     }
 
     const { password, changePassword } = updatePasswordDto;
@@ -129,7 +130,7 @@ export class UsersService {
    */
   async exitUserVerify(tokenUserId: string, userId: string, exitUserVerifyDto: ExitUserVerifyDto) {
     if (tokenUserId !== userId) {
-      throw new UnauthorizedException('unauthorized_user');
+      throw new ForbiddenException('user_mismatch');
     }
 
     const { password } = exitUserVerifyDto;
@@ -160,7 +161,7 @@ export class UsersService {
     file: Express.Multer.File,
   ): Promise<string> {
     if (tokenUserId !== userId) {
-      throw new UnauthorizedException('unauthorized_user');
+      throw new ForbiddenException('user_mismatch');
     }
 
     const user = await this.userRepository.findById(userId);

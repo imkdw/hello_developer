@@ -191,14 +191,14 @@ describe('Auth Module (e2e)', () => {
   });
 
   describe('[GET] /auth/logout - 로그아웃', () => {
-    it('토큰의 유저 아이디와 실제 유저 아이디가 불일치, 401, unauthorized_user 반환', async () => {
+    it('토큰의 유저 아이디와 실제 유저 아이디가 불일치, 403, user_mismatch 반환', async () => {
       return request(app.getHttpServer())
         .get(`/auth/logout/1`)
         .set({ Authorization: `Bearer ${accessToken}` })
-        .expect(401)
+        .expect(403)
         .expect({
-          statusCode: 401,
-          message: 'unauthorized_user',
+          statusCode: 403,
+          message: 'user_mismatch',
         });
     });
 
@@ -246,13 +246,13 @@ describe('Auth Module (e2e)', () => {
   });
 
   describe('[GET] /auth/check/:userId - 사용자 로그인여부 확인', () => {
-    it('토큰에 저장된 사용자 아이디와 실제 사용자 아이디가 다를경우, 400, user_mismatch 반환', async () => {
+    it('토큰에 저장된 사용자 아이디와 실제 사용자 아이디가 다를경우, 403, user_mismatch 반환', async () => {
       return request(app.getHttpServer())
         .get(`/auth/check/asd`)
         .set('Authorization', `Bearer ${accessToken}`)
-        .expect(400)
+        .expect(403)
         .expect({
-          statusCode: 400,
+          statusCode: 403,
           message: 'user_mismatch',
         });
     });

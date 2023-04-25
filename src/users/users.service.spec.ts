@@ -1,21 +1,13 @@
-import { NotFoundException, UnauthorizedException, BadRequestException } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
-import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
-import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 import { Board } from 'src/boards/board.entity';
 import { BoardRepository } from 'src/boards/board.repository';
-import { BoardsModule } from 'src/boards/boards.module';
-import { Category } from 'src/boards/category/category.entity';
-import { Tag } from 'src/boards/tag/tag.entity';
-import { View } from 'src/boards/view/view.entity';
 import { Comment } from 'src/comments/comment.entity';
 import { CommentRepository } from 'src/comments/comment.repostiroy';
-import { CommentsModule } from 'src/comments/comments.module';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
-import { UsersModule } from './users.module';
 import { UsersService } from './users.service';
 import configuration from 'src/config/configuration';
 import { UtilsService } from 'src/utils/utils.service';
@@ -123,7 +115,7 @@ describe('[Service] UsersService', () => {
   });
 
   describe('[프로필수정] UsersService.update()', () => {
-    it('수정을 요청한 유저와 실제 유저가 일치하지 않는경우, 401, unauthorized_user', async () => {
+    it('수정을 요청한 유저와 실제 유저가 일치하지 않는경우, 403, user_mismatch', async () => {
       // given
       const tokenUserId = 'userId';
 
@@ -141,8 +133,8 @@ describe('[Service] UsersService', () => {
         await usersService.update(tokenUserId, user.userId, updateProfileDto);
       } catch (err: any) {
         // then
-        expect(err).toBeInstanceOf(UnauthorizedException);
-        expect(err.message).toEqual('unauthorized_user');
+        expect(err).toBeInstanceOf(ForbiddenException);
+        expect(err.message).toEqual('user_mismatch');
       }
     });
 
@@ -164,7 +156,7 @@ describe('[Service] UsersService', () => {
   });
 
   describe('[회원탈퇴] UsersService.remove()', () => {
-    it('삭제를 요청한 유저와 실제 유저가 다를경우, 401, unauthorized_user', async () => {
+    it('삭제를 요청한 유저와 실제 유저가 다를경우, 403, user_mismatch', async () => {
       // given
       const tokenUserId = 'userId';
       const userId = 'userId2';
@@ -174,8 +166,8 @@ describe('[Service] UsersService', () => {
         await usersService.remove(tokenUserId, userId);
       } catch (err: any) {
         // then
-        expect(err).toBeInstanceOf(UnauthorizedException);
-        expect(err.message).toEqual('unauthorized_user');
+        expect(err).toBeInstanceOf(ForbiddenException);
+        expect(err.message).toEqual('user_mismatch');
       }
     });
 
@@ -237,7 +229,7 @@ describe('[Service] UsersService', () => {
   });
 
   describe('[비밀번호 변경] UsersService.password()', () => {
-    it('토큰에 포함된 아이디와 실제 요청한 유저의 아이디가 다를경우 unauthorized_user 반환', async () => {
+    it('토큰에 포함된 아이디와 실제 요청한 유저의 아이디가 다를경우 403, user_mismatch 반환', async () => {
       // given
       const tokenUserId = 'userId';
       const userId = 'userId2';
@@ -251,8 +243,8 @@ describe('[Service] UsersService', () => {
         await usersService.password(tokenUserId, userId, updatePasswordDto);
       } catch (err: any) {
         // then
-        expect(err.message).toBe('unauthorized_user');
-        expect(err).toBeInstanceOf(UnauthorizedException);
+        expect(err.message).toBe('user_mismatch');
+        expect(err).toBeInstanceOf(ForbiddenException);
       }
     });
 
@@ -318,7 +310,7 @@ describe('[Service] UsersService', () => {
   });
 
   describe('[회원탈퇴 유저인증] UsersService.exitUserVerify()', () => {
-    it('토큰에 포함된 아이디와 실제 요청한 유저의 아이디가 다를경우 unauthorized_user 반환', async () => {
+    it('토큰에 포함된 아이디와 실제 요청한 유저의 아이디가 다를경우 403, user_mismatch 반환', async () => {
       // given
       const tokenUserId = 'userId';
       const userId = 'userId2';
@@ -331,8 +323,8 @@ describe('[Service] UsersService', () => {
         await usersService.exitUserVerify(tokenUserId, userId, exitUserVerifyDto);
       } catch (err: any) {
         // then
-        expect(err.message).toBe('unauthorized_user');
-        expect(err).toBeInstanceOf(UnauthorizedException);
+        expect(err.message).toBe('user_mismatch');
+        expect(err).toBeInstanceOf(ForbiddenException);
       }
     });
 
@@ -400,7 +392,7 @@ describe('[Service] UsersService', () => {
       buffer: Buffer.from('test'),
     } as Express.Multer.File;
 
-    it('토큰에 포함된 아이디와 실제 요청한 유저의 아이디가 다를경우 unauthorized_user 반환', async () => {
+    it('토큰에 포함된 아이디와 실제 요청한 유저의 아이디가 다를경우 403, user_mismatch 반환', async () => {
       // given
       const tokenUserId = 'userId';
       const userId = 'userId2';
@@ -410,8 +402,8 @@ describe('[Service] UsersService', () => {
         await usersService.profileImage(tokenUserId, userId, file);
       } catch (err: any) {
         // then
-        expect(err.message).toBe('unauthorized_user');
-        expect(err).toBeInstanceOf(UnauthorizedException);
+        expect(err.message).toBe('user_mismatch');
+        expect(err).toBeInstanceOf(ForbiddenException);
       }
     });
 

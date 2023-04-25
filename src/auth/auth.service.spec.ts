@@ -5,7 +5,7 @@ import { User } from 'src/users/user.entity';
 import { UserRepository } from 'src/users/user.repository';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { UtilsService } from 'src/utils/utils.service';
 import { LoginDto } from './dto/login.dto';
 import { ConfigModule } from '@nestjs/config';
@@ -190,7 +190,7 @@ describe('[Service] AuthService', () => {
   });
 
   describe('[로그아웃] AuthService.logout()', () => {
-    it('토큰에 포함된 유저아이디와 실제 요청한 유저의 아이디가 다를경우 unautorized 에러 발생', async () => {
+    it('토큰에 포함된 유저아이디와 실제 요청한 유저의 아이디가 다를경우 forbidden 에러 발생', async () => {
       // given
       const tokenUserId = 'userId1';
       const userId = 'userId2';
@@ -199,8 +199,8 @@ describe('[Service] AuthService', () => {
       try {
         const result = await authService.logout(tokenUserId, userId);
       } catch (err: any) {
-        expect(err.message).toEqual('unauthorized_user');
-        expect(err).toBeInstanceOf(UnauthorizedException);
+        expect(err.message).toEqual('user_mismatch');
+        expect(err).toBeInstanceOf(ForbiddenException);
       }
     });
 
@@ -285,7 +285,7 @@ describe('[Service] AuthService', () => {
   });
 
   describe('[로그인여부 체크] AuthService.check()', () => {
-    it('토큰에있는 유저의 아이디와 실제 요청한 유저의 아이디가 다르면 unauthorized 에러반환', async () => {
+    it('토큰에있는 유저의 아이디와 실제 요청한 유저의 아이디가 다르면 forbidden 에러반환', async () => {
       // given
       const tokenUserId = 'userId1';
       const userId = 'userId2';
@@ -296,7 +296,7 @@ describe('[Service] AuthService', () => {
       } catch (err: any) {
         // then
         expect(err.message).toEqual('user_mismatch');
-        expect(err).toBeInstanceOf(BadRequestException);
+        expect(err).toBeInstanceOf(ForbiddenException);
       }
     });
 

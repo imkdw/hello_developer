@@ -1,4 +1,4 @@
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Comment } from './comment.entity';
@@ -80,7 +80,7 @@ describe('[Service] CommentsService', () => {
       }
     });
 
-    it('댓글 작성자와, 업데이트 요청자의 아이디가 일치하지 않을때, 401, unauthorized_user', async () => {
+    it('댓글 작성자와, 업데이트 요청자의 아이디가 일치하지 않을때, 403, user_mismatch', async () => {
       // given
       const userId = 'userId';
       const commentId = 1;
@@ -94,8 +94,8 @@ describe('[Service] CommentsService', () => {
         await commentsService.update(userId, commentId, updateCommentDto);
       } catch (err: any) {
         // then
-        expect(err).toBeInstanceOf(UnauthorizedException);
-        expect(err.message).toEqual('unauthorized_user');
+        expect(err).toBeInstanceOf(ForbiddenException);
+        expect(err.message).toEqual('user_mismatch');
       }
     });
 
@@ -134,7 +134,7 @@ describe('[Service] CommentsService', () => {
       }
     });
 
-    it('댓글 작성자와, 삭제 요청자의 아이디가 일치하지 않을때, 401, unauthorized_user', async () => {
+    it('댓글 작성자와, 삭제 요청자의 아이디가 일치하지 않을때, 403, user_mismatch', async () => {
       // given
       const userId = 'userId';
       const commentId = 1;
@@ -148,8 +148,8 @@ describe('[Service] CommentsService', () => {
         await commentsService.remove(userId, commentId);
       } catch (err: any) {
         // then
-        expect(err).toBeInstanceOf(UnauthorizedException);
-        expect(err.message).toEqual('unauthorized_user');
+        expect(err).toBeInstanceOf(ForbiddenException);
+        expect(err.message).toEqual('user_mismatch');
       }
     });
 

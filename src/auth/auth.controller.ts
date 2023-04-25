@@ -22,6 +22,7 @@ import {
   ApiBadRequestResponse,
   ApiCookieAuth,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
   ApiUnauthorizedResponse,
@@ -138,13 +139,13 @@ export class AuthController {
   @ApiOkResponse({
     description: `로그아웃 성공시 200을 반환하고, 데이터베이스에 존재하는 refreshToken을 삭제`,
   })
-  @ApiUnauthorizedResponse({
+  @ApiForbiddenResponse({
     description:
       '로그아웃을 요청한 유저와 토큰 내부에 유저가 일치하지 않는경우 - unauthorized_user',
     schema: {
       type: 'object',
       properties: {
-        statusCode: { example: 401 },
+        statusCode: { example: 403 },
         message: { example: 'unauthorized_user' },
       },
     },
@@ -169,10 +170,7 @@ export class AuthController {
     schema: { properties: { accessToken: { type: 'string' } } },
   })
   async token(@Req() req) {
-    console.log(req.cookies);
     const refreshToken = req.cookies['refreshToken'];
-    // TODO: 삭제
-    console.log(`refreshToken: ${refreshToken}`);
     const accessToken = this.authService.generateAccessToken(refreshToken);
     return { accessToken };
   }

@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
-import { NotFoundException } from '@nestjs/common/exceptions';
+import { ForbiddenException, NotFoundException } from '@nestjs/common/exceptions';
 import { Board } from './board.entity';
 import { BoardRepository } from './board.repository';
 import { CategoryRepository } from './category/category.repository';
@@ -127,7 +127,7 @@ export class BoardsService {
     if (board.userId === userId) {
       await this.boardRepository.remove(userId, boardId);
     } else {
-      throw new UnauthorizedException('unauthorized_user');
+      throw new ForbiddenException('user_mismatch');
     }
   }
 
@@ -138,6 +138,11 @@ export class BoardsService {
    * @param boardId - 게시글 수정을 요청한 아이디
    */
   async update(userId: string, updateBoardDto: UpdateBoardDto, boardId: string) {
+    const board = await this.boardRepository.findById(boardId);
+    if (board.userId !== userId) {
+      throw new ForbiddenException('user_mismatch');
+    }
+
     const { tags, category } = updateBoardDto;
 
     const categoryIds = await this.categoryRepository.findIdByName(category);

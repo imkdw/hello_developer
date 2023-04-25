@@ -13,14 +13,22 @@ import { Tag } from '../src/boards/tag/tag.entity';
 import { Recommend } from '../src/boards/recommend/recommend.entity';
 import { Comment } from '../src/comments/comment.entity';
 import { View } from '../src/boards/view/view.entity';
-import { UsersModule } from '../src/users/users.module';
 import { AuthModule } from '../src/auth/auth.module';
 import { BoardsModule } from '../src/boards/boards.module';
 import { ConfigModule } from '@nestjs/config';
 import configuration from '../src/config/configuration';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from '../src/http-exception.filter';
-import { board, createBoard, createComment, login, login2, register, register2 } from './test.data';
+import {
+  board,
+  createBoard,
+  createComment,
+  createDefaultCategorys,
+  login,
+  login2,
+  register,
+  register2,
+} from './test.data';
 import { account } from './test.data';
 
 describe('Board Module (e2e)', () => {
@@ -84,7 +92,7 @@ describe('Board Module (e2e)', () => {
     tempBoardId = utilsService.getUUID();
 
     // 카테고리 데이터 저장
-    await categoryRepository.createDefaultCategorys();
+    await createDefaultCategorys(dataSource);
 
     // 유저 생성 및 ID 저장
     userId = await register(dataSource, utilsService);
@@ -255,14 +263,14 @@ describe('Board Module (e2e)', () => {
         });
     });
 
-    it('게시글 작성자와 삭제를 요청한 사용자가 일치하지 않을때, 401, unauthorized_user', () => {
+    it('게시글 작성자와 삭제를 요청한 사용자가 일치하지 않을때, 403, user_mismatch', () => {
       return request(app.getHttpServer())
         .delete(`/boards/${boardId}`)
         .set({ Authorization: `Bearer ${user2AccessToken}` })
-        .expect(401)
+        .expect(403)
         .expect({
-          statusCode: 401,
-          message: 'unauthorized_user',
+          statusCode: 403,
+          message: 'user_mismatch',
         });
     });
 

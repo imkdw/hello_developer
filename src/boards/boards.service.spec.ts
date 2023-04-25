@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common/exceptions';
+import { ForbiddenException, NotFoundException } from '@nestjs/common/exceptions';
 import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { Board } from './board.entity';
@@ -241,7 +241,7 @@ describe('[Service] BoardsService', () => {
       }
     });
 
-    it('삭제를 요청한 사용자와 글 작성자가 다를경우, 401, unauthorized_user', async () => {
+    it('삭제를 요청한 사용자와 글 작성자가 다를경우, 403, user_mismatch', async () => {
       // given
       const userId = 'userId';
       const boardId = 'boardId';
@@ -255,8 +255,8 @@ describe('[Service] BoardsService', () => {
         await boardsService.remove(userId, boardId);
       } catch (err: any) {
         // then
-        expect(err).toBeInstanceOf(UnauthorizedException);
-        expect(err.message).toEqual('unauthorized_user');
+        expect(err).toBeInstanceOf(ForbiddenException);
+        expect(err.message).toEqual('user_mismatch');
       }
     });
 
@@ -281,20 +281,25 @@ describe('[Service] BoardsService', () => {
   describe('[글수정] BoardsService.update()', () => {
     it('이상한 카테고리로 글 수정 요청, 400, invalid_category', async () => {
       // given
-      const userId = 'user-id-1';
+      const userId = 'userId';
+      const existBoard = new Board();
+      existBoard.userId = userId;
+
       const updateBoardDto: UpdateBoardDto = {
         title: '제목',
         content: '내용',
         category: 'qna',
         tags: [{ name: 'test' }],
       };
-      const boardId = 'board-id-1';
+      const boardId = 'boardId';
 
       // when
       jest.spyOn(categoryRepository, 'findIdByName').mockResolvedValue([null]);
       jest.spyOn(tagRepository, 'findByName').mockResolvedValue(null);
       jest.spyOn(tagRepository, 'create');
       jest.spyOn(boardRepository, 'update');
+      jest.spyOn(boardRepository, 'findById').mockResolvedValue(existBoard);
+
       try {
         await boardsService.update(userId, updateBoardDto, boardId);
       } catch (err: any) {

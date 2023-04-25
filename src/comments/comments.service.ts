@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CommentRepository } from './comment.repostiroy';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -33,7 +33,7 @@ export class CommentsService {
     }
 
     if (existComment.userId !== userId) {
-      throw new UnauthorizedException('unauthorized_user');
+      throw new ForbiddenException('user_mismatch');
     }
 
     const { comment } = updateCommentDto;
@@ -53,7 +53,7 @@ export class CommentsService {
     }
 
     if (existComment.userId !== userId) {
-      throw new UnauthorizedException('unauthorized_user');
+      throw new ForbiddenException('user_mismatch');
     }
 
     await this.commentRepository.remove(userId, commentId);

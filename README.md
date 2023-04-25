@@ -388,6 +388,14 @@ res.cookie('refreshToken', refreshToken, { httpOnly: true, path: '/', secure: tr
 #### Swagger 문서에 필요한 내용은 외부파일로 분리하여 코드를 개선할 예정입니다.
 
 <br/>
+
+## AWS Parameter Store로 환경변수 관리하기
+
+기존 방식의 경우 .env 파일을 600 권한 + root 소유자로 관리하여 docker에 주입하여 사용중입니다.  
+하지만 .env 파일이 탈취되거나 노출될 경우 위험성이 존재합니다.  
+AWS Parameter Store + AWS SDK를 사용하여 환경변수를 안전하게 관리하도록 변경할 예정입니다.
+
+<br/>
 <br/>
 
 # ❤ 프로젝트를 진행하면서 느낀점

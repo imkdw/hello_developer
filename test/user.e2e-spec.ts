@@ -11,6 +11,7 @@ import {
   register2,
   introduce,
   board,
+  createDefaultCategorys,
 } from './test.data';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../src/users/user.entity';
@@ -91,7 +92,7 @@ describe('Users Module (e2e)', () => {
     tempBoardId = utilsService.getUUID();
 
     // 카테고리 데이터 저장
-    await categoryRepository.createDefaultCategorys();
+    await createDefaultCategorys(dataSource);
 
     // 유저 생성 및 ID 저장
     userId = await register(dataSource, utilsService);
@@ -130,15 +131,15 @@ describe('Users Module (e2e)', () => {
   });
 
   describe('[PATCH] /users/:userId - 유저 프로필 수정하기', () => {
-    it('수정을 요청한 유저와 실제 유저가 일치하지 않는경우, 401, unauthorized_user ', () => {
+    it('수정을 요청한 유저와 실제 유저가 일치하지 않는경우, 403, user_mismatch ', () => {
       return request(app.getHttpServer())
         .patch(`/users/test`)
         .send({ nickname, introduce })
         .set({ Authorization: `Bearer ${accessToken}` })
-        .expect(401)
+        .expect(403)
         .expect({
-          statusCode: 401,
-          message: 'unauthorized_user',
+          statusCode: 403,
+          message: 'user_mismatch',
         });
     });
 
@@ -179,14 +180,14 @@ describe('Users Module (e2e)', () => {
   });
 
   describe('[DELETE] /users/:userID - 유저 회원탈퇴', () => {
-    it('삭제를 요청한 유저와 실제 유저가 다를경우, 401, unauthorized_user', () => {
+    it('삭제를 요청한 유저와 실제 유저가 다를경우, 403, user_mismatch', () => {
       return request(app.getHttpServer())
         .delete(`/users/test`)
         .set({ Authorization: `Bearer ${accessToken}` })
-        .expect(401)
+        .expect(403)
         .expect({
-          statusCode: 401,
-          message: 'unauthorized_user',
+          statusCode: 403,
+          message: 'user_mismatch',
         });
     });
 
@@ -282,15 +283,15 @@ describe('Users Module (e2e)', () => {
   //   });
   // });
   describe('[PATCH] /users/:userId/password - 유저 비밀번호 변경', () => {
-    it('변경을 요청한 유저와 실제 유저가 일치하지 않는경우, 401, unauthorized_user', async () => {
+    it('변경을 요청한 유저와 실제 유저가 일치하지 않는경우, 403, user_mismatch', async () => {
       return request(app.getHttpServer())
         .patch(`/users/1/password`)
         .set({ Authorization: `Bearer ${accessToken}` })
         .send({ password: account.password, changePassword: account.password + 'a' })
-        .expect(401)
+        .expect(403)
         .expect({
-          statusCode: 401,
-          message: 'unauthorized_user',
+          statusCode: 403,
+          message: 'user_mismatch',
         });
     });
 
@@ -337,15 +338,15 @@ describe('Users Module (e2e)', () => {
   });
 
   describe('[PATCH] /users/:userId/verify - 비밀번호 변경 전 유저 검증 API', () => {
-    it('변경을 요청한 유저와 실제 유저가 일치하지 않는경우, 401, unauthorized_user', async () => {
+    it('변경을 요청한 유저와 실제 유저가 일치하지 않는경우, 403, user_mismatch', async () => {
       return request(app.getHttpServer())
         .patch(`/users/userId/verify`)
         .set({ Authorization: `Bearer ${accessToken}` })
         .send({ password: account.password })
-        .expect(401)
+        .expect(403)
         .expect({
-          statusCode: 401,
-          message: 'unauthorized_user',
+          statusCode: 403,
+          message: 'user_mismatch',
         });
     });
 

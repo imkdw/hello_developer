@@ -26,7 +26,6 @@ export class User {
   @Column('varchar', { length: 255, nullable: true, default: '' })
   introduce: string;
 
-  // TODO: 유저 프로필 이미지 기본값 변경하기
   @Column('varchar', {
     length: 255,
     nullable: true,

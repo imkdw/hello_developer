@@ -23,6 +23,7 @@ import { ExitUserVerifyDto } from './dto/exit-user-verify.dto';
 import { ApiTags } from '@nestjs/swagger/dist/decorators/api-use-tags.decorator';
 import {
   ApiBadRequestResponse,
+  ApiForbiddenResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -72,13 +73,10 @@ export class UsersController {
    */
   @ApiOperation({ summary: '사용자 정보 수정 API' })
   @ApiNoContentResponse({ description: '사용자 정보 수정 성공시' })
-  @ApiUnauthorizedResponse({
+  @ApiForbiddenResponse({
     description: '수정을 요청한 유저와 실제 유저가 일치하지 않는경우',
     schema: {
-      properties: {
-        statusCode: { example: 401 },
-        message: { example: 'unauthorized_user' },
-      },
+      properties: { statusCode: { example: 403 }, message: { example: 'user_mismatch' } },
     },
   })
   @HttpCode(204)
@@ -98,13 +96,10 @@ export class UsersController {
    */
   @ApiOperation({ summary: '회원탈퇴 API' })
   @ApiNoContentResponse({ description: '회원탈퇴에 성공시' })
-  @ApiUnauthorizedResponse({
+  @ApiForbiddenResponse({
     description: '삭제를 요청한 유저와 실제 유저가 일치하지 않는경우',
     schema: {
-      properties: {
-        statusCode: { example: 401 },
-        message: { example: 'unauthorized_user' },
-      },
+      properties: { statusCode: { example: 403 }, message: { example: 'user_mismatch' } },
     },
   })
   @HttpCode(204)
@@ -161,12 +156,12 @@ export class UsersController {
       },
     },
   })
-  @ApiUnauthorizedResponse({
+  @ApiForbiddenResponse({
     description: '변경을 요청한 사용자와 실제 사용자가 다를경우',
     schema: {
       properties: {
-        statusCode: { example: 401 },
-        message: { example: 'unauthorized_user' },
+        statusCode: { example: 403 },
+        message: { example: 'user_mismatch' },
       },
     },
   })
@@ -211,12 +206,12 @@ export class UsersController {
       },
     },
   })
-  @ApiUnauthorizedResponse({
+  @ApiForbiddenResponse({
     description: '변경을 요청한 사용자와 실제 사용자가 다를경우',
     schema: {
       properties: {
-        statusCode: { example: 401 },
-        message: { example: 'unauthorized_user' },
+        statusCode: { example: 403 },
+        message: { example: 'user_mismatch' },
       },
     },
   })
@@ -261,12 +256,12 @@ export class UsersController {
       },
     },
   })
-  @ApiUnauthorizedResponse({
+  @ApiForbiddenResponse({
     description: '변경을 요청한 사용자와 실제 사용자가 다를경우',
     schema: {
       properties: {
-        statusCode: { example: 401 },
-        message: { example: 'unauthorized_user' },
+        statusCode: { example: 403 },
+        message: { example: 'user_mismatch' },
       },
     },
   })
