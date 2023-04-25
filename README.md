@@ -4,7 +4,11 @@
 
 웹개발에 있어 개발 사이클의 전반적인 흐름을 경험하기 위해 진행한 개인 프로젝트 입니다.
 
+모바일에서도 사용이 가능하도록 모바일 반응형 디자인을 구현했습니다.
+
 실제 서비스는 [헬로디벨로퍼](https://hdev.site) 에서 사용이 가능합니다.
+
+<img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/mobile.png">
 
 <br/>
 
@@ -26,6 +30,7 @@
 ### ETC
 
 - Notion
+- Slack
   <br/>
   <br/>
 
@@ -116,6 +121,9 @@ graph TD;
     Boards-->Comments;
 		Users-->AWS
 ```
+
+<br/>
+<br/>
 
 # 🌐 System Architecture
 
