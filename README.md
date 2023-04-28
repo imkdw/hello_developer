@@ -392,6 +392,10 @@ res.cookie('refreshToken', refreshToken, { httpOnly: true, path: '/', secure: tr
 
 <br/>
 
+### 23.04.28 - 모듈 내 module.swagger.ts 생성 및 Custom Decorator 형식으로 분리완료
+
+<br/>
+
 ## AWS Parameter Store로 환경변수 관리하기
 
 기존 방식의 경우 .env 파일을 600 권한 + root 소유자로 관리하여 docker에 주입하여 사용중입니다.  

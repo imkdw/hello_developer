@@ -17,13 +17,8 @@ import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { ApiTags } from '@nestjs/swagger/dist/decorators/api-use-tags.decorator';
-import {
-  ApiCreatedResponse,
-  ApiNoContentResponse,
-  ApiNotFoundResponse,
-  ApiOperation,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
+import { ApiCreate, ApiUpdate } from './comments.swagger';
+import { ApiRemove } from 'src/boards/boards.swagger';
 
 @Controller('comments')
 @ApiTags('댓글 API')
@@ -34,11 +29,7 @@ export class CommentsController {
    * [POST] /comments - 댓글 작성 API
    * @param createCommentDto - 작성한 댓글 데이터
    */
-  @ApiOperation({ summary: '댓글 작성시 사용하는 API' })
-  @ApiCreatedResponse({
-    description: '댓글 작성 성공시 댓글 ID 반환',
-    schema: { properties: { commentId: { example: 1 } } },
-  })
+  @ApiCreate('댓글 작성시 사용하는 API')
   @UseGuards(JwtAuthGuard)
   @UsePipes(ValidationPipe)
   @Post()
@@ -52,26 +43,7 @@ export class CommentsController {
    * @param commentId - 댓글 아이디
    * @param updateCommentDto - 수정한 댓글 데이터
    */
-  @ApiOperation({ summary: '댓글 수정시 사용하는 API' })
-  @ApiNoContentResponse({ description: '댓글 수정 성공시' })
-  @ApiNotFoundResponse({
-    description: '수정할려고 하는 댓글이 없을경우',
-    schema: {
-      properties: {
-        statusCode: { example: 404 },
-        message: { example: 'comment_not_found' },
-      },
-    },
-  })
-  @ApiUnauthorizedResponse({
-    description: '댓글 수정을 요청한 사용자와 실제 작성자가 다를경우',
-    schema: {
-      properties: {
-        statusCode: { example: 401 },
-        message: { example: 'unauthorized_user' },
-      },
-    },
-  })
+  @ApiUpdate('댓글 수정시 사용하는 API')
   @HttpCode(204)
   @UseGuards(JwtAuthGuard)
   @UsePipes(ValidationPipe)
@@ -87,26 +59,7 @@ export class CommentsController {
   /**
    * [DELETE] /comments/:commentId - 댓글 삭제 API
    */
-  @ApiOperation({ summary: '댓글을 삭제할때 사용하는 API' })
-  @ApiNoContentResponse({ description: '정상적으로 댓글이 삭제된 경우' })
-  @ApiNotFoundResponse({
-    description: '삭제를 요청한 댓글이 없을경우',
-    schema: {
-      properties: {
-        statusCode: { example: 404 },
-        message: { example: 'comment_not_found' },
-      },
-    },
-  })
-  @ApiUnauthorizedResponse({
-    description: '삭제를 요청한 유저와 댓글 작성자가 일치하지 않은경우',
-    schema: {
-      properties: {
-        statusCode: { example: 404 },
-        message: { example: 'comment_not_found' },
-      },
-    },
-  })
+  @ApiRemove('댓글을 삭제할때 사용하는 API')
   @HttpCode(204)
   @UseGuards(JwtAuthGuard)
   @Delete('/:commentId')
