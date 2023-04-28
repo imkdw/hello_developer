@@ -392,7 +392,7 @@ res.cookie('refreshToken', refreshToken, { httpOnly: true, path: '/', secure: tr
 
 <br/>
 
-### 23.04.28 - 모듈 내 module.swagger.ts 생성 및 Custom Decorator 형식으로 분리완료
+### 23.04.28 - 모듈 내 module.swagger.ts 생성 및 applyDecorator를 사용하여 분리완료
 
 <br/>
 

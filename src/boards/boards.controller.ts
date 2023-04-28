@@ -32,6 +32,7 @@ import {
   ApiUpdate,
   ApiViews,
 } from './boards.swagger';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('boards')
 @ApiTags('게시글 API')
