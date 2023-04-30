@@ -72,7 +72,6 @@ export class BoardsService {
 
     await this.boardRepository.create(newBoard);
     await this.viewRepository.create(boardId);
-
     const oldPath = `boards_image/${tempBoardId}`;
     const newPath = `boards_image/${boardId}`;
     await this.awsService.changeFolderName(oldPath, newPath);

@@ -394,13 +394,15 @@ res.cookie('refreshToken', refreshToken, { httpOnly: true, path: '/', secure: tr
 
 ### 23.04.28 - 모듈 내 module.swagger.ts 생성 및 applyDecorator를 사용하여 분리완료
 
-<br/>
-
-## AWS Parameter Store로 환경변수 관리하기
-
-기존 방식의 경우 .env 파일을 600 권한 + root 소유자로 관리하여 docker에 주입하여 사용중입니다.  
-하지만 .env 파일이 탈취되거나 노출될 경우 위험성이 존재합니다.  
-AWS Parameter Store + AWS SDK를 사용하여 환경변수를 안전하게 관리하도록 변경할 예정입니다.
+```typescript
+  @ApiRegister('회원가입 API')
+  @UsePipes(ValidationPipe)
+  @Post('register')
+  async register(@Body() registerDto: RegisterDto) {
+    const userId = await this.authService.register(registerDto);
+    return { userId };
+  }
+```
 
 <br/>
 <br/>
