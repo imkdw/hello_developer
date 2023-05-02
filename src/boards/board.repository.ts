@@ -121,11 +121,8 @@ export class BoardRepository {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
 
-    /** 트랜잭션을 사용하여 테이블 내용 업데이트 */
     try {
       await queryRunner.startTransaction();
-
-      /** 태그를 제외한 게시글 내용 업데이트 */
       await this.boardRepository.update(
         { userId, boardId },
         {
