@@ -25,20 +25,16 @@ export class BoardsService {
     private awsService: AwsService,
   ) {}
 
-  /**
-   * 게시글 생성
-   * @param userId - 작성자 아이디
-   * @param createBoardDto - 게시글 작성 데이터
-   * @returns
-   */
   async create(userId: string, createBoardDto: CreateBoardDto) {
     const { title, content, category, tags, tempBoardId } = createBoardDto;
 
+    /** category 테이블에서 category_id 조회 */
     const categoryIds = await this.categoryRepository.findIdByName(category);
     if (!categoryIds[0]) {
       throw new BadRequestException('invalid_category');
     }
 
+    /** 태그 존재여부 확인해서 추가 */
     const tagsArr = [];
     for (const tag of tags) {
       if (tag.name.length === 0) {
@@ -57,6 +53,8 @@ export class BoardsService {
     }
 
     const boardId = this.utilsService.getUUID();
+
+    /** 본문 사진 임시 게시글 ID -> 실제 게시글 ID로 변경 */
     const replaceRegExp = new RegExp(`${tempBoardId}`, 'g');
     const replaceContent = content.replace(replaceRegExp, boardId);
 
@@ -72,6 +70,7 @@ export class BoardsService {
 
     await this.boardRepository.create(newBoard);
     await this.viewRepository.create(boardId);
+
     const oldPath = `boards_image/${tempBoardId}`;
     const newPath = `boards_image/${boardId}`;
     await this.awsService.changeFolderName(oldPath, newPath);
