@@ -1,5 +1,5 @@
-import { Module, OnModuleInit } from '@nestjs/common';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { Module } from '@nestjs/common';
+import { APP_FILTER } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { BoardsModule } from './boards/boards.module';
 import { CommentsModule } from './comments/comments.module';
