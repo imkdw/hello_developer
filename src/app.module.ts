@@ -17,7 +17,6 @@ import { Comment } from './comments/comment.entity';
 import { HttpExceptionFilter } from './http-exception.filter';
 import { UtilsModule } from './utils/utils.module';
 import configuration from './config/configuration';
-import { MorganModule, MorganInterceptor } from 'nest-morgan';
 import { AwsModule } from './aws/aws.module';
 import { AppController } from './app.controller';
 
@@ -58,7 +57,6 @@ import { AppController } from './app.controller';
     UtilsModule,
     UsersModule,
     UtilsModule,
-    MorganModule,
     AwsModule,
   ],
   providers: [

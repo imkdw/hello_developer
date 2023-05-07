@@ -17,7 +17,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
   async validate(email: string, password: string): Promise<any> {
     /**
-     * 서비스에서 구현한 validateUser 메소드로 이메일, 비밀번호를 사용하여 유저를 검증해준다.
+     * 서비스에서 구현한 validateUser 메소드로 이메일, 비밀번호를 사용하여 유저를 검증
      */
     const user = await this.authService.validateUser(email, password);
 
