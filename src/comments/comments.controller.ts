@@ -17,8 +17,7 @@ import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { ApiTags } from '@nestjs/swagger/dist/decorators/api-use-tags.decorator';
-import { ApiCreate, ApiUpdate } from './comments.swagger';
-import { ApiRemove } from 'src/boards/boards.swagger';
+import { ApiCreate, ApiRemove, ApiUpdate } from './comments.swagger';
 
 @Controller('comments')
 @ApiTags('댓글 API')
