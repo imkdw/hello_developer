@@ -22,9 +22,9 @@ jobs:
         run: |
           npm test
 
-      # - name: 통합테스트 진행
-      #   run: |
-      #     npm run test:e2e
+      - name: 통합테스트 진행
+        run: |
+          npm run test:e2e
 
       - name: AWS IAM 사용자 설정
         uses: aws-actions/configure-aws-credentials@v2
