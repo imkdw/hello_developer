@@ -14,7 +14,7 @@ const getKoreaTime = () => {
   const minute = String(date.getMinutes()).padStart(2, '0');
   const second = String(date.getSeconds()).padStart(2, '0');
 
-  return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+  return `${year}-${month}-${day} ${hour}:${minute}`;
 };
 
 @Catch(HttpException)
@@ -32,6 +32,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
 
+    /** Sentry 및 Slack 로그 푸쉬 */
     if (status >= 500) {
       this.logger.error(exception, 'HTTP 500 Internal Server Error');
       Sentry.init({

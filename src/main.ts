@@ -6,7 +6,7 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn', 'log'],
+    logger: ['error', 'warn', process.env.NODE_ENV === 'development' ? 'log' : null],
   });
 
   const swaggerConfig = new DocumentBuilder()
@@ -27,4 +27,5 @@ async function bootstrap() {
 
   await app.listen(5000);
 }
+
 bootstrap();
