@@ -202,13 +202,13 @@ graph TD;
 
 ## E2E Test
 
-### 모든 API에 대한 65개의 통합테스트 케이스를 작성했습니다.
+### 모든 API에 대한 65개의 E2E 테스트 케이스를 작성했습니다.
 
 <img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/e2e-test-result.png">
 
 ### 테스트시간을 줄기이 위하여 실제 DB가 아닌 인-메모리 DB인 SQLite를 사용했습니다.
 
-### 통합테스트의 경우 루트폴더 하위 test 폴더에 존재합니다.
+### E2E 테스트의 경우 루트폴더 하위 test 폴더에 존재합니다.
 
 <img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/e2e-test-structure.png">
 <br/>
