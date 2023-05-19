@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { View } from './view.entity';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 
 @Injectable()
 export class ViewRepository {
@@ -10,8 +10,10 @@ export class ViewRepository {
     private readonly viewRepository: Repository<View>,
   ) {}
 
-  async create(boardId: string) {
-    await this.viewRepository.save({ boardId });
+  async create(queryRunner: QueryRunner, boardId: string) {
+    const view = new View();
+    view.boardId = boardId;
+    await queryRunner.manager.save(view);
   }
 
   async findOne(boardId: string) {

@@ -12,6 +12,7 @@ import { RecommendRepository } from './recommend/recommend.repository';
 import { UtilsService } from '../utils/utils.service';
 import { AwsService } from '../aws/aws.service';
 import { ImageUploadDto } from './dto/image-upload.dto';
+import { DataSource, EntityManager } from 'typeorm';
 
 @Injectable()
 export class BoardsService {
@@ -23,6 +24,7 @@ export class BoardsService {
     private recommendRepository: RecommendRepository,
     private utilsService: UtilsService,
     private awsService: AwsService,
+    private dataSource: DataSource,
   ) {}
 
   async create(userId: string, createBoardDto: CreateBoardDto) {
@@ -68,12 +70,22 @@ export class BoardsService {
     newBoard.categoryId2 = categoryIds[1] || null;
     newBoard.tags = tagsArr;
 
-    await this.boardRepository.create(newBoard);
-    await this.viewRepository.create(boardId);
-
-    const oldPath = `boards_image/${tempBoardId}`;
-    const newPath = `boards_image/${boardId}`;
-    await this.awsService.changeFolderName(oldPath, newPath);
+    /** 게시글 저장 -> 게시글 조회수 저장 트랜잭션 처리 */
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    try {
+      await queryRunner.startTransaction();
+      await this.boardRepository.create(queryRunner, newBoard);
+      await this.viewRepository.create(queryRunner, boardId);
+      await queryRunner.commitTransaction();
+      const oldPath = `boards_image/${tempBoardId}`;
+      const newPath = `boards_image/${boardId}`;
+      await this.awsService.changeFolderName(oldPath, newPath);
+    } catch (err: any) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
 
     return boardId;
   }

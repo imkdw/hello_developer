@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { Board } from './board.entity';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { Tag } from './tag/tag.entity';
@@ -17,8 +17,8 @@ export class BoardRepository {
    * @param board - 새로운 게시글 데이터
    * @returns 게시글 ID 반환
    */
-  async create(board: Board) {
-    await this.boardRepository.save(board);
+  async create(queryRunner: QueryRunner, board: Board) {
+    await queryRunner.manager.save(board);
   }
 
   async findAll(categorysIds: number[]) {
