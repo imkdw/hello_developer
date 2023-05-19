@@ -12,7 +12,7 @@ import { RecommendRepository } from './recommend/recommend.repository';
 import { UtilsService } from '../utils/utils.service';
 import { AwsService } from '../aws/aws.service';
 import { ImageUploadDto } from './dto/image-upload.dto';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class BoardsService {
