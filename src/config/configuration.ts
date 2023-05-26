@@ -32,4 +32,8 @@ export default () => ({
     token: process.env.SLACK_TOKEN,
     logChannelId: process.env.SLACK_LOG_CHANNEL_ID,
   },
+  swagger: {
+    user: process.env.SWAGGER_USER,
+    password: process.env.SWAGGER_PASSWORD,
+  },
 });
