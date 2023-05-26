@@ -220,6 +220,8 @@ graph TD;
 
 ### API 문서 URL : [Hello Developer API Docs.](https://api.hdev.site:5000/api)
 
+### 사용자 접근을 방지하기 위해 로그인계정을 설정했습니다. admin / 1234
+
 <br/>
 <img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/swagger.png">
 
