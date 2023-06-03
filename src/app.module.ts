@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { BoardsModule } from './boards/boards.module';
@@ -19,6 +19,7 @@ import { UtilsModule } from './utils/utils.module';
 import configuration from './config/configuration';
 import { AwsModule } from './aws/aws.module';
 import { AppController } from './app.controller';
+import { GoogleOAuthMiddleware } from './auth/middlewares/google-auth.middleware';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { AppController } from './app.controller';
           password: '1234',
           database: 'hello_developer',
           entities: [User, Board, Category, Tag, Recommend, Comment, View],
+          synchronize: true,
         })
       : TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
@@ -67,4 +69,10 @@ import { AppController } from './app.controller';
   ],
   controllers: [AppController],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(GoogleOAuthMiddleware)
+      .forRoutes({ path: '/auth/google', method: RequestMethod.GET });
+  }
+}

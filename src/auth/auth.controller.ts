@@ -10,6 +10,7 @@ import {
   Param,
   Res,
   ForbiddenException,
+  Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger/dist/decorators/api-use-tags.decorator';
 import { Response } from 'express';
@@ -20,6 +21,7 @@ import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { ApiCheck, ApiLogin, ApiLogout, ApiRegister, ApiToken, ApiVerify } from './auth.swagger';
+import { CustomRequest } from './interfaces/auth.interface';
 
 @Controller('auth')
 @ApiTags('인증 API')
@@ -104,5 +106,15 @@ export class AuthController {
   @Get('check/:userId')
   async check(@Req() req, @Param('userId') userId: string) {
     await this.authService.check(req.user.userId, userId);
+  }
+
+  @Get('google')
+  async googleAuth(@Req() req: CustomRequest, @Res() res: Response) {
+    const authData = await this.authService.googleAuth(req.accessToken);
+    const { userId, profileImg, nickname, accessToken, refreshToken } = authData;
+
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, path: '/', secure: true });
+
+    return { userId, profileImg, nickname, accessToken };
   }
 }

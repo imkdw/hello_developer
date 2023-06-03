@@ -17,7 +17,7 @@ export class User {
   @Column('varchar', { length: 320, nullable: false, unique: true })
   email: string;
 
-  @Column('varchar', { length: 255, nullable: false })
+  @Column('varchar', { length: 255, nullable: true, default: null })
   password: string;
 
   @Column('varchar', { length: 20, nullable: false, unique: true })
@@ -43,7 +43,7 @@ export class User {
   @Column('boolean', { nullable: true, default: false, name: 'is_verified_flag' })
   isVerified: boolean;
 
-  @Column('varchar', { length: 255, nullable: false, name: 'verify_token' })
+  @Column('varchar', { length: 255, nullable: true, name: 'verify_token', default: null })
   verifyToken: string;
 
   @Column('varchar', { length: 255, nullable: true, default: null, name: 'refresh_token' })

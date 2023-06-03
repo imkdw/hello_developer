@@ -12,6 +12,8 @@ import { User } from '../users/user.entity';
 import { UtilsService } from '../utils/utils.service';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from '../email/email.service';
+import axios from 'axios';
+import { GoogleUserInfo } from './interfaces/auth.interface';
 
 @Injectable()
 export class AuthService {
@@ -119,5 +121,36 @@ export class AuthService {
     const expiresIn = this.configService.get<string>('jwt.rtkExpiresIn');
 
     return this.jwtService.sign({ userId }, { secret, expiresIn });
+  };
+
+  googleAuth = async (accessToken: string) => {
+    const res = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const googleUserInfo: GoogleUserInfo = res.data;
+
+    const { email, name, picture } = googleUserInfo;
+    const user = new User();
+    user.email = email;
+    user.nickname = name;
+    user.profileImg = picture;
+    user.isVerified = true;
+    const createdUser = await this.userRepository.register(user);
+    const { userId, profileImg, nickname } = createdUser;
+
+    const tokens = {
+      accessToken: this.createAccessToken(createdUser.userId),
+      refreshToken: this.createRefreshToken(createdUser.userId),
+    };
+    await this.userRepository.saveRefreshToken(createdUser.userId, tokens.refreshToken);
+    return {
+      userId,
+      profileImg,
+      nickname,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    };
   };
 }
