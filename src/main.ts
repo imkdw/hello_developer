@@ -4,6 +4,7 @@ import { SwaggerModule } from '@nestjs/swagger/dist';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import * as expressBasicAuth from 'express-basic-auth';
+import { JwtMiddleware } from './middlewares/jwt.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -18,6 +19,9 @@ async function bootstrap() {
       users: { admin: '1234' },
     }),
   );
+
+  /** JWT 인증처리 미들웨어 */
+  // app.use(JwtMiddleware);
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Hello Developer API Docs')
