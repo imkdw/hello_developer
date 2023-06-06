@@ -1,7 +1,7 @@
 import { Request } from 'express';
 
 export interface CustomRequest extends Request {
-  accessToken: string;
+  accessToken?: string;
 }
 
 export interface GoogleUserInfo {

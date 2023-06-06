@@ -20,6 +20,7 @@ import configuration from './config/configuration';
 import { AwsModule } from './aws/aws.module';
 import { AppController } from './app.controller';
 import { GoogleOAuthMiddleware } from './auth/middlewares/google-auth.middleware';
+import { JwtMiddleware } from './auth/middlewares/jwt.middleware';
 
 @Module({
   imports: [
@@ -74,5 +75,7 @@ export class AppModule implements NestModule {
     consumer
       .apply(GoogleOAuthMiddleware)
       .forRoutes({ path: '/auth/google', method: RequestMethod.GET });
+
+    consumer.apply(JwtMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }
