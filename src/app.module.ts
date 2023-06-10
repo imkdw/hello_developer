@@ -21,6 +21,7 @@ import { AwsModule } from './aws/aws.module';
 import { AppController } from './app.controller';
 import { GoogleOAuthMiddleware } from './auth/middlewares/google-auth.middleware';
 import { JwtMiddleware } from './auth/middlewares/jwt.middleware';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { JwtMiddleware } from './auth/middlewares/jwt.middleware';
     UsersModule,
     UtilsModule,
     AwsModule,
+    ChatModule,
   ],
   providers: [
     {
