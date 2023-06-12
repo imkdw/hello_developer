@@ -9,7 +9,9 @@ export class PaymentsController {
   nextUrl(@Body() requestWelPayDto: RequestWelpayDto) {
     console.log(requestWelPayDto);
     const makeParam = (P_TID: string, P_MID: string): string => {
-      return 'P_TID=' + P_TID + '&P_MID=' + P_MID;
+      const param = 'P_TID=' + P_TID + '&P_MID=' + P_MID;
+      console.log('param: ', param);
+      return param;
     };
 
     const P_MID = 'welcometst';
@@ -18,9 +20,9 @@ export class PaymentsController {
     // socket.emit('message', makeParam(P_TID, P_MID));
 
     const options = {
-      hostname: P_REQ_URL,
+      hostname: 'tmobile.paywelcome.co.kr',
       port: 443,
-      path: '/',
+      path: '/smart/payReq.ini',
       method: 'POST',
     };
 
