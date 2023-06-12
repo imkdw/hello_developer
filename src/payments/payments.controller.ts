@@ -23,7 +23,7 @@ export class PaymentsController {
     const options = {
       hostname: 'tmobile.paywelcome.co.kr',
       port: 443,
-      path: '/smart/payReq.ini',
+      path: `/smart/payReq.ini?${makeParam(P_TID, P_MID)}`,
       method: 'POST',
     };
 
