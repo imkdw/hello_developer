@@ -30,7 +30,7 @@ export class PaymentsController {
       console.log('status: ', res.statusCode);
 
       res.on('data', (chunk) => {
-        console.log('res: ', chunk);
+        console.log('res: ', chunk.toString());
       });
     });
 
