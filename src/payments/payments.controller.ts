@@ -2,6 +2,7 @@ import { Controller, Post, Body } from '@nestjs/common';
 import { RequestWelpayDto } from './dto/request-welpay.dto';
 import { io } from 'socket.io-client';
 import * as https from 'https';
+import * as iconv from 'iconv-lite';
 
 @Controller('payments')
 export class PaymentsController {
@@ -30,7 +31,7 @@ export class PaymentsController {
       console.log('status: ', res.statusCode);
 
       res.on('data', (chunk) => {
-        console.log('res: ', chunk.toString('euc-kr'));
+        console.log('res: ', iconv.decode(chunk, 'euc-kr'));
       });
     });
 
