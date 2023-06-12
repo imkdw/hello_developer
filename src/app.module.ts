@@ -22,6 +22,7 @@ import { AppController } from './app.controller';
 import { GoogleOAuthMiddleware } from './auth/middlewares/google-auth.middleware';
 import { JwtMiddleware } from './auth/middlewares/jwt.middleware';
 import { ChatModule } from './chat/chat.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { ChatModule } from './chat/chat.module';
     UtilsModule,
     AwsModule,
     ChatModule,
+    PaymentsModule,
   ],
   providers: [
     {
