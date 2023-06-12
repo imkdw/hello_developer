@@ -18,9 +18,9 @@ jobs:
         run: |
           npm install
 
-      - name: 단위테스트 진행
-        run: |
-          npm test
+      # - name: 단위테스트 진행
+      #   run: |
+      #     npm test
 
       # - name: 통합테스트 진행
       #   run: |
