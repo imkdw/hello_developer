@@ -29,10 +29,31 @@ export class PaymentsController {
       console.log('status: ', res.statusCode);
 
       res.on('data', (chunk) => {
-        const parsedChunk = JSON.parse(iconv.decode(chunk, 'euc-kr'));
-        const responseWelPayDto = new ResponseWelPayDto();
+        const parsedChunk = iconv.decode(chunk, 'euc-kr');
         console.log(parsedChunk);
-        responseWelPayDto.P_OID = parsedChunk.P_OID;
+
+        const params = new URLSearchParams(parsedChunk);
+        const data: ResponseWelPayDto = {
+          P_STATUS: params.get('P_STATUS') || '',
+          P_TID: params.get('P_TID') || '',
+          P_TYPE: params.get('P_TYPE') || '',
+          P_AUTH_DT: params.get('P_AUTH_DT') || '',
+          P_MID: params.get('P_MID') || '',
+          P_OID: params.get('P_OID') || '',
+          P_AMT: params.get('P_AMT') || '',
+          P_UNAME: params.get('P_UNAME') || '',
+          P_MNAME: params.get('P_MNAME') || '',
+          P_RMESG1: params.get('P_RMESG1') || '',
+          P_NOTI: params.get('P_NOTI') || '',
+          P_NOTEURL: params.get('P_NOTEURL') || '',
+          P_NEXT_URL: params.get('P_NEXT_URL') || '',
+        };
+
+        for (const [key, value] of params.entries()) {
+          data[key] = value;
+        }
+        const responseWelPayDto = new ResponseWelPayDto();
+        responseWelPayDto.P_OID = data.P_OID;
         return {
           url: `https://hdev.site/payments/result?P_OID=${responseWelPayDto.P_OID}`,
         };
