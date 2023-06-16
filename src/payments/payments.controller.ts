@@ -8,7 +8,7 @@ import { ResponseWelPayDto } from './dto/response-welpay.dtk';
 @Controller('payments')
 export class PaymentsController {
   @Post('nextUrl')
-  @Redirect() // Redirect 데코레이터 사용
+  // @Redirect() // Redirect 데코레이터 사용
   async nextUrl(@Body() requestWelPayDto: RequestWelpayDto) {
     const makeParam = (P_TID: string, P_MID: string): string => {
       const param = 'P_TID=' + P_TID + '&P_MID=' + P_MID;
@@ -25,7 +25,7 @@ export class PaymentsController {
       method: 'POST',
     };
 
-    return new Promise((resolve, reject) => {
+    const data = new Promise((resolve, reject) => {
       const req = https.request(options, (res) => {
         console.log('status: ', res.statusCode);
 
@@ -54,26 +54,31 @@ export class PaymentsController {
             data[key] = value;
           }
 
+          console.log(data);
           const responseWelPayDto = new ResponseWelPayDto();
           responseWelPayDto.P_OID = data.P_OID;
 
           // 리다이렉트할 URL 반환
-          resolve({
-            url: `https://hdev.site/payments/result?P_OID=${responseWelPayDto.P_OID}`,
-          });
+          // resolve({
+          //   url: `https://hdev.site/payments/result?P_OID=${responseWelPayDto.P_OID}`,
+          // });
+          resolve('잘됨');
         });
       });
 
       req.on('error', (error) => {
         console.error(error);
         // 에러 발생 시 리다이렉트할 URL 반환
-        reject({
-          url: 'https://hdev.site/payments/result?error=true',
-        });
+        // reject({
+        //   url: 'https://hdev.site/payments/result?error=true',
+        // });
+        reject('안됨');
       });
 
       req.write(makeParam(P_TID, P_MID));
       req.end();
     });
+
+    return data;
   }
 }
