@@ -23,9 +23,15 @@ import { GoogleOAuthMiddleware } from './auth/middlewares/google-auth.middleware
 import { JwtMiddleware } from './auth/middlewares/jwt.middleware';
 import { ChatModule } from './chat/chat.module';
 import { PaymentsModule } from './payments/payments.module';
+import { ThrottlerModule } from '@nestjs/throttler/dist/throttler.module';
 
 @Module({
   imports: [
+    // rate limit
+    ThrottlerModule.forRoot({
+      ttl: 60, // N초당 M번의 API 요청을 제어할떄 설정하는 N
+      limit: 10, // 60초당 10번의 요청을 받겠다는 의미
+    }),
     ConfigModule.forRoot({
       envFilePath: ['.env.development'],
       load: [configuration],
