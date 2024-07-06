@@ -1,4 +1,5 @@
 # [ Hello Developer ] 개발자를 위한 커뮤니티 서비스
+![Nest](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white)
 
 <img src="https://s3.ap-northeast-2.amazonaws.com/dongwoo.personal/logo.svg" width="200px" height="100px">
 
